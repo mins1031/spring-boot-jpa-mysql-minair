@@ -10,6 +10,7 @@ import com.minair.minair.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +49,13 @@ public class AirlineService {
         return optionalAirline.get();
     }
 
-    public Page<Airline> findAllAirline(Pageable pageable){
+    public Page<Airline> findAllAirline(int pageNum){
 
-        return airlineRepository.allAirlineList(pageable);
+        int offset = pageNum -1;
+
+        PageRequest pageRequest = PageRequest.of(offset,10);
+        Page<Airline> airlinePage = airlineRepository.allAirlineList(pageRequest);
+        return airlinePage ;
     }
 
     @Transactional

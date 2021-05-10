@@ -86,4 +86,14 @@ public class ReservationService {
         Reservation findReservation = optionalReservation.get();
         findReservation.setSeats(seats);
     }
+
+    public Page<Reservation> findAll(int pageNum){
+
+        int offset = pageNum - 1;
+        System.out.println(pageNum);
+
+        PageRequest p = PageRequest.of(offset,10);
+        Page<Reservation> allReservation = reservationRepository.pageAllReservation(p);
+        return allReservation;
+    }
 }

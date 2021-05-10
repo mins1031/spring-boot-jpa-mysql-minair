@@ -88,5 +88,25 @@ public class ReservationController {
                             Model model){
         Reservation findReservation = reservationService.findOneReservation(reservationId);
         model.addAttribute("reservation", findReservation);
+        //이것도 dto로 리펙토링때 수정할것.
+    }
+
+    @GetMapping("/all")
+    public void allReservation(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                               Model model){
+        log.info("예약 목록");
+        Page<Reservation> allReservation = reservationService.findAll(pageNum);
+
+        List<ReservationResultDto> resultList = allReservation.getContent().stream()
+                .map(r -> new ReservationResultDto(r.getId(),r.getMember(),
+                        r.getAirline(),r.getAdultCount(),r.getChildCount(),
+                        r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
+                .collect(Collectors.toList());
+
+        PageDto pageDto = new PageDto(pageNum,10,allReservation.getTotalElements(),
+                allReservation.getTotalPages());
+
+        model.addAttribute("reservations",resultList);
+        model.addAttribute("pageMaker",pageDto);
     }
 }

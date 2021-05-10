@@ -57,6 +57,23 @@
 <footer th:replace="fragments/fragments :: footer"></footer>
 
 <script>
+    $(document).ready(function () {
+        var checkStatus = adminCheck().status;
+        if (checkStatus != 200) {
+            alert("ADMIN 권한을 가진 계정만 접근할수 있습니다.")
+            $(location).attr('href','/');
+        }
+        //index페이지 권한설정 완료.
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    });
 
     $('#airRegistBtn').on('click',function (e) {
 

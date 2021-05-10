@@ -25,7 +25,7 @@ public class PageDto {
         this.offset = offset;
         this.limit = limit;
         this.total = total;
-        this.endPage = (int)(Math.ceil(offset/10.0)) * 10;
+        this.endPage = (int)(Math.ceil(this.offset/10.0)) * 10;
         this.startPage = endPage - 9;
         this.realEndPage = totalPage;
 
@@ -35,5 +35,4 @@ public class PageDto {
         this.prev = this.startPage > 1;
         this.next = this.endPage < realEndPage;
     }
-
 }

@@ -8,4 +8,6 @@ import org.springframework.data.domain.Pageable;
 public interface CustomReservationRepository {
 
     public Page<Reservation> pageReservations(Member member, Pageable pageable);
+
+    Page<Reservation> pageAllReservation(Pageable pageable);
 }

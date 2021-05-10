@@ -42,4 +42,20 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
 
         return new PageImpl<>(reservations,pageable,total);
     }
+
+    @Override
+    public Page<Reservation> pageAllReservation(Pageable pageable) {
+        List<Reservation> reservations = queryFactory
+                .selectFrom(reservation)
+                .orderBy(reservation.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .selectFrom(reservation)
+                .fetchCount();
+
+        return new PageImpl<>(reservations,pageable,total);
+    }
 }

@@ -89,11 +89,10 @@ public class AirlineController {
     }
 
     @GetMapping("/airline/airlines")
-    public void airlines(Model model,@RequestParam(value = "pageNum", defaultValue = "0") int pageNum){
+    public void airlines(Model model,@RequestParam(value = "pageNum", defaultValue = "1") int pageNum){
         log.info("All 항공권 조회");
 
-        PageRequest pageRequest = PageRequest.of(pageNum,10);
-        Page<Airline> allAirline = airlineService.findAllAirline(pageRequest);
+        Page<Airline> allAirline = airlineService.findAllAirline(pageNum);
         List<AirlineDto> airlineDtoList = allAirline.getContent().stream()
                 .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
                         a.getDepart_date(),a.getDepart_time(),a.getReach_time(),

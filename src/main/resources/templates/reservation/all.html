@@ -5,31 +5,36 @@
 <body>
 <div th:replace="fragments/fragments :: header"></div>
 <hr>
-<div align="center"><h2>* 모든 항공권 목록 *</h2></div>
-<table class="table table-bordered"
+<table class="table table-bordered "
        style="background-color: #7cc67c">
     <thead style="background-color: #f0ad4e">
     <tr>
-        <th>선택</th>
+        <th>예약코드</th>
+        <th>예약자명</th>
         <th>항공코드</th>
         <th>출발지</th>
         <th>도착지</th>
         <th>출발일</th>
         <th>출발시간</th>
-        <th>도착시간</th>
-        <th>잔여좌석</th>
+        <th>총인원</th>
+        <th>좌석</th>
+        <th>상세보기</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="airline : ${airlineList}">
-        <td><input type="radio" name="goSelect" class="goSelected"></td>
-        <td style="color: #0b0b0b" th:text="${airline?.id}"/></td>
-        <td th:text="${airline?.departure}"></td>
-        <td th:text="${airline?.distination}"></td>
-        <td th:text="${airline?.depart_date}"></td>
-        <td th:text="${airline?.depart_time}"></td>
-        <td th:text="${airline?.reach_time}"></td>
-        <td th:text="${airline?.aboveseat}"></td>
+    <!--<tr th:each="airline : ${backAirlineList.getAirlineResult}">-->
+    <tr th:each="reservation : ${reservations}">
+        <td style="color: #0b0b0b" th:text="${reservation?.id}"/></td>
+        <td th:text="${reservation?.getMember.getUsername}"></td>
+        <td th:text="${reservation?.getAirline.getId}" class="airlineId"></td>
+        <td th:text="${reservation?.getAirline.getDeparture}"></td>
+        <td th:text="${reservation?.getAirline.getDistination}"></td>
+        <td th:text="${reservation?.getAirline.getDepart_date}"></td>
+        <td th:text="${reservation?.getAirline.getDepart_time}"></td>
+        <td th:text="${reservation?.totalPerson}"></td>
+        <td th:text="${reservation?.getReserveSeat}"></td>
+        <td><button type="button" style="color: #545b62"
+                    class="reserveInfo">상세정보</button></td>
     </tr>
     </tbody>
 </table><br/>
@@ -57,15 +62,13 @@
         </li>
     </ul>
 </nav>
-<br>
 
 <form action="/reservation/info" method="get" class="infoForm">
     <input type="hidden" name="reservationId" value="" class="hiddenReservationIdInfo">
 </form>
-<form action="/airline/airlines" method="get" class="basicInfo">
+<form action="/reservation/all" method="get" class="basicInfo">
     <input type="hidden" name="pageNum" value="" class="pageNum">
 </form>
-
 
 <footer th:replace="fragments/fragments :: footer"></footer>
 
@@ -132,6 +135,5 @@
 
     });
 </script>
-
 </body>
 </html>

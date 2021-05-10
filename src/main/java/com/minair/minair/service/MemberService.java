@@ -43,6 +43,24 @@ public class MemberService {
         memberRepository.save(joinMember);
     }
 
+    @Transactional
+    public void joinAdmin(MemberJoinDto memberJoinDto){
+        String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
+        String role = "ROLE_MEMBER,ROLE_ADMIN";
+        Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
+                encodePw, memberJoinDto.getEmail(),
+                memberJoinDto.getBirth(),memberJoinDto.getName_kor(),
+                memberJoinDto.getName_eng(),memberJoinDto.getPhone(),
+                memberJoinDto.getGender());
+        joinMember.investRole(role);
+
+        RefreshTokenProperty refreshTokenProperty
+                = new RefreshTokenProperty(null,0);
+        joinMember.issueRefreshToken(refreshTokenProperty);
+
+        memberRepository.save(joinMember);
+    }
+
     public Optional<Member> findById(Long id){
         return memberRepository.findById(id);
     }

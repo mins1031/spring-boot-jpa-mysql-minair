@@ -24,7 +24,15 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <style>
+    <script src="https://code.jquery.com/jquery-2.2.1.js"></script>
+    <script src="../resources/static/js/codemodul/login.js"
+            th:src="@{/js/codemodul/login.js}"></script>
+    <script src="../resources/static/js/codemodul/common.js"
+            th:src="@{/js/codemodul/common.js}"></script>
+    <script src="../resources/static/js/codemodul/refreshToken.js"
+            th:src="@{/js/codemodul/refreshToken.js}"></script>
+
+    <style >
         body {
             color: #999;
             background: #fafafa;
@@ -87,33 +95,11 @@
             text-decoration: underline;
         }
     </style>
-    <script src="https://code.jquery.com/jquery-2.2.1.js"></script>
-
 </head>
 <body>
-<div id="fh5co-wrapper">
-    <div id="fh5co-page">
-
-        <header id="fh5co-header-section" class="sticky-banner">
-            <div class="container">
-                <div class="nav-header">
-                    <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle dark"><i></i></a>
-                    <h1 id="fh5co-logo"><a href="index.html"><i class="icon-airplane"></i>Travel</a></h1>
-                    <!-- START #fh5co-menu-wrap -->
-                    <nav id="fh5co-menu-wrap" role="navigation">
-                        <ul class="sf-menu" id="fh5co-primary-menu">
-                            <li class="active"><a href="index.html">Home</a></li>
-                            <li><a href="#" id="userLink">User</a></li>
-                            <li><a href="contact.html">Contact</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </header>
-    </div>
-
+<div th:replace="fragments/fragments :: header"></div><br>
 <div class="signup-form">
-    <form action="/join" method="post">
+    <form action="/admin/new" method="post">
         <h2>Sign Up</h2>
         <div class="form-group">
             <input type="text" id='id' class="form-control" name="username" placeholder="아이디" required="required" >
@@ -154,10 +140,27 @@
     </form>
     <div class="text-center">Already have an account? <a href="#">Login here</a></div>
 </div>
-</div>
+<br>
 
-<script src="https://code.jquery.com/jquery-2.2.1.js"></script>
 <script>
+    $(document).ready(function () {
+        var checkStatus = adminCheck().status;
+        if (checkStatus != 200) {
+            alert("ADMIN 권한을 가진 계정만 접근할수 있습니다.")
+            $(location).attr('href','/');
+        }
+        //index페이지 권한설정 완료.
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    });
+
     $('#checkId').on("click",function () {
         var idVal = $('#id').val();
         console.log(idVal)
