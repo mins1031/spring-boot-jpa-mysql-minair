@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/fragments :: html-head">
+</head>
+<body>
+<div th:replace="fragments/fragments :: header"></div>
+<hr>
+<div align="center"><h2>* 모든 항공권 목록 *</h2></div>
+<table class="table table-bordered"
+       style="background-color: #7cc67c">
+    <thead style="background-color: #f0ad4e">
+    <tr>
+        <th>선택</th>
+        <th>항공코드</th>
+        <th>출발지</th>
+        <th>도착지</th>
+        <th>출발일</th>
+        <th>출발시간</th>
+        <th>도착시간</th>
+        <th>잔여좌석</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="airline : ${airlineList}">
+        <td><input type="radio" name="goSelect" class="goSelected"></td>
+        <td style="color: #0b0b0b" th:text="${airline?.id}"/></td>
+        <td th:text="${airline?.departure}"></td>
+        <td th:text="${airline?.distination}"></td>
+        <td th:text="${airline?.depart_date}"></td>
+        <td th:text="${airline?.depart_time}"></td>
+        <td th:text="${airline?.reach_time}"></td>
+        <td th:text="${airline?.aboveseat}"></td>
+    </tr>
+    </tbody>
+</table><br/>
+
+<hr size="10px" style="border:solid 3px #0b0b0b">
+
+
+<footer th:replace="fragments/fragments :: footer"></footer>
+
+</body>
+</html>

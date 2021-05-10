@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+    <!-- Animate.css -->
+    <link type="text/css" rel="stylesheet" href="/css/animate.css" th:href="@{/css/animate.css}"/>
+    <!-- Icomoon Icon Fonts-->
+    <link type="text/css" rel="stylesheet" href="/css/icomoon.css" th:href="@{/css/icomoon.css}"/>
+    <!-- Bootstrap  -->
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+    <!-- Superfish -->
+    <link rel="stylesheet" href="../resources/static/css/superfish.css" th:href="@{/css/superfish.css}"/>
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" href="../resources/static/css/magnific-popup.css" th:href="@{/css/magnific-popup.css}"/>
+    <!-- CS Select -->
+    <link rel="stylesheet" href="../resources/static/css/cs-select.css" th:href="@{/css/cs-select.css}"/>
+    <link rel="stylesheet" href="../resources/static/css/cs-skin-border.css" th:href="@{/css/cs-skin-border.css}"/>
+    <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}"/>
+
+    <title>Bootstrap Elegant Sign Up Form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            color: #999;
+            background: #fafafa;
+            font-family: 'Roboto', sans-serif;
+        }
+        .form-control {
+            min-height: 41px;
+            box-shadow: none;
+            border-color: #e6e6e6;
+        }
+        .form-control:focus {
+            border-color: #ff7f00;
+        }
+        .form-control, .btn {
+            border-radius: 3px;
+        }
+        .signup-form {
+            width: 425px;
+            margin: 0 auto;
+            padding: 30px 0;
+        }
+        .signup-form h2 {
+            color: #333;
+            font-weight: bold;
+            margin: 0 0 25px;
+        }
+        .signup-form form {
+            margin-bottom: 15px;
+            background: #fff;
+            border: 1px solid #f4f4f4;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+            padding: 40px 50px;
+        }
+        .signup-form .form-group {
+            margin-bottom: 20px;
+        }
+        .signup-form label {
+            font-weight: normal;
+            font-size: 13px;
+        }
+        .signup-form input[type="checkbox"] {
+            margin-top: 2px;
+        }
+        .signup-form .btn {
+            font-size: 16px;
+            font-weight: bold;
+            background: #ff7f00;
+            border: none;
+            min-width: 140px;
+            outline: none !important;
+        }
+        .signup-form .btn:hover, .signup-form .btn:focus {
+            background: #00b3b3;
+        }
+        .signup-form a {
+            color: #ff7f00;
+            text-decoration: none;
+        }
+        .signup-form a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div id="fh5co-wrapper">
+    <div id="fh5co-page">
+
+        <header id="fh5co-header-section" class="sticky-banner">
+            <div class="container">
+                <div class="nav-header">
+                    <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle dark"><i></i></a>
+                    <h1 id="fh5co-logo"><a href="index.html"><i class="icon-airplane"></i>Travel</a></h1>
+                    <!-- START #fh5co-menu-wrap -->
+                    <nav id="fh5co-menu-wrap" role="navigation">
+                        <ul class="sf-menu" id="fh5co-primary-menu">
+                            <li class="active"><a href="index.html">Home</a></li>
+                            <li><a href="#" id="userLink">User</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+    </div>
+
+<div class="signup-form">
+    <form action="/join" method="post">
+        <h2>Sign Up</h2>
+        <div class="form-group">
+            <input type="text" id='id' class="form-control" name="username" placeholder="아이디" required="required" >
+            <input type="button" id='checkId' value="중복체크">
+        </div>
+        <div class="form-group">
+            <input type="password" id='pw' class="form-control" name="password" placeholder="비밀번호" required="required">
+        </div>
+        <div class="form-group">
+            <input type="password" id='conPw' class="form-control" name="confirm_password" placeholder="비밀번호 확인" required="required">
+        </div>
+        <div class="form-group">
+            <input type="email" class="form-control" name="email" placeholder="이메일" required="required">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="name_kor" placeholder="한국이름" required="required">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="name_eng" placeholder="영어이름" required="required">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="birth" placeholder="생년월일" required="required">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="phone" placeholder="휴대번호" required="required">
+        </div>
+        <div class="form-group">
+            <label>성별 :</label><br/>
+            <label><input type="radio" name="gender" value="M">남</label><br/>
+            <label><input type="radio" name="gender" value="F">여</label>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-inline"><input type="checkbox" required="required"> I accept the <a href="#">Terms of Use</a> &amp; <a href="#">Privacy Policy</a></label>
+        </div>
+        <div class="form-group">
+            <button type="submit" id="subBtn" class="btn btn-primary btn-lg">Sign Up</button>
+        </div>
+    </form>
+    <div class="text-center">Already have an account? <a href="#">Login here</a></div>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.2.1.js"></script>
+<script>
+    $('#checkId').on("click",function () {
+        var idVal = $('#id').val();
+        console.log(idVal)
+        if (idVal == "") {
+            alert("id를 입력해 주세요.")
+        } else {
+            $.ajax({
+                type: "post",
+                url: "/checkId",
+                data: {
+                    "idVal": idVal
+                },
+                success: function (result) {
+                    if (result == "YES") {
+                        alert("사용 가능한 Id입니다.")
+                    } else {
+                        alert("중복된 Id입니다.")
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("error");
+                }
+            });
+        }
+    });
+    $('#subBtn').on('click',function(e){
+        var pw = $('#pw').val()
+        var conPw = $('#conPw').val()
+        if (pw != conPw){
+            e.preventDefault()
+            alert("비밀번호가 일치하지 않습니다.")
+        }
+    });
+</script>
+
+</body>
+</html>

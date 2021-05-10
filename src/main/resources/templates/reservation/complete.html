@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/fragments :: html-head">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="fragments/fragments :: header"></div>
+<div style="text-align: center">
+    <h2><span class="reserverId"></span>님 예약이 완료되었습니다!!!! </h2>
+</div>
+<hr size="10px" style="border:solid 3px #0b0b0b">
+<div><h3 id="fh5co-logo" style="color: #0b0b0b">가는편</h3></div>
+<table class="table table-bordered "
+       style="background-color: #7cc67c">
+    <thead style="background-color: #f0ad4e">
+    <tr>
+        <th>예약코드</th>
+        <!--<th>예약자Id</th>-->
+        <th>예약자명</th>
+        <th>항공코드</th>
+        <th>출발지</th>
+        <th>도착지</th>
+        <th>출발일</th>
+        <th>출발시간</th>
+        <th>총인원</th>
+        <th>좌석</th>
+        <th>상세보기</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--<tr th:each="airline : ${backAirlineList.getAirlineResult}">-->
+    <tr>
+        <td style="color: #0b0b0b" th:text="${goReserveList?.id}"/></td>
+        <td th:text="${goReserveList?.getMember.getUsername}"></td>
+        <!--<td th:text="${goReserveList?.getMember.getName_kor}"></td>-->
+        <td th:text="${goReserveList?.getAirline.getId}"></td>
+        <td th:text="${goReserveList?.getAirline.getDeparture}"></td>
+        <td th:text="${goReserveList?.getAirline.getDistination}"></td>
+        <td th:text="${goReserveList?.getAirline.getDepart_date}"></td>
+        <td th:text="${goReserveList?.getAirline.getDepart_time}"></td>
+        <td th:text="${backReserveList?.totalPerson}"></td>
+        <td><button type="button" style="color: #545b62" class="checkInBtn">체크인</button></td>
+        <td><button type="button" style="color: #545b62"
+                    class=".reserveInfo">상세정보</button></td>
+    </tr>
+    </tbody>
+</table><br/>
+<hr size="10px" style="border:solid 3px #0b0b0b">
+<div><h3 id="fh5co-logo" style="color: #0b0b0b">오는편</h3></div>
+<table class="table table-bordered "
+       style="background-color: #7cc67c">
+    <thead style="background-color: #f0ad4e">
+    <tr>
+        <th>예약코드</th>
+        <th>예약자명</th>
+        <th>항공코드</th>
+        <th>출발지</th>
+        <th>도착지</th>
+        <th>출발일</th>
+        <th>출발시간</th>
+        <th>총인원</th>
+        <th>좌석</th>
+        <th>상세보기</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--<tr th:each="airline : ${backAirlineList.getAirlineResult}">-->
+    <tr>
+        <td style="color: #0b0b0b" th:text="${backReserveList?.id}"/></td>
+        <td th:text="${backReserveList?.getMember.getUsername}"></td>
+        <td th:text="${backReserveList?.getAirline.getId}"></td>
+        <td th:text="${backReserveList?.getAirline.getDeparture}"></td>
+        <td th:text="${backReserveList?.getAirline.getDistination}"></td>
+        <td th:text="${backReserveList?.getAirline.getDepart_date}"></td>
+        <td th:text="${backReserveList?.getAirline.getDepart_time}"></td>
+        <td th:text="${backReserveList?.totalPerson}"></td>
+        <td><button type="button" style="color: #545b62" class="checkInBtn">체크인</button></td>
+        <td><button type="button" style="color: #545b62"
+                    class=".reserveInfo">상세정보</button></td>
+    </tr>
+    </tbody>
+</table><br/>
+<hr size="10px" style="border:solid 3px #0b0b0b">
+<div style="text-align: center">
+    <button type="button" href="/" class="btn btn-primary">홈으로</button>
+    <button type="submit" href="/reservation/reservations" class="btn btn-primary">예약내역보기</button>
+</div>
+
+<form action="/checkin" method="get" class="checkInForm">
+    <input type="hidden" name="airlineId" value="" class="hiddenAirlineId">
+    <input type="hidden" name="reservationId" value="" class="hiddenReservationId">
+    <input type="hidden" name="totalPerson" value="" class="hiddenTotalPerson">
+</form>
+<form action="/reservation/info" method="get" class="infoForm">
+    <input type="hidden" name="reservationId" value="" class="hiddenReservationIdInfo">
+    <!--<input type="hidden" name="username" value="" class="hiddenUserIdInfo">
+    <input type="hidden" name="adult" value="" class="hiddenAdult">
+    <input type="hidden" name="child" value="" class="hiddenChild">
+    <input type="hidden" name="departure" value="" class="hiddenDeparture">
+    <input type="hidden" name="distination" value="" class="hiddenDistination">
+    <input type="hidden" name="departDate" value="" class="hiddenDepartDate">
+    <input type="hidden" name="departTime" value="" class="hiddenDepartTime">
+    <input type="hidden" name="reachTime" value="" class="hiddenReachTime">
+    <input type="hidden" name="airlineId" value="" class="hiddenAirlineIdInfo">
+    <input type="hidden" name="totalPrice" value="" class="hiddenTotalPrice">
+-->
+</form>
+
+<script>
+    $(document).ready(function () {
+        var loginStatus = loginStatus().status;
+
+        if (loginStatus === false){
+            alert("로그인후 이용해 주세요!!")
+            $(location).attr('href',"/loginForm2");
+        }
+
+        $('.reserverId').text(localStorage.getItem("memberId"));
+        //class=".reserveInfo"이걸로 상세페이지 갈때 예약 번호주고
+        //예약리스트 보여주는 페이지는 로컬스토리지 안의 memberId확인해줘야하기에 먼저 토큰 확인하고
+        //id확인해서 예약 리스트 뽑아주는 방식으로 진행.
+        //체크인은 예약내역에서 체크인 페이지 넘어갈때 예약id 주고 체크인좌석 선택되면 체크인 좌석정보
+        //해당 예약 객체 reserve_seat에 저장.
+    })
+    var reservationId;
+    $('.checkInBtn').on('click',function (e) {
+        var tr = $(this).parent().parent();
+        var td = tr.children();
+
+        reservationId = td.eq(0).text();
+        var airlineId = td.eq(2).text();
+        var totalPerson = td.eq(7).text();
+
+        $('.hiddenReservationId').val(reservationId);
+        $('.hiddenAirlineId').val(airlineId);
+        $('.hiddenTotalPerson').val(totalPerson);
+        console.log($('.hiddenReservationId').val());
+        console.log($('.hiddenAirlineId').val());
+        console.log($('.hiddenTotalPerson').val());
+        $('.checkInForm').submit();
+    })
+    $('.reserveInfo').on('click',function (e) {
+        e.preventDefault()
+        console.log(reservationId);
+    })
+</script>
+</body>
+</html>

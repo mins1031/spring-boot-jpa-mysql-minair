@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/fragments :: html-head"></head>
+<body>
+<div id="fh5co-wrapper" th:replace="fragments/fragments :: header"></div>
+<div class="login-form">
+    <form action="/login" method="post">
+        <h2 class="text-center">Login</h2>
+        <div class="form-group has-error">
+            <input type="text" id="username" class="form-control" name="username" required="required">
+        </div>
+        <div class="form-group">
+            <input type="password" id='pw' class="form-control" name="password" required="required">
+        </div>
+        <div class="form-group">
+            <button type="submit" id='sub' class="btn btn-primary btn-lg btn-block">Sign in</button>
+        </div>
+        <p><a href="#">Lost your Password?</a></p>
+    </form>
+    <p class="text-center small">Don't have an account? <a href="#">Sign up here!</a></p>
+</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //var httpRequest = new Res();
+        var subBtn = $("#sub");
+        $('#sub').on("click",function (e){
+           e.preventDefault()
+            var username = $("#username").val();
+            var password = $("#pw").val();
+            console.log(username)
+            console.log(password)
+            localStorage.setItem("memberId",username);
+
+            var loginInfo = login.login({username:username,password:password});
+            console.log("result="+loginInfo.result)
+            console.log("result="+loginInfo.status)
+
+            if (loginInfo.status === 200) {
+                localStorage.setItem("Authorization", loginInfo.result);
+
+                login.issueRefresh(username, function (result, xhr) {
+                    console.log("result2=" + result)
+                    localStorage.setItem("refreshToken", result);
+                });
+                $(location).attr('href',"/");
+            } else if (loginInfo.status === 400){
+                alert("로그인 실패. 아이디,패스워드를 확인해주세요.")
+            }
+        })
+        /*$('#userLink').on("click",function (e) {
+            e.preventDefault()
+            var request = new XMLHttpRequest();
+            var token = localStorage.getItem("Authorization")
+            request.open("get","/user/info",false)
+            request.setRequestHeader("Authorization",token)
+            console.log(token)
+
+        })*/
+    });
+</script>
+</body>
+</html>

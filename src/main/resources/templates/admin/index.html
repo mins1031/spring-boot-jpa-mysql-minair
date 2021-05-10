@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/fragments :: html-head">
+</head>
+<body>
+
+<div th:replace="fragments/fragments :: header"></div>
+
+<div id="fh5co-blog-section" class="fh5co-section-gray">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center heading-section animate-box">
+                <h3>Admin 페이지 입니다.</h3>
+                <p>필요하신 기능을 선택해 주세요.</p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row row-bottom-padded-md">
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="fh5co-blog animate-box">
+                    <a href="#"></a>
+                    <div class="blog-text">
+                        <div class="prod-title">
+                            <h3>항공권 등록</h3>
+                            <p>현 날짜를 기준 이후의 항공권을 등록 할 수 있습니다.</p>
+                            <a class="btn btn-primary" href="/airline/new">항공권 등록</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="fh5co-blog animate-box">
+                    <a href="#"></a>
+                    <div class="blog-text">
+                        <div class="prod-title">
+                            <h3>항공권 목록</h3>
+                            <p>현 날짜를 기준으로 항공권 목록을 확인합니다.</p>
+                            <a class="btn btn-primary" href="/airline/airlines">항공권 목록</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix visible-sm-block"></div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="fh5co-blog animate-box">
+                    <a href="#"></a>
+                    <div class="blog-text">
+                        <div class="prod-title">
+                            <h3>회원 목록</h3>
+                            <p>회원가입한 회원들의 정보를 확인 가능합니다.</p>
+                            <a class="btn btn-primary" href="/member/members">회원 목록</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="fh5co-blog animate-box">
+                    <a href="#"></a>
+                    <div class="blog-text">
+                        <div class="prod-title">
+                            <h3>공지사항</h3>
+                            <p>공지사항 내역을 관리 할 수 있습니다.</p>
+                            <button class="btn btn-primary" href="/notice">공지사항</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="fh5co-blog animate-box">
+                    <a href="#"></a>
+                    <div class="blog-text">
+                        <div class="prod-title">
+                            <h3>예약목록</h3>
+                            <p>항공권 예약 목록을 확인 할 수 있습니다.</p>
+                            <button class="btn btn-primary" href="/reservation/reservations">예약 목록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix visible-sm-block"></div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="fh5co-blog animate-box">
+                    <a href="#"></a>
+                    <div class="blog-text">
+                        <div class="prod-title">
+                            <h3>;;;</h3>
+                            <p>;;;</p>
+                            <button class="btn btn-primary" href="/admin/airList">;;;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix visible-md-block"></div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="fragments/fragments :: footer"></footer>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-2.2.1.js"></script>
+
+<script src="../resources/static/js/jquery.min.js"
+        th:src="@{/js/jquery.min.js}"></script>
+<!-- jQuery Easing -->
+<script src="../resources/static/js/jquery.easing.1.3.js"
+        th:src="@{/js/jquery.easing.1.3.js}"></script>
+<!-- Bootstrap -->
+<script src="../resources/static/js/bootstrap.min.js"
+        th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Waypoints -->
+<script src="../resources/static/js/jquery.waypoints.min.js"
+        th:src="@{/js/jquery.waypoints.min.js}"></script>
+<script src="../resources/static/js/sticky.js"
+        th:src="@{/js/sticky.js}"></script>
+
+<!-- Stellar -->
+<script src="../resources/static/js/jquery.stellar.min.js"
+        th:src="@{/js/jquery.stellar.min.js}"></script>
+<!-- Superfish -->
+<script src="../resources/static/js/hoverIntent.js"
+        th:src="@{/js/hoverIntent.js}"></script>
+<script src="../resources/static/js/superfish.js"
+        th:src="@{/js/superfish.js}"></script>
+<!-- Magnific Popup -->
+<script src="../resources/static/js/jquery.magnific-popup.min.js"
+        th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+<script src="../resources/static/js/magnific-popup-options.js"
+        th:src="@{/js/magnific-popup-options.js}"></script>
+<!-- Date Picker -->
+<script src="../resources/static/js/bootstrap-datepicker.min.js"
+        th:src="@{/js/bootstrap-datepicker.min.js}"></script>
+<!-- CS Select -->
+<script src="../resources/static/js/classie.js"
+        th:src="@{/js/classie.js}"></script>
+<script src="../resources/static/js/selectFx.js"
+        th:src="@{/js/selectFx.js}"></script>
+
+<!-- Main JS -->
+<script src="../resources/static/js/main.js"
+        th:src="@{/js/main.js}"></script>
+
+<script>
+    $(document).ready(function () {
+        var checkStatus = adminCheck().status;
+        if (checkStatus != 200) {
+            alert("ADMIN 권한을 가진 계정만 접근할수 있습니다.")
+            $(location).attr('href','/');
+        }
+        //index페이지 권한설정 완료.
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    });
+</script>
+</body>
+</html>

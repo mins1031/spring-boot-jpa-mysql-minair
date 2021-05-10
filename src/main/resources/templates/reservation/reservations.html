@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/fragments :: html-head">
+<body>
+<div th:replace="fragments/fragments :: header"></div><br>
+
+<table class="table table-bordered "
+       style="background-color: #7cc67c">
+    <thead style="background-color: #f0ad4e">
+    <tr>
+        <th>예약코드</th>
+        <th>예약자명</th>
+        <th>항공코드</th>
+        <th>출발지</th>
+        <th>도착지</th>
+        <th>출발일</th>
+        <th>출발시간</th>
+        <th>총인원</th>
+        <th>좌석</th>
+        <th>상세보기</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--<tr th:each="airline : ${backAirlineList.getAirlineResult}">-->
+    <tr th:each="reservation : ${reservations}">
+        <td style="color: #0b0b0b" th:text="${reservation?.id}"/></td>
+        <td th:text="${reservation?.getMember.getUsername}"></td>
+        <td th:text="${reservation?.getAirline.getId}" class="airlineId"></td>
+        <td th:text="${reservation?.getAirline.getDeparture}"></td>
+        <td th:text="${reservation?.getAirline.getDistination}"></td>
+        <td th:text="${reservation?.getAirline.getDepart_date}"></td>
+        <td th:text="${reservation?.getAirline.getDepart_time}"></td>
+        <td th:text="${reservation?.totalPerson}"></td>
+        <td th:if="${reservation?.getReserveSeat} != null"
+            th:text="${reservation?.getReserveSeat}"></td>
+        <td th:unless="${reservation?.getReserveSeat} != null">
+            <button type="button" style="color: #545b62" class="checkInBtn" href="/checkin">
+                체크인</button></td>
+        <td><button type="button" style="color: #545b62"
+                    class="reserveInfo">상세정보</button></td>
+    </tr>
+    </tbody>
+</table><br/>
+
+<nav aria-label="Page navigation example ">
+    <ul class="pagination">
+        <li class="page-item" th:if="${pageMaker.prev} == true">
+            <a class="pagePrevBtn" aria-label="Previous" href="#">
+                <span aria-hidden="true">이전</span>
+            </a>
+        </li>
+
+        <th:block  th:with="start = ${pageMaker.startPage}, end = ${pageMaker.endPage}">
+            <li class="page-item"
+                th:with="start = ${pageMaker.startPage}, end = ${pageMaker.endPage}"
+                th:each="pageButton : ${#numbers.sequence(start, end)}"
+                th:class="${pageMaker.offset == pageButton ? 'active': ''}">
+                <a class="pageBtn" href="#" th:text=${pageButton}></a>
+            </li>
+        </th:block>
+        <li class="page-item " th:if="${pageMaker.next} == true">
+            <a class="pageNextBtn" aria-label="Next" href="#">
+                <span aria-hidden="true">다음</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+<hr size="5px" style="border:solid 3px #0b0b0b">
+
+<form action="/reservation/reservations" method="get" class="basicInfo">
+    <input type="hidden" name="pageNum" value="" class="pageNum">
+    <input type="hidden" name="username" value="" class="pageUsername">
+</form>
+
+<form action="/checkin" method="get" class="checkInForm">
+    <input type="hidden" name="airlineId" value="" class="hiddenAirlineId">
+    <input type="hidden" name="reservationId" value="" class="hiddenReservationId">
+    <input type="hidden" name="totalPerson" value="" class="hiddenTotalPerson">
+</form>
+<form action="/reservation/info" method="get" class="infoForm">
+    <input type="hidden" name="reservationId" value="" class="hiddenReservationIdInfo">
+</form>
+<footer th:replace="fragments/fragments :: footer"></footer>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    });
+
+    $('.checkInBtn').on('click',function (e) {
+        console.log("hi");
+        var tr = $(this).parent().parent();
+        var td = tr.children();
+
+        var reservationId = td.eq(0).text();
+        var airlineId = td.eq(2).text();
+        var totalPerson = td.eq(7).text();
+
+        $('.hiddenAirlineId').val(airlineId);
+        console.log(airlineId);
+        $('.hiddenTotalPerson').val(totalPerson);
+        //var to = $('.hiddenTotalPerson').val();
+        console.log(totalPerson);
+        $('.hiddenReservationId').val(reservationId);
+        console.log(reservationId);
+        $('.checkInForm').submit();
+    })
+
+    $('.reserveInfo').on('click',function () {
+        var tr = $(this).parent().parent();
+        var td = tr.children();
+
+        var reservationId = td.eq(0).text();
+        $('.hiddenReservationIdInfo').val(reservationId);
+        console.log(reservationId);
+        console.log($('.hiddenReservationIdInfo').val());
+        $('.infoForm').submit();
+    })
+
+    $('.pageBtn').on('click',function (e) {
+        var pageNum = $(this).text();
+        console.log(pageNum);
+        $('.pageNum').val(pageNum);
+        console.log($('.pageNum').val());
+        $('.pageUsername').val(localStorage.getItem("memberId"));
+        console.log($('.pageUsername').val());
+        $('.basicInfo').submit();
+    })
+
+    $('.pageNextBtn').on('click',function (e) {
+        console.log("다음버튼 클릭")
+        /*<![CDATA[*/
+
+        var endPage = /*[[${pageMaker.getEndPage()}]]*/
+            console.log("endPage = "+endPage);
+        /*]]>*/
+        $('.pageNum').val(endPage + 1);
+        $('.pageUsername').val(localStorage.getItem("memberId"));
+        $('.basicInfo').submit();
+    })
+
+    $('.pagePrevBtn').on('click',function (e) {
+        console.log("이전버튼 클릭")
+        /*<![CDATA[*/
+
+        var startPage = /*[[${pageMaker.getStartPage()}]]*/
+            console.log("startPage = "+startPage);
+        /*]]>*/
+
+        $('.pageNum').val(startPage - 1);
+        $('.pageUsername').val(localStorage.getItem("memberId"));
+        $('.basicInfo').submit();
+
+    })
+</script>
+</body>
+</html>

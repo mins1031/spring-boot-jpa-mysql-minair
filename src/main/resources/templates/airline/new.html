@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/fragments :: html-head">
+</head>
+<body>
+<div th:replace="fragments/fragments :: header"></div>
+<hr>
+<div class="container">
+    <div class="row" align="center">
+        <h1>항공권 등록</h1>
+        <form action="/airline/new" method="post" id="airlineCreate" align="center">
+            <div>
+                <section style="color: #0b0b0b">
+                    <label>출발지:</label>
+                    <select id="departure" name="departure" style="color: #0b0b0b">
+                        <option value="" disabled selected></option>
+                        <option value="ICN">ICN(인천)</option>
+                        <option value="DAE">DAE(대구)</option>
+                        <option value="BUS">BUS(부산)</option>
+                        <option value="GWANG">GWANG(광주)</option>
+                        <option value="JEJU">JEJU(제주)</option>
+                    </select>
+                </section>
+                <section style="color: #0b0b0b">
+                    <label>도착지:</label>
+                    <select id="distination" name="distination" class="cs-select cs-skin-border" style="color: #0b0b0b">
+                        <option value="" disabled selected></option>
+                        <option value="ICN">ICN(인천)</option>
+                        <option value="DAE">DAE(대구)</option>
+                        <option value="BUS">BUS(부산)</option>
+                        <option value="GWANG">GWANG(광주)</option>
+                        <option value="JEJU">JEJU(제주)</option>
+                    </select>
+                </section>
+                <div class="col-sm-12 mt">
+                    <label style="color: #0b0b0b">출발날짜:</label>
+                    <input type="text" name="depart_date" id="depart_date" style="color: #0b0b0b">
+                </div>
+                <div class="col-sm-12 mt">
+                    <label style="color: #0b0b0b">출발시간:</label>
+                    <input type="text" name="depart_time" id="depart_time" style="color: #0b0b0b">
+                </div>
+                <div class="col-sm-12 mt">
+                    <label style="color: #0b0b0b">도착시간:</label>
+                    <input type="text" name="reach_time" id="reach_time" style="color: #0b0b0b">
+                </div>
+                <button type="button" class="btn btn-primary" id="airRegistBtn">항공권 등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+<br>
+
+<footer th:replace="fragments/fragments :: footer"></footer>
+
+<script>
+
+    $('#airRegistBtn').on('click',function (e) {
+
+        var departure = $('#departure').val();
+        var distination = $('#distination').val();
+        var depart_date = $('#depart_date').val();
+        var depart_time = $('#depart_time').val();
+        var reach_time = $('#reach_time').val();
+
+        var airlineCreate = {
+            "departure": departure,
+            "distination": distination,
+            "depart_date": depart_date,
+            "depart_time": depart_time,
+            "reach_time": reach_time
+        }
+
+        console.log(airlineCreate)
+
+        var accessToken = localStorage.getItem("Authorization");
+        console.log(accessToken)
+
+        $.ajax({
+            method: "post",
+            url: "/airline/new",
+            data : JSON.stringify(airlineCreate),
+            contentType : "application/json; charset=utf-8",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", accessToken);
+            },
+            statusCode: {
+                200: function (response) {
+                    alert("항공권 등록이완료되었습니다.")
+                    $('#departure').val("");
+                    $('#distination').val("");
+                    $('#depart_date').val("");
+                    $('#depart_time').val("");
+                    $('#reach_time').val("");
+                },
+                401: function () {
+                    alert("항공권 등록이 실패 하였습니다.... 항목들이 올바르게 작성되었는지 확인해주세요")
+                }
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/fragments :: html-head">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="fragments/fragments :: header"></div><hr>
+
+<div class="demo">
+    <div class="demo form-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-offset-3 col-md-6">
+                    <form class="form-horizontal" action="/member/modify" method="get">
+                        <div class="form-content">
+                            <h4 class="heading">Your Details</h4>
+                            <div class="form-group">
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
+                                        ID</label>
+                                    <span class="form-control" th:text="${memberInfo.username}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-envelope-o"></i>
+                                        이메일</label>
+                                    <span class="form-control" th:text="${memberInfo.email}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-calendar"></i>
+                                        생년월일</label>
+                                    <span class="form-control" th:text="${memberInfo.birth}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
+                                        한글이름</label>
+                                    <span class="form-control" th:text="${memberInfo.name_kor}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
+                                        영문이름</label>
+                                    <span class="form-control" th:text="${memberInfo.name_eng}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-lock"></i>
+                                         Phone</label>
+                                    <span class="form-control" th:text="${memberInfo.phone}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
+                                        성별</label>
+                                    <span class="form-control" th:text="${memberInfo.gender}"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
+                                        가입일자</label>
+                                    <span class="form-control" th:text="${memberInfo.regDate}"/>
+                                </div>
+                            </div>
+                        <div align="center">
+                            <input type="button" href="/" value="홈으로" class="btn btn-primary">
+                            <input type="submit" value="수정하기" class="btn btn-primary">
+                        </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+
+<footer th:replace="fragments/fragments :: footer"></footer>
+
+<script>
+    $(document).ready(function () {
+        var loginStatus = loginStatus().status;
+
+        if (loginStatus === false) {
+            alert("로그인후 이용해 주세요!!")
+            $(location).attr('href', "/loginForm2");
+        }
+    })
+
+</script>
+</body>
+</html>
+
+

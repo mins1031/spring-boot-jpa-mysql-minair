@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns="http://www.w3.org/1999/html">
+<head th:replace="fragments/fragments :: html-head" >
+</head>
+<script src="https://code.jquery.com/jquery-3.4.0.js"
+        integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo=" crossorigin="anonymous"></script>
+<!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<!-- 합쳐지고 최소화된 최신 CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="resources/static/css/seat.css"  th:href="@{/css/seat.css}">
+
+<div th:replace="fragments/fragments :: header"></div>
+<br/>
+<!-- 좌석 현황 표출 -->
+<div style="text-align: center">
+    <b style="color: red"><h5>▷ 빨간색 좌석은 예약 된 좌석입니다.</h5></b>
+    <b style="color: red"><h5>▷ 회색좌석 중 원하시는 좌석을 선택해주세요.</h5></b><br>
+</div>
+<div class="showSeatArea" style="text-align: center">
+    <div class="btn-group" data-toggle="buttons" id="AL_div">
+        <label class="btn btn-big btn-primary" for="A1" id="A1_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" id="A1" value="A1">A1</label>
+        <label class="btn btn-big btn-primary" for="A2" id="A2_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="A2" id="A2">A2</label>
+        <label class="btn btn-big btn-primary" for="A3" id="A3_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="A3" id="A3">A3</label>
+    </div>
+    <span>중앙통로</span>
+    <div class="btn-group" data-toggle="buttons" id="AR_div">
+        <label class="btn btn-big btn-primary" for="A4" id="A4_lb" style="background-color: #545b62">
+        <input type="checkbox" autocomplete="off" value="A4" id="A4">A4</label>
+        <label class="btn btn-big btn-primary" for="A4" id="A5_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="A5" id="A5">A5</label>
+        <label class="btn btn-big btn-primary" for="A4" id="A6_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="A6" id="A6">A6</label>
+    </div>
+    <br>
+    <br>
+    <div class="btn-group" data-toggle="buttons" id="BL_div">
+        <label class="btn btn-big btn-primary" for="B1" id="B1_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" id="B1" value="B1">B1</label>
+        <label class="btn btn-big btn-primary" for="B2" id="B2_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="B2" id="B2">B2</label>
+        <label class="btn btn-big btn-primary" for="B3" id="B3_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="B3" id="B3">B3</label>
+    </div>
+    <span>중앙통로</span>
+    <div class="btn-group" data-toggle="buttons" id="BR_div">
+        <label class="btn btn-big btn-primary" for="B4" id="B4_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="B4" id="B4">B4</label>
+        <label class="btn btn-big btn-primary" for="B5" id="B5_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="B5" id="B5">B5</label>
+        <label class="btn btn-big btn-primary" for="B6" id="B6_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="B6" id="B6">B6</label>
+    </div><br>
+    <br>
+    <div class="btn-group" data-toggle="buttons" id="CL_div">
+        <label class="btn btn-big btn-primary" for="C1" id="C1_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" id="C1" value="C1">C1</label>
+        <label class="btn btn-big btn-primary" for="C2" id="C2_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="C2" id="C2">C2</label>
+        <label class="btn btn-big btn-primary" for="C3" id="C3_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="C3" id="C3">C3</label>
+    </div>
+    <span>중앙통로</span>
+    <div class="btn-group" data-toggle="buttons" id="CR_div">
+        <label class="btn btn-big btn-primary" for="C4" id="C4_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="C4" id="C4">C4</label>
+        <label class="btn btn-big btn-primary" for="C5" id="C5_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="C5" id="C5">C5</label>
+        <label class="btn btn-big btn-primary" for="C6" id="C6_lb" style="background-color: #545b62">
+            <input type="checkbox" autocomplete="off" value="C6" id="C6">C6</label>
+    </div>
+    <br>
+    <br>
+</div><br>
+
+<div style="text-align: center">
+    <form action="/reservation/checkIn" method="post" class="checkInForm">
+        <input type="hidden" name="reservationId" value="" class="hiddenReservationId">
+        <input type="hidden" name="airlineId" value="" class="hiddenAirlineId">
+        <input type="hidden" name="selectSeats" value="" class="hiddenSelectSeats">
+        <input type="hidden" name="totalPerson" value="" class="hiddenTotalPerson">
+        <div>
+            <input type="button" class="btn btn-primary" value="홈으로" href="/">
+            <input type="submit" class="btn btn-primary" value="체크인" id="subBtn">
+        </div>
+    </form>
+</div><br>
+
+<footer th:replace="fragments/fragments :: footer"></footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    console.log("hi!")
+    var totalPerson = /*[[${totalPerson}]]*/
+    var airlindId = /*[[${airlineId}]]*/
+    var reservationId = /*[[${reservation}]]*/
+
+    console.log(totalPerson);
+
+
+    /*[# th:each="seat : ${seatList}"]*/
+          var seatId = /*[[${seat?.id}]]*/;
+          var seatName = /*[[${seat?.seatName}]]*/;
+          var seatStatus = /*[[${seat?.seatStatus}]]*/;
+              console.log(seatId);
+              console.log(seatName);
+              console.log(seatStatus);
+              if (seatStatus){
+                  console.log("reserved!!");
+                  $('#'+seatName+'_lb').attr("style", "background-color: red");
+              }
+
+    /*[/]*/
+
+    /*]]>*/
+    var selectSeat = [];
+    var selectSeats ;
+    var checkPerson = 0;
+    console.log(reservationId)
+    $('label').on('click',function () {
+        console.log($(this).attr('style'))
+        if ($(this).attr('style') === 'background-color: red'){
+            alert("예약되어있는 좌석입니다.")
+        } else if ($(this).attr('style') === 'background-color: blue'){
+            alert("이미 선택하신 좌석입니다.")
+        } else {
+            if (checkPerson < totalPerson) {
+                $(this).attr("style", "background-color: blue")
+                checkPerson += 1;
+                selectSeat.push($(this).children().val())
+                console.log(selectSeat)
+            } else if (checkPerson >= totalPerson) {
+                alert("좌석은 인원수 만큼만 선택 할 수 있습니다.")
+            }
+        }
+    })
+
+    $('#subBtn').on('click',function (e) {
+        //e.preventDefault()
+        selectSeats = selectSeat.join(',')
+        console.log(selectSeats)
+        console.log(airlindId)
+        console.log(reservationId)
+        console.log(totalPerson)
+
+
+        $('.hiddenReservationId').val(reservationId)
+        console.log("reservationId="+$('.hiddenReservationId').val())
+        $('.hiddenAirlineId').val(airlindId)
+        console.log("airlineId="+$('.hiddenAirlineId').val())
+        $('.hiddenSelectSeats').val(selectSeats)
+        console.log("seats="+$('.hiddenSelectSeats').val())
+        $('.hiddenTotalPerson').val(totalPerson)
+        console.log("totalPerson="+$('.hiddenTotalPerson').val())
+
+    })
+    //우선 선택한게 빨간색 즉 이미 체크인 되어있는 경우와 이미 선택한 좌석인 경우 선택이 안되는 경우를 if에 추가해줘야함. 선택할시
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+package com.minair.minair.controller;
+
+import com.minair.minair.domain.Airline;
+import com.minair.minair.domain.Member;
+import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.notEntity.Departure;
+import com.minair.minair.domain.notEntity.Distination;
+import com.minair.minair.service.AirlineService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class AirlineController {
+
+    private final AirlineService airlineService;
+
+    @GetMapping("/airline")
+    public String searchAirline(@ModelAttribute("airlineSearchDto") AirlineSearchDto airlineSearchDto,
+                               @DateTimeFormat(pattern = "yyyy-MM-dd")
+                               @RequestParam("comebackDate") LocalDate combackDate,
+                               Model model){
+        List<Airline> searchAirlineList = airlineService.searchAirlines(airlineSearchDto);
+        List<AirlineDto> collect = searchAirlineList.stream()
+                .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
+                        a.getDepart_date(),a.getDepart_time(),a.getReach_time(),
+                        a.getAboveseat()))
+                .collect(Collectors.toList());
+
+        AirlineSearchResult<List<AirlineDto>> goAirResult =
+                new AirlineSearchResult<List<AirlineDto>>(collect);
+        //가는편 조회후 Dto로 변환해 View객체로 감싸줌
+
+        String convertDeparture = airlineSearchDto.getDeparture().toString();
+        String convertDistination = airlineSearchDto.getDistination().toString();
+        System.out.println(convertDeparture);
+        System.out.println(convertDistination);
+        Departure departure = Departure.valueOf(convertDistination);
+        Distination distination = Distination.valueOf(convertDeparture);
+        System.out.println(departure);
+        System.out.println(distination);
+
+        AirlineSearchDto backDto = new AirlineSearchDto(departure,distination,
+                combackDate, airlineSearchDto.getAdult(), airlineSearchDto.getChild()
+        );
+        //검색시 오는날 데이터만 따로 담아서 오는편 조회시 가는날 데이터로 넣어서 만들어줌.
+        List<Airline> backAirlineList = airlineService.searchAirlines(backDto);
+        List<AirlineDto> backCollect = backAirlineList.stream()
+                .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
+                        a.getDepart_date(),a.getDepart_time(),a.getReach_time(),
+                        a.getAboveseat()))
+                .collect(Collectors.toList());
+        AirlineSearchResult<List<AirlineDto>> backAirResult =
+                new AirlineSearchResult<List<AirlineDto>>(backCollect);
+        //오는편 조회후 dto로 변환해 View객체로 감싸줌.
+
+        model.addAttribute("searchInfo",airlineSearchDto);
+        model.addAttribute("goAirlineList", goAirResult);
+        model.addAttribute("backAirlineList", backAirResult);
+
+        return "/airline/airlinelist";
+    }
+
+    /*@PostMapping("/airline/new")
+    public String createAirline(@RequestBody Airline airline){
+        //원래 dto로 받아서 Airline로 바꿔줘야 하지만 일단 테스트기에 받아서 진행
+        airlineService.createAirline(airline);
+        log.info("항공권 등록!");
+
+        return "항공권 등록!";
+    }*/
+
+    @GetMapping("/airline/new")
+    public void createAirline(){
+        log.info("항공권등록");
+    }
+
+    @GetMapping("/airline/airlines")
+    public void airlines(Model model,@RequestParam(value = "pageNum", defaultValue = "0") int pageNum){
+        log.info("All 항공권 조회");
+
+        PageRequest pageRequest = PageRequest.of(pageNum,10);
+        Page<Airline> allAirline = airlineService.findAllAirline(pageRequest);
+        List<AirlineDto> airlineDtoList = allAirline.getContent().stream()
+                .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
+                        a.getDepart_date(),a.getDepart_time(),a.getReach_time(),
+                        a.getAboveseat()))
+                .collect(Collectors.toList());
+        PageDto pageDto = new PageDto(pageNum,10,allAirline.getTotalElements()
+                ,allAirline.getTotalPages());
+        // 05/09 PageDto의 offset을 바꿔주는 것이 좋음. 저번에 했을떄 왜 안되었냐면
+        // if(offset <= 0) {this.offset = 1} else this.offset = offset 이경우 endPage 공식의 offset값을
+        // this.offset을 해야하는데 offset으로 했기 때문일것 내일 적용해보기기
+        model.addAttribute("airlineList",airlineDtoList);
+        model.addAttribute("pageMaker",pageDto);
+    }
+}

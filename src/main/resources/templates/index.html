@@ -1,0 +1,407 @@
+
+<!DOCTYPE html >
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/fragments :: html-head">
+    <!--<![endif]
+     th:src="@{/js/modernizr-2.6.2.min.js}"
+      th:src="@{/js/respond.min.js}"
+    -->
+</head>
+<body>
+<div th:replace="fragments/fragments :: header"></div>
+
+        <!-- end:header-top -->
+        <div class="fh5co-hero">
+            <div class="fh5co-overlay"></div>
+            <div class="fh5co-cover" data-stellar-background-ratio="0.5" style="background-image: url(images/bg1.jpg);">
+                <div class="desc">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-5 col-md-5">
+                                <div class="tabulation animate-box">
+                                    <form action="/airline" method="get" id="airlineSearch">
+                                    <!-- Nav tabs -->
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active">
+                                            <a href="#flights" aria-controls="flights" role="tab" data-toggle="tab">Flights</a>
+                                        </li>
+                                    </ul>
+
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane active" id="flights">
+                                            <div class="row">
+                                                <div class="col-xxs-12 col-xs-6 mt">
+                                                    <section>
+                                                        <label>출발지:</label>
+                                                        <select name="departure" class="cs-select cs-skin-border">
+                                                            <option value="" disabled selected></option>
+                                                            <option value="ICN">ICN(인천)</option>
+                                                            <option value="DAE">DAE(대구)</option>
+                                                            <option value="BUS">BUS(부산)</option>
+                                                            <option value="GWANG">GWANG(광주)</option>
+                                                            <option value="JEJU">JEJU(제주)</option>
+                                                        </select>
+                                                    </section>
+                                                </div>
+                                                <!--<div class="col-xxs-12 col-xs-6 mt">
+                                                    <div class="input-field">
+                                                        <label>Departure:</label>
+                                                        <input type="text" class="form-control" name="departure"/>
+                                                    </div>
+                                                </div>-->
+                                                <div class="col-xxs-12 col-xs-6 mt">
+                                                    <section>
+                                                        <label>도착지:</label>
+                                                        <select name="distination" class="cs-select cs-skin-border">
+                                                            <option value="" disabled selected></option>
+                                                            <option value="ICN">ICN(인천)</option>
+                                                            <option value="DAE">DAE(대구)</option>
+                                                            <option value="BUS">BUS(부산)</option>
+                                                            <option value="GWANG">GWANG(광주)</option>
+                                                            <option value="JEJU">JEJU(제주)</option>
+                                                        </select>
+                                                    </section>
+                                                </div>
+                                                <!--<div class="col-xxs-12 col-xs-6 mt">
+                                                    <div class="input-field">
+                                                        <label>Distination:</label>
+                                                        <input type="text" class="form-control" name="distination"/>
+                                                    </div>
+                                                </div>-->
+                                                <div class="col-sm-12 mt">
+                                                    <label>가는날:</label>
+                                                    <input type="text" class="form-control" name="depart_date">
+                                                </div>
+                                                <div class="col-sm-12 mt">
+                                                    <label>오는날:</label>
+                                                    <input type="text" class="form-control" name="comebackDate">
+                                                </div>
+                                                <div class="col-xxs-12 col-xs-6 mt">
+                                                    <section>
+                                                        <label>성인:</label>
+                                                        <select name="adult" class="cs-select cs-skin-border">
+                                                            <option value="0" disabled selected>0</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                        </select>
+                                                    </section>
+                                                </div>
+                                                <div class="col-xxs-12 col-xs-6 mt">
+                                                    <section>
+                                                        <label>아이:</label>
+                                                        <select name="child" class="cs-select cs-skin-border">
+                                                            <option value="0" disabled selected>0</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                        </select>
+                                                    </section>
+                                                </div>
+                                                <!--<div class="col-xxs-12 col-xs-6 mt">
+                                                    <label>people:</label>
+                                                    <input type="text" class="form-control" name="people">
+                                                </div>-->
+                                                <div class="col-xs-12">
+                                                    <input type="submit" class="btn btn-primary btn-block" value="항공권 검색">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </form>
+                                                <!--<div class="col-xxs-12 col-xs-6 mt">
+                                                    <section>
+                                                        <label>Children:</label>
+                                                        <select class="cs-select cs-skin-border">
+                                                            <option value="" disabled selected>1</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                        </select>
+                                                    </section>
+                                                </div>-->
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="desc2 animate-box">
+                                <div class="col-sm-7 col-sm-push-1 col-md-7 col-md-push-1">
+                                    <p>HandCrafted by <a href="http://frehtml5.co/" target="_blank" class="fh5co-site-name">FreeHTML5.co</a></p>
+                                    <h2>Exclusive Limited Time Offer</h2>
+                                    <h3>Fly to Hong Kong via Los Angeles, USA</h3>
+                                    <span class="price">$599</span>
+                                    <!-- <p><a class="btn btn-primary btn-lg" href="#">Get Started</a></p> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="fh5co-tours" class="fh5co-section-gray">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2 text-center heading-section animate-box">
+                        <h3>Hot Tours</h3>
+                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-sm-6 fh5co-tours animate-box" data-animate-effect="fadeIn">
+                        <div href="#"><img src="/images/place-1.jpg" alt="Free HTML5 Website Template by FreeHTML5.co" class="img-responsive">
+                            <div class="desc">
+                                <span></span>
+                                <h3>New York</h3>
+                                <span>3 nights + Flight 5*Hotel</span>
+                                <span class="price">$1,000</span>
+                                <a class="btn btn-primary btn-outline" href="#">Book Now <i class="icon-arrow-right22"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 fh5co-tours animate-box" data-animate-effect="fadeIn">
+                        <div href="#"><img src="/images/place-2.jpg" alt="Free HTML5 Website Template by FreeHTML5.co" class="img-responsive">
+                            <div class="desc">
+                                <span></span>
+                                <h3>Philippines</h3>
+                                <span>4 nights + Flight 5*Hotel</span>
+                                <span class="price">$1,000</span>
+                                <a class="btn btn-primary btn-outline" href="#">Book Now <i class="icon-arrow-right22"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 fh5co-tours animate-box" data-animate-effect="fadeIn">
+                        <div href="#"><img src="/images/place-3.jpg" alt="Free HTML5 Website Template by FreeHTML5.co" class="img-responsive">
+                            <div class="desc">
+                                <span></span>
+                                <h3>Hongkong</h3>
+                                <span>2 nights + Flight 4*Hotel</span>
+                                <span class="price">$1,000</span>
+                                <a class="btn btn-primary btn-outline" href="#">Book Now <i class="icon-arrow-right22"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center animate-box">
+                        <p><a class="btn btn-primary btn-outline btn-lg" href="#">See All Offers <i class="icon-arrow-right22"></i></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<form action="/reservation/reservations" method="get" class="myReserve">
+    <input type="hidden" class="usernameInput" name="username" value="">
+</form>
+
+<form action="/member/info" method="get" class="myInfoForm">
+    <input type="hidden" class="userId" name="username" value="">
+</form>
+
+<footer th:replace="fragments/fragments :: footer"></footer>
+
+    </div>
+    <!-- END fh5co-page -->
+
+</div>
+<!-- END fh5co-wrapper -->
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-2.2.1.js"></script>
+
+<script src="../resources/static/js/jquery.min.js"
+        th:src="@{/js/jquery.min.js}"></script>
+<!-- jQuery Easing -->
+<script src="../resources/static/js/jquery.easing.1.3.js"
+        th:src="@{/js/jquery.easing.1.3.js}"></script>
+<!-- Bootstrap -->
+<script src="../resources/static/js/bootstrap.min.js"
+        th:src="@{/js/bootstrap.min.js}"></script>
+<!-- Waypoints -->
+<script src="../resources/static/js/jquery.waypoints.min.js"
+        th:src="@{/js/jquery.waypoints.min.js}"></script>
+<script src="../resources/static/js/sticky.js"
+        th:src="@{/js/sticky.js}"></script>
+
+<!-- Stellar -->
+<script src="../resources/static/js/jquery.stellar.min.js"
+        th:src="@{/js/jquery.stellar.min.js}"></script>
+<!-- Superfish -->
+<script src="../resources/static/js/hoverIntent.js"
+        th:src="@{/js/hoverIntent.js}"></script>
+<script src="../resources/static/js/superfish.js"
+        th:src="@{/js/superfish.js}"></script>
+<!-- Magnific Popup -->
+<script src="../resources/static/js/jquery.magnific-popup.min.js"
+        th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+<script src="../resources/static/js/magnific-popup-options.js"
+        th:src="@{/js/magnific-popup-options.js}"></script>
+<!-- Date Picker -->
+<script src="../resources/static/js/bootstrap-datepicker.min.js"
+        th:src="@{/js/bootstrap-datepicker.min.js}"></script>
+<!-- CS Select -->
+<script src="../resources/static/js/classie.js"
+        th:src="@{/js/classie.js}"></script>
+<script src="../resources/static/js/selectFx.js"
+        th:src="@{/js/selectFx.js}"></script>
+
+<!-- Main JS -->
+<script src="../resources/static/js/main.js"
+        th:src="@{/js/main.js}"></script>
+<script src="../resources/static/js/codemodul/refreshToken.js"
+        th:src="@{/js/codemodul/refreshToken.js}"></script>
+
+<script>
+
+    /*$('#userLink').on("click",function (e) {
+        var token = localStorage.getItem("Authorization")
+
+        userInfo(token, function (result, xhr) {
+            var request = new XMLHttpRequest();
+            console.log(request.getResponseHeader("Authorization"));
+            //$(location).attr('href', "/user/info");
+        });
+    });*/
+
+    var a1 = getTokenInfo().accessToken;
+    var r1 = getTokenInfo().refreshToken;
+    console.log(a1);
+    console.log(r1);
+
+    let reAccessToken = "";
+    let status ;
+    function test(accessToken,refreshToken) {
+
+        $.ajax({
+            method: "get",
+            url: "/user/test",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", accessToken);
+            },
+            statusCode: {
+                200: function (response) {
+                    console.log("200!");
+                    console.log(response);
+                   // $(location).attr('href','/user/index');
+                },
+                403: function () {
+                    status = 403;
+                    console.log("403...");
+                    let reissueToken = refresh(refreshToken)
+                    console.log(reissueToken.accessToken);
+                    reAccessToken = reissueToken.accessToken;
+                    console.log("reaccessToken= "+reAccessToken);
+                    test(reissueToken.accessToken,refreshToken);
+                }
+            }
+        });
+        if(status === 403) {
+            console.log(reAccessToken);
+            localStorage.setItem("Authorization", reAccessToken);
+        }
+    }
+    //우선 403시 토큰을 재발급 받아서 로컬스토리지에 저장하는것이 주요했음.
+    //이것을 전역변수reAccessToken에 저장하고자 403시 reAccessToken에 받아온 토큰 값저장하고
+    //ajax종료시 로컬스토리지에 저장해서 갱신해주는 로직으로 진행해 성공.
+
+    $('#test').on("click", function (e) {
+            test(getTokenInfo().accessToken,getTokenInfo().refreshToken);
+    });
+    $('#bok').on("click", function (e) {
+        console.log(a1);
+    });
+
+    $('.logout').on('click', function () {
+        console.log("logout 버튼")
+        logout(getTokenInfo().accessToken,getTokenInfo().refreshToken);
+    });
+
+    $('.myReserveBtn').on('click',function (e) {
+        var memberIdForFindReserve = localStorage.getItem("memberId");
+        console.log(memberIdForFindReserve)
+        $('.usernameInput').val(memberIdForFindReserve);
+        $('.myReserve').submit();
+    })
+    //로그인&미로그인 둘다 1)액세스 토큰 유뮤 체크
+    //로그인해고 다른 페이지 접근시 1)액세스 토큰 유뮤 체크, 2)유 라면 로그인했던것이므로
+
+    $('.myInfo').on('click',function (e) {
+        if (tokenCheck().result === false){
+            alert("로그인후 이용해주세요.")
+        }
+
+        var username = localStorage.getItem("memberId");
+        console.log(username);
+        $('.userId').val(username);
+        console.log($('.userId').val());
+        $('.myInfoForm').submit();
+    })
+
+    $(document).ready(function () {
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    });
+
+
+
+</script>
+</body>
+</html>
+
+<!-- loginStatus() 초기 버전-->
+<!--밑의 함수는 1) 토큰 체크,2) 유효기간 체크,3) 2)값을 바탕으로 엑세스토큰재발급 기능이 있는 함수임.
+/*function loginCheck() {
+var existence = tokenCheck().result;
+console.log("test="+existence);
+//로컬스토리지에 엑세스,리프레시토큰,memberId값이 있으면 true값이 existence에 반환
+var loginStatus = false;
+//토큰 유무값 리턴변수
+let tokenResult = null;
+if (existence) { //existence가 true면 실행됨.= 2토큰,id값이 있으면 실행.
+tokenResult = tokenExpirationCheck(getTokenInfo().accessToken,
+getTokenInfo().refreshToken);
+//console.log(tokenResult.result);
+if (tokenResult.result === null) {
+loginStatus = true;
+console.log("tokenExpirationCheck 200!")
+} else {
+loginStatus = true;
+console.log("tokenExpirationCheck 401...")
+localStorage.setItem("Authorization", tokenResult.result);
+}
+}
+return {
+loginStatus:loginStatus
+}
+}
+var status = loginCheck().loginStatus;
+console.log("status="+status);
+
+if (status === true){
+$('.login').hide();
+console.log("실행됨");
+//var state = $('#login').css('display');
+
+} else {
+$('.user').hide();
+$('.logout').hide();
+}-->
