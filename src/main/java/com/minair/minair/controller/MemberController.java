@@ -1,10 +1,7 @@
 package com.minair.minair.controller;
 
 import com.minair.minair.domain.Member;
-import com.minair.minair.domain.dto.AirlineDto;
-import com.minair.minair.domain.dto.MemberInfoDto;
-import com.minair.minair.domain.dto.MemberJoinDto;
-import com.minair.minair.domain.dto.MemberListDto;
+import com.minair.minair.domain.dto.*;
 import com.minair.minair.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,14 +65,19 @@ public class MemberController {
     }
 
     @GetMapping("/member/modify")
-    public void memberModify(@ModelAttribute("memberDto")MemberInfoDto memberInfoDto,
-                             Model model){
+    public void memberModifyGet(@ModelAttribute("memberDto")MemberInfoDto memberInfoDto){
         log.info("회원 수정 페이지 전환");
         System.out.println(memberInfoDto);
         if (memberInfoDto == null)
             new NullPointerException();
 
-        model.addAttribute("memberInfo", memberInfoDto);
+    }
+
+    @PostMapping("/member/modify")
+    public String memberModifyPost(@ModelAttribute("memberModifyDto") MemberModifyDto memberModifyDto){
+        log.info("회원 정보 수정 요청");
+        memberService.updateMember(memberModifyDto);
+        return "redirect:/";
     }
 
     @GetMapping("/member/members")

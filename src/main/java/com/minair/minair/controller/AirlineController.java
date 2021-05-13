@@ -5,6 +5,7 @@ import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.*;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
+import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.service.AirlineService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,10 +33,17 @@ public class AirlineController {
     private final AirlineService airlineService;
 
     @GetMapping("/airline")
-    public String searchAirline(@ModelAttribute("airlineSearchDto") AirlineSearchDto airlineSearchDto,
-                               @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public String searchAirline(@ModelAttribute("airlineSearchDto") @Valid AirlineSearchDto airlineSearchDto,
+                                BindingResult bindingResult,
+                                @DateTimeFormat(pattern = "yyyy-MM-dd")
                                @RequestParam("comebackDate") LocalDate combackDate,
-                               Model model){
+                                Model model){
+        if (combackDate == null)
+            throw new RequestNullException();
+
+        if (bindingResult.hasErrors()){
+            throw new IllegalArgumentException();
+        }
         List<Airline> searchAirlineList = airlineService.searchAirlines(airlineSearchDto);
         List<AirlineDto> collect = searchAirlineList.stream()
                 .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
@@ -46,12 +57,9 @@ public class AirlineController {
 
         String convertDeparture = airlineSearchDto.getDeparture().toString();
         String convertDistination = airlineSearchDto.getDistination().toString();
-        System.out.println(convertDeparture);
-        System.out.println(convertDistination);
+
         Departure departure = Departure.valueOf(convertDistination);
         Distination distination = Distination.valueOf(convertDeparture);
-        System.out.println(departure);
-        System.out.println(distination);
 
         AirlineSearchDto backDto = new AirlineSearchDto(departure,distination,
                 combackDate, airlineSearchDto.getAdult(), airlineSearchDto.getChild()
@@ -91,6 +99,9 @@ public class AirlineController {
     @GetMapping("/airline/airlines")
     public void airlines(Model model,@RequestParam(value = "pageNum", defaultValue = "1") int pageNum){
         log.info("All 항공권 조회");
+
+        if (pageNum == 0)
+            throw new RequestNullException();
 
         Page<Airline> allAirline = airlineService.findAllAirline(pageNum);
         List<AirlineDto> airlineDtoList = allAirline.getContent().stream()

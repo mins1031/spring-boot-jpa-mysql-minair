@@ -2,6 +2,7 @@ package com.minair.minair.service;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.MemberJoinDto;
+import com.minair.minair.domain.dto.MemberModifyDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.MemberRepository;
@@ -128,6 +129,11 @@ public class MemberService {
             new NullPointerException();
 
         return findMember;
+    }
 
+    @Transactional
+    public void updateMember(MemberModifyDto memberModifyDto){
+        Member findMember = memberRepository.findByUsername(memberModifyDto.getUsername());
+        findMember.updateMember(memberModifyDto);
     }
 }

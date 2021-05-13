@@ -19,49 +19,48 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-offset-3 col-md-6">
-                    <form class="form-horizontal" action="/member/modify" method="get">
+                    <form class="form-horizontal" action="/member/modify" method="post">
                         <div class="form-content">
                             <h4 class="heading">Your Details</h4>
+                            <h6 class="heading">* 생년월일은 'yyyy-mm-dd' 양식을 지켜서 작성해주세요 *</h6>
                             <div class="form-group">
-                                <div class="col-sm-6">
-                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
-                                        ID</label>
-                                    <span class="form-control" th:text="${memberInfo.username}"/>
-                                </div>
+                                <input type="hidden" class="form-control"
+                                       name="username" th:value="${memberDto.username}"/>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-envelope-o"></i>
                                         이메일</label>
-                                    <span class="form-control" th:text="${memberInfo.email}"/>
+                                    <input type="text" class="form-control"
+                                           name="email" th:value="${memberDto.email}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-calendar"></i>
                                         생년월일</label>
-                                    <span class="form-control" th:text="${memberInfo.birth}"/>
+                                    <input type="text" class="form-control"
+                                           name="birth" th:value="${memberDto.birth}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         한글이름</label>
-                                    <span class="form-control" th:text="${memberInfo.name_kor}"/>
+                                    <input type="text" class="form-control"
+                                           name="name_kor" th:value="${memberDto.name_kor}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         영문이름</label>
-                                    <span class="form-control" th:text="${memberInfo.name_eng}"/>
+                                    <input type="text" class="form-control"
+                                           name="name_eng" th:value="${memberDto.name_eng}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-lock"></i>
                                         Phone</label>
-                                    <span class="form-control" th:text="${memberInfo.phone}"/>
+                                    <input type="text" class="form-control"
+                                           name="phone" th:value="${memberDto.phone}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         성별</label>
-                                    <span class="form-control" th:text="${memberInfo.gender}"/>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
-                                        가입일자</label>
-                                    <span class="form-control" th:text="${memberInfo.regDate}"/>
+                                    <input type="text" class="form-control"
+                                           name="gender" th:value="${memberDto.gender}"/>
                                 </div>
                             </div>
                             <div align="center">
@@ -81,13 +80,14 @@
 
 <script>
     $(document).ready(function () {
-        var loginStatus = loginStatus().status;
+        var presentUser = loginStatus().status;
+        console.log(presentUser)
 
-        if (loginStatus === false) {
+        if (presentUser === false) {
             alert("로그인후 이용해 주세요!!")
             $(location).attr('href', "/loginForm2");
         }
-    })
+    });
 
 </script>
 </body>

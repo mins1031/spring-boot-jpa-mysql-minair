@@ -52,7 +52,9 @@ public class AirlineServiceTest {
                 LocalDate.of(2021,04,03)
                 ,1,2);
 
-        List<Airline> airlineList = airlineService.searchAirlines(airlineSearchDto);
+        AirlineSearchDto airlineSearchDto1 = null;
+        List<Airline> airlineList = airlineService.searchAirlines(airlineSearchDto1);
+
         for (Airline a: airlineList) {
             log.info("항공권="+a.getId());
         }

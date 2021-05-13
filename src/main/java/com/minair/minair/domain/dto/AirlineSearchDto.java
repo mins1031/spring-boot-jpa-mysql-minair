@@ -8,19 +8,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 public class AirlineSearchDto {
 
+    @NotEmpty
     private Departure departure;
+    @NotEmpty
     private Distination distination;
+    @NotEmpty
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate depart_date;
     /*@DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate comback_date;*/
+    @NotEmpty
     private int adult;
+    @NotEmpty
     private int child;
 
     public AirlineSearchDto(Departure departure,

@@ -31,7 +31,6 @@
             var password = $("#pw").val();
             console.log(username)
             console.log(password)
-            localStorage.setItem("memberId",username);
 
             var loginInfo = login.login({username:username,password:password});
             console.log("result="+loginInfo.result)
@@ -39,7 +38,7 @@
 
             if (loginInfo.status === 200) {
                 localStorage.setItem("Authorization", loginInfo.result);
-
+                localStorage.setItem("memberId",username);
                 login.issueRefresh(username, function (result, xhr) {
                     console.log("result2=" + result)
                     localStorage.setItem("refreshToken", result);

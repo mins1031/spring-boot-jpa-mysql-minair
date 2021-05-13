@@ -26,42 +26,50 @@
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         ID</label>
-                                    <span class="form-control" th:text="${memberInfo.username}"/>
+                                    <input type="text" class="form-control"
+                                           name="username" th:value="${memberInfo.username}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-envelope-o"></i>
                                         이메일</label>
-                                    <span class="form-control" th:text="${memberInfo.email}"/>
+                                    <input type="text" class="form-control"
+                                           name="email" th:value="${memberInfo.email}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-calendar"></i>
                                         생년월일</label>
-                                    <span class="form-control" th:text="${memberInfo.birth}"/>
+                                    <input type="text" class="form-control"
+                                           name="birth" th:value="${memberInfo.birth}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         한글이름</label>
-                                    <span class="form-control" th:text="${memberInfo.name_kor}"/>
+                                    <input type="text" class="form-control"
+                                           name="name_kor" th:value="${memberInfo.name_kor}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         영문이름</label>
-                                    <span class="form-control" th:text="${memberInfo.name_eng}"/>
+                                    <input type="text" class="form-control"
+                                           name="name_eng" th:value="${memberInfo.name_eng}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-lock"></i>
                                          Phone</label>
-                                    <span class="form-control" th:text="${memberInfo.phone}"/>
+                                    <input type="text" class="form-control"
+                                           name="phone" th:value="${memberInfo.phone}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         성별</label>
-                                    <span class="form-control" th:text="${memberInfo.gender}"/>
+                                    <input type="text" class="form-control"
+                                           name="gender" th:value="${memberInfo.gender}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         가입일자</label>
-                                    <span class="form-control" th:text="${memberInfo.regDate}"/>
+                                    <input type="text" class="form-control"
+                                           name="regDate" th:value="${memberInfo.regDate}"/>
                                 </div>
                             </div>
                         <div align="center">
@@ -81,13 +89,14 @@
 
 <script>
     $(document).ready(function () {
-        var loginStatus = loginStatus().status;
+        var presentUser = loginStatus().status;
+        console.log(presentUser)
 
-        if (loginStatus === false) {
+        if (presentUser === false) {
             alert("로그인후 이용해 주세요!!")
             $(location).attr('href', "/loginForm2");
         }
-    })
+    });
 
 </script>
 </body>

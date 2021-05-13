@@ -57,17 +57,15 @@ public class ReservationService {
     }
 
     public Page<Reservation> findReservation(String username,int pageNum){
-        System.out.println(username);
-        System.out.println(pageNum);
 
         int offset = pageNum - 1;
-        System.out.println(pageNum);
 
         Member findMember = memberRepository.findByUsername(username);
         PageRequest pageRequest = PageRequest.of(offset,10, Sort.by(Sort.Direction.DESC,"id"));
         //PageRequest.of의 offset은 디비 적용시 offset * limit의 양으로 들어감. 귯
         Page<Reservation> page = reservationRepository.pageReservations(findMember, pageRequest);
-
+        if (page.getContent().isEmpty())
+            throw new NullPointerException();
         //List<Reservation> reservationList = reservationRepository.findAllByMember(findMember);
         return page;
         //이거 페이징 처리 진행하기 위해 로직 들어내야함.

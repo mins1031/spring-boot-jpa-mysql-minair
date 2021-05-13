@@ -1,17 +1,16 @@
 package com.minair.minair.service;
 
-import ch.qos.logback.classic.sift.AppenderFactoryUsingJoran;
+import com.minair.minair.exception.NotFoundAirlines;
+import com.minair.minair.exception.PageNumberException;
+import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.Seat;
 import com.minair.minair.domain.dto.AirlineSearchDto;
-import com.minair.minair.repository.AirlinSeatRepository;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +29,9 @@ public class AirlineService {
 
     @Transactional
     public void createAirline(Airline airline){
-        List<Seat> seatList = seatRepository.findAll();
-
+        if (airline == null)
+            throw new RequestNullException();
         airlineRepository.save(airline);
-
         seatService.createSeats(airline,airline.getSeatcount());
     }
 
@@ -51,10 +49,15 @@ public class AirlineService {
 
     public Page<Airline> findAllAirline(int pageNum){
 
+        if (pageNum == 0)
+            throw new PageNumberException();
+
         int offset = pageNum -1;
 
         PageRequest pageRequest = PageRequest.of(offset,10);
         Page<Airline> airlinePage = airlineRepository.allAirlineList(pageRequest);
+        if (airlinePage.getContent().isEmpty())
+            throw new NullPointerException();
         return airlinePage ;
     }
 
@@ -66,24 +69,25 @@ public class AirlineService {
 
     @Transactional
     public List<Airline> searchAirlines(AirlineSearchDto airlineSearchDto){
-        System.out.println(airlineSearchDto.getDeparture().getClass());
-        System.out.println(airlineSearchDto.getDistination());
-        System.out.println(airlineSearchDto.getDepart_date());
-        //System.out.println(airlineSearchDto.getComback_date());
-        System.out.println(airlineSearchDto.getAdult());
-        System.out.println(airlineSearchDto.getChild());
+        if (airlineSearchDto == null)
+            throw new RequestNullException();
 
         log.info("항공권 검색");
         List<Airline> findSearchList = airlineRepository.searchResults(airlineSearchDto);
+        if (findSearchList == null)
+            throw new NotFoundAirlines();
         return findSearchList;
     }
 
     @Transactional
     public void subSeatCount(Long airlineId, int totalPerson){
-        System.out.println(airlineId);
-        System.out.println(totalPerson);
+        if (airlineId == null && totalPerson == 0)
+            throw new RequestNullException();
         Optional<Airline> optionalAirline = airlineRepository.findById(airlineId);
         Airline airline = optionalAirline.get();
+        if (airline == null)
+            throw new NullPointerException();
+
         airline.discountSeat(totalPerson);
     }
 

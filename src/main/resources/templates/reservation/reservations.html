@@ -42,6 +42,10 @@
     </tbody>
 </table><br/>
 
+<div align="center">
+    <h2 th:if="${Empty} != null" th:text="${Empty}"></h2>
+    <a class="btn btn-primary" href="/">이전</a>
+</div>
 <nav aria-label="Page navigation example ">
     <ul class="pagination">
         <li class="page-item" th:if="${pageMaker.prev} == true">
@@ -65,7 +69,6 @@
         </li>
     </ul>
 </nav>
-
 
 <hr size="5px" style="border:solid 3px #0b0b0b">
 

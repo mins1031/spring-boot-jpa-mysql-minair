@@ -1,6 +1,7 @@
 package com.minair.minair.domain;
 
 import com.minair.minair.domain.date.DateEntity;
+import com.minair.minair.domain.dto.MemberModifyDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import lombok.AccessLevel;
@@ -86,12 +87,13 @@ public class Member extends DateEntity {
                 refreshToken.getRefreshTokenExpirationPeriod());
     }
 
-    public void updateMember(Member member){
-        this.name_kor = member.getName_kor();
-        this.name_eng = member.getName_eng();
-        this.phone = member.getPhone();
-        this.birth = member.getBirth();
-        this.gender = member.getGender();
+    public void updateMember(MemberModifyDto memberModifyDto){
+        this.email = memberModifyDto.getEmail();
+        this.name_kor = memberModifyDto.getName_kor();
+        this.name_eng = memberModifyDto.getName_eng();
+        this.phone = memberModifyDto.getPhone();
+        this.birth = memberModifyDto.getBirth();
+        this.gender = memberModifyDto.getGender();
     }
 
     public void changePassword(String password){

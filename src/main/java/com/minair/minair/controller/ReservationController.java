@@ -5,6 +5,7 @@ import com.minair.minair.domain.dto.PageDto;
 import com.minair.minair.domain.dto.ReservationDto;
 import com.minair.minair.domain.dto.ReservationResultDto;
 import com.minair.minair.domain.dto.ReservationsResultDto;
+import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.service.AirlineService;
 import com.minair.minair.service.ReservationService;
@@ -15,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,14 +34,20 @@ public class ReservationController {
     private final AirlineService airlineService;
 
     @PostMapping("/complete")
-    public void reserve(@ModelAttribute("ReservationDto") ReservationDto reservationDto,
-                                     Model model){
+    public void reserve(@ModelAttribute("ReservationDto") @Valid ReservationDto reservationDto,
+                        BindingResult bindingResult, Model model){
+
+        if (bindingResult.hasErrors())
+            throw new IllegalArgumentException();
+
         List<Reservation> reservationList = reservationService.reservation(reservationDto);
+        if (reservationList == null)
+            throw new NullPointerException();
+
         List<ReservationResultDto> resultList = reservationList.stream()
                 .map(r -> new ReservationResultDto(r.getId(),r.getMember(),r.getAirline(),r.getAdultCount(),
                         r.getChildCount(),r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
                 .collect(Collectors.toList());
-        System.out.println(resultList);
         model.addAttribute("goReserveList",resultList.get(0));
         model.addAttribute("backReserveList",resultList.get(1));
         //result 객체로 싸서 뷰로보내야함.
@@ -47,22 +56,31 @@ public class ReservationController {
     @GetMapping("/reservations")
     public void reservations(@RequestParam("username") String username,
                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum, Model model){
-        System.out.println("C:username= "+username);
-        Page<Reservation> reservations = reservationService.findReservation(username,pageNum);
-        List<Reservation> teamList = reservations.getContent();
-        List<ReservationResultDto> realList = teamList.stream()
-                .map(r -> new ReservationResultDto(r.getId(),r.getMember(),r.getAirline(),r.getAdultCount(),
-                        r.getChildCount(),r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
-                .collect(Collectors.toList());
+        if (username == null)
+            throw new RequestNullException();
+        else if (pageNum == 0)
+            throw new IllegalArgumentException();
+        try {
+            Page<Reservation> reservations = reservationService.findReservation(username,pageNum);
+            List<Reservation> teamList = reservations.getContent();
+            List<ReservationResultDto> realList = teamList.stream()
+                    .map(r -> new ReservationResultDto(r.getId(),r.getMember(),r.getAirline(),r.getAdultCount(),
+                            r.getChildCount(),r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
+                    .collect(Collectors.toList());
 
-        PageDto pageDto = new PageDto(pageNum,10,reservations.getTotalElements(),
-                reservations.getTotalPages());
+            PageDto pageDto = new PageDto(pageNum,10,reservations.getTotalElements(),
+                    reservations.getTotalPages());
 
-        System.out.println(reservations.getTotalElements());
-        System.out.println(reservations.getTotalPages());
-        model.addAttribute("reservations",realList);
-        model.addAttribute("pageMaker",pageDto);
+            System.out.println(reservations.getTotalElements());
+            System.out.println(reservations.getTotalPages());
+            model.addAttribute("reservations",realList);
+            model.addAttribute("pageMaker",pageDto);
+            model.addAttribute("Empty",null);
+        } catch (NullPointerException e){
+            String messege = "아직 예약하신 상품이 없습니다.";
+            model.addAttribute("Empty",messege);
 
+        }
     }
 
     @PostMapping("/checkIn")
