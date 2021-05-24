@@ -91,4 +91,16 @@ public class AirlineService {
         airline.discountSeat(totalPerson);
     }
 
+    @Transactional
+    public void plusSeatCount(Long airlineId, int totalPerson){
+        if (airlineId == null && totalPerson == 0)
+            throw new RequestNullException();
+        Optional<Airline> optionalAirline = airlineRepository.findById(airlineId);
+        Airline airline = optionalAirline.get();
+        if (airline == null)
+            throw new NullPointerException();
+
+        airline.plusSeat(totalPerson);
+    }
+
 }

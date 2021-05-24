@@ -28,7 +28,67 @@
     </tbody>
 </table><br/>
 
+<nav aria-label="Page navigation example ">
+    <ul class="pagination">
+        <li class="page-item" th:if="${pageMaker.prev} == true">
+            <a class="pagePrevBtn" aria-label="Previous" href="#">
+                <span aria-hidden="true">이전</span>
+            </a>
+        </li>
+
+        <th:block  th:with="start = ${pageMaker.startPage}, end = ${pageMaker.endPage}">
+            <li class="page-item"
+                th:with="start = ${pageMaker.startPage}, end = ${pageMaker.endPage}"
+                th:each="pageButton : ${#numbers.sequence(start, end)}"
+                th:class="${pageMaker.offset == pageButton ? 'active': ''}">
+                <a class="pageBtn" href="#" th:text=${pageButton}></a>
+            </li>
+        </th:block>
+        <li class="page-item " th:if="${pageMaker.next} == true">
+            <a class="pageNextBtn" aria-label="Next" href="#">
+                <span aria-hidden="true">다음</span>
+            </a>
+        </li>
+    </ul>
+</nav><br>
+
 <footer th:replace="fragments/fragments :: footer"></footer>
 
+<script>
+
+    $('.pageBtn').on('click',function (e) {
+        var pageNum = $(this).text();
+        console.log(pageNum);
+        $('.pageNum').val(pageNum);
+        console.log($('.pageNum').val());
+        $('.pageUsername').val(localStorage.getItem("memberId"));
+        console.log($('.pageUsername').val());
+        $('.basicInfo').submit();
+    });
+
+    $('.pageNextBtn').on('click',function (e) {
+        console.log("다음버튼 클릭")
+        /*<![CDATA[*/
+
+        var endPage = /*[[${pageMaker.getEndPage()}]]*/
+            console.log("endPage = "+endPage);
+        /*]]>*/
+        $('.pageNum').val(endPage + 1);
+        $('.basicInfo').submit();
+    });
+
+    $('.pagePrevBtn').on('click',function (e) {
+        console.log("이전버튼 클릭")
+        /*<![CDATA[*/
+
+        var startPage = /*[[${pageMaker.getStartPage()}]]*/
+            console.log("startPage = "+startPage);
+        /*]]>*/
+
+        $('.pageNum').val(startPage - 1);
+        $('.basicInfo').submit();
+
+    });
+</script>
 </body>
 </html>

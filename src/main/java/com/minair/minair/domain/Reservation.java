@@ -31,7 +31,7 @@ public class Reservation extends DateEntity {
     private int totalPerson;
     private int totalPrice;
 
-    private String reserveSeat;
+    private String reserveSeat = null;
 
     public static Reservation createReservation(Member member, Airline airline,
                                                 int adultCount, int childCount,

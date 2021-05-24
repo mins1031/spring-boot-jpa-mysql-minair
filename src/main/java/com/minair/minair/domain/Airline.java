@@ -69,10 +69,17 @@ public class Airline extends DateEntity {
     //폼으로 전체 엔티티값들이 왔다갔다함으로 값을 전부 바꿔주는 위 로직이 맞는듯
 
     public void discountSeat(int discount){
-       if (this.seatcount - discount <= 0 || this.seatcount <= 0)
+       if (this.aboveseat - discount <= 0 || this.aboveseat <= 0)
            new IllegalAccessError("남은 좌석이 없습니다.");
        else
         this.aboveseat -=  discount;
+    }
+
+    public void plusSeat(int plusCount){
+        if (this.aboveseat + plusCount <= this.seatcount || this.aboveseat == this.seatcount)
+            new IllegalAccessError("좌석오류입니다. 다시 확인해 주세요.");
+        else
+            this.aboveseat +=  plusCount;
     }
 
     public void setSeat(List<Seat> seat){

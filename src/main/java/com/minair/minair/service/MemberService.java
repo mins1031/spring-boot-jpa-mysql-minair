@@ -9,6 +9,8 @@ import com.minair.minair.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bytecode.StackSize;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,8 +68,16 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
-    public List<Member> findByAll(){
-        return memberRepository.findAll();
+    public Page<Member> findByAll(int pageNum){
+
+        int offset = pageNum - 1;
+        PageRequest pageRequest = PageRequest.of(offset,10);
+
+        Page<Member> members = memberRepository.findMembers(pageRequest);
+        if (members.getContent().isEmpty())
+            throw new NullPointerException();
+
+        return members;
     }
 
     public void updateMember(Member member){

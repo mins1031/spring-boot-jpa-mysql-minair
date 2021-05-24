@@ -1,10 +1,8 @@
 package com.minair.minair.controller;
 
+import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Reservation;
-import com.minair.minair.domain.dto.PageDto;
-import com.minair.minair.domain.dto.ReservationDto;
-import com.minair.minair.domain.dto.ReservationResultDto;
-import com.minair.minair.domain.dto.ReservationsResultDto;
+import com.minair.minair.domain.dto.*;
 import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.service.AirlineService;
@@ -56,10 +54,14 @@ public class ReservationController {
     @GetMapping("/reservations")
     public void reservations(@RequestParam("username") String username,
                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum, Model model){
-        if (username == null)
+        if (username == null) {
+            log.info("id가 잘못 요청되었습니다.");
             throw new RequestNullException();
-        else if (pageNum == 0)
+        }
+        else if (pageNum == 0) {
+            log.info("페이지 정보가 잘못 요청되었습니다.");
             throw new IllegalArgumentException();
+        }
         try {
             Page<Reservation> reservations = reservationService.findReservation(username,pageNum);
             List<Reservation> teamList = reservations.getContent();
@@ -71,8 +73,6 @@ public class ReservationController {
             PageDto pageDto = new PageDto(pageNum,10,reservations.getTotalElements(),
                     reservations.getTotalPages());
 
-            System.out.println(reservations.getTotalElements());
-            System.out.println(reservations.getTotalPages());
             model.addAttribute("reservations",realList);
             model.addAttribute("pageMaker",pageDto);
             model.addAttribute("Empty",null);
@@ -88,13 +88,12 @@ public class ReservationController {
                         @RequestParam("totalPerson") int totalPerson,
                         @RequestParam("airlineId") Long airlineId,
                         @RequestParam("selectSeats") String selectSeats){
-        System.out.println("c-reservationId="+reservationId);
-        System.out.println("c-seats="+selectSeats);
-        System.out.println("c-totalPerson="+totalPerson);
-        System.out.println("c-airlineId="+airlineId);
+
+        if (reservationId == null || totalPerson == 0 || airlineId == null || selectSeats == null)
+            throw new NullPointerException();
+
         // 객체지향의 원칙에 따라
         // 예약에서 체크인 내용에 추가하는건 예약 서비스에서, 항공id통해서 좌석 상태 변경은 좌석서비스 통해서.
-
         reservationService.checkSeat(reservationId,selectSeats);
         seatService.checkInSeats(airlineId,selectSeats);
         airlineService.subSeatCount(airlineId,totalPerson);
@@ -104,14 +103,25 @@ public class ReservationController {
     @GetMapping("/info")
     public void confirmInfo(@RequestParam("reservationId") Long reservationId,
                             Model model){
+        if (reservationId == null)
+            throw new NullPointerException();
+
         Reservation findReservation = reservationService.findOneReservation(reservationId);
-        model.addAttribute("reservation", findReservation);
+        if (findReservation == null)
+            throw new NullPointerException();
+        ReservationDetailInfoDto reservationDetailInfoDto
+                = ReservationDetailInfoDto.ReservationDetailInfoDto(findReservation);
+        log.info("test 예약 정보");
+        model.addAttribute("reservation", reservationDetailInfoDto);
         //이것도 dto로 리펙토링때 수정할것.
     }
 
     @GetMapping("/all")
     public void allReservation(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                Model model){
+        if (pageNum == 0)
+            throw new RequestNullException();
+
         log.info("예약 목록");
         Page<Reservation> allReservation = reservationService.findAll(pageNum);
 
@@ -126,5 +136,27 @@ public class ReservationController {
 
         model.addAttribute("reservations",resultList);
         model.addAttribute("pageMaker",pageDto);
+    }
+
+    @PostMapping("/remove")
+    public String remove(@RequestParam("reservationId") Long reservationId,
+                         @RequestParam("totalPerson") int totalPerson){
+        if (reservationId == null)
+            throw new RequestNullException();
+
+        try {
+            Reservation findReservation = reservationService.findOneReservation(reservationId);
+            if (findReservation.getReserveSeat() != null) {
+                airlineService.plusSeatCount(findReservation.getAirline().getId(),totalPerson);
+                reservationService.remove(findReservation);
+            } else
+                reservationService.remove(findReservation);
+
+            return "redirect:/";
+        } catch (RuntimeException e){
+            log.info(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }

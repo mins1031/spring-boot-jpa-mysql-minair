@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -92,6 +93,16 @@ public class ReservationService {
 
         PageRequest p = PageRequest.of(offset,10);
         Page<Reservation> allReservation = reservationRepository.pageAllReservation(p);
+        if (allReservation.getContent().isEmpty())
+            throw new NullPointerException();
+
         return allReservation;
+    }
+
+    @Transactional
+    public void remove(Reservation reservation){
+        log.info("예약 삭제");
+
+        reservationRepository.delete(reservation);
     }
 }

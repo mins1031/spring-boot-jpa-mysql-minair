@@ -1,8 +1,10 @@
 package com.minair.minair.domain.dto;
 
+import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +27,5 @@ public class ReservationInfoResultDto {
     private LocalTime reachTime;
     private Long airlineId;
     private int totalPrice;
+
 }

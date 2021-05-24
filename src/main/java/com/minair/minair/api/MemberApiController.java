@@ -1,4 +1,4 @@
-package com.minair.minair.controller;
+package com.minair.minair.api;
 
 import com.minair.minair.auth.PrincipalDetails;
 import com.minair.minair.domain.Member;

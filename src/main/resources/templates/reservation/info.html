@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head th:replace="fragments/fragments :: html-head">
     <meta charset="UTF-8">
     <title>Title</title>
@@ -8,64 +8,49 @@
 <div th:replace="fragments/fragments :: header"></div>
 
 <table border="1" align="center"
-     width="80%" height="200%"> <!-- class="table table-bordered " -->
-    <!--<thead style="background-color: #f0ad4e">
-    <tr>
-        <th>예약코드 </th>
-        <th>예약자명</th>
-        <th>항공코드</th>
-        <th>출발지</th>
-        <th>도착지</th>
-        <th>출발일</th>
-        <th>출발시간</th>
-        <th>총인원</th>
-        <th>좌석</th>
-        <th>상세보기</th>
-    </tr>
-    </thead>
-    -->
+     width="80%" height="200%">
     <div style="text-align: center; color: #0b0b0b; font-style: italic">예약 상세</div>
 
     <th width="150">
         <tr>
             <td align="center" style="color:#0b0b0b;">예약번호</td>
-            <td align="center" style="color: #0b0b0b" th:text="${reservation?.id}"/></td>
+            <td align="center" style="color: #0b0b0b" th:text="${reservation?.reservationId}"/></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">예매자</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getMember.getUsername}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.username}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">성인</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.adultCount}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.adult}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">아이</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.childCount}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.child}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">출발지</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getAirline.getDeparture}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.departure}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">도착지</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getAirline.getDistination}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.distination}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">출발날짜</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getAirline.getDepart_date}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.departDate}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">출발시간</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getAirline.getDepart_time}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.departTime}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">도착시간</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getAirline.getReach_time}"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.reachTime}"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">편명</td>
-            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.getAirline.getId}" class="airlineId"></td>
+            <td align="center" style="color:#0b0b0b;" th:text="${reservation?.airlineId}" class="airlineId"></td>
         </tr>
         <tr>
             <td align="center" style="color:#0b0b0b;">결제가격</td>
@@ -74,10 +59,10 @@
         <tr>
             <td align="center" style="color:#0b0b0b;">좌석번호</td>
             <td align="center" style="color:#0b0b0b;"
-                th:if="${reservation?.getReserveSeat} != null"
+                th:if="${reservation?.getReserveSeats} != null"
                 th:text="${reservation?.getReserveSeat}"></td>
             <td align="center" style="color:#0b0b0b;"
-                th:unless="${reservation?.getReserveSeat} != null">
+                th:unless="${reservation?.getReserveSeats} != null">
                 <button type="button" style="color: #545b62" class="checkInBtn" href="/checkin">
                     체크인</button></td>
         </tr>
@@ -85,9 +70,19 @@
 </table><br/>
 </div><br>
 
+<div style="text-align: center">
+    <a type="button" href="/" class="btn btn-primary">홈으로</a>
+</div><br>
+
+<form action="/checkin" method="get" class="checkInForm">
+    <input type="hidden" name="airlineId" value="" class="hiddenAirlineId">
+    <input type="hidden" name="reservationId" value="" class="hiddenReservationId">
+    <input type="hidden" name="totalPerson" value="" class="hiddenTotalPerson">
+</form>
+
 <footer th:replace="fragments/fragments :: footer"></footer>
 
-<script>
+<script th:inline="javascript">
     $(document).ready(function () {
         var loginPresent = loginStatus().status;
 
@@ -95,6 +90,27 @@
             alert("로그인후 이용해 주세요!!")
             $(location).attr('href', "/loginForm2");
         }
+    })
+
+
+    $('.checkInBtn').on('click',function (e) {
+        /*<![CDATA[*/
+        console.log("hi!")
+        var adult = /*[[${reservation?.adult}]]*/
+        var child = /*[[${reservation?.child}]]*/
+        var airlindId = /*[[${reservation?.airlineId}]]*/
+        var reservationId = /*[[${reservation?.reservationId}]]*/
+            /*]]>*/
+
+        var totalPerson = adult+child
+
+        $('.hiddenReservationId').val(reservationId);
+        $('.hiddenAirlineId').val(airlindId);
+        $('.hiddenTotalPerson').val(totalPerson);
+        console.log($('.hiddenReservationId').val());
+        console.log($('.hiddenAirlineId').val());
+        console.log($('.hiddenTotalPerson').val());
+        $('.checkInForm').submit();
     })
 
 </script>

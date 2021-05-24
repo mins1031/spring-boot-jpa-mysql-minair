@@ -18,6 +18,7 @@
         <th>총인원</th>
         <th>좌석</th>
         <th>상세보기</th>
+        <th>예약취소</th>
     </tr>
     </thead>
     <tbody>
@@ -38,13 +39,15 @@
                 체크인</button></td>
         <td><button type="button" style="color: #545b62"
                     class="reserveInfo">상세정보</button></td>
+        <td><button type="button" style="color: #545b62"
+                    class="reserveCancle" data-toggle="modal" data-target="#myModal">예약취소</button></td>
     </tr>
     </tbody>
 </table><br/>
 
 <div align="center">
     <h2 th:if="${Empty} != null" th:text="${Empty}"></h2>
-    <a class="btn btn-primary" href="/">이전</a>
+    <a class="btn btn-primary" th:if="${Empty} != null" th:text="${Empty}" href="/">이전</a>
 </div>
 <nav aria-label="Page navigation example ">
     <ul class="pagination">
@@ -69,7 +72,9 @@
         </li>
     </ul>
 </nav>
-
+<div align="center">
+    <a class="btn btn-primary" th:if="${Empty} == null"  href="/">홈으로</a>
+</div>
 <hr size="5px" style="border:solid 3px #0b0b0b">
 
 <form action="/reservation/reservations" method="get" class="basicInfo">
@@ -85,6 +90,31 @@
 <form action="/reservation/info" method="get" class="infoForm">
     <input type="hidden" name="reservationId" value="" class="hiddenReservationIdInfo">
 </form>
+<form action="/reservation/remove" method="post" class="removeForm">
+    <input type="hidden" name="reservationId" value="" class="removeReserveId">
+    <input type="hidden" name="totalPerson" value="" class="removeTotalPerson">
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal 제목</h4>
+            </div>
+            <div class="modal-body" style="color: #545b62">
+                정말 예약을 취소 하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="notDelete" data-dismiss="modal"
+                        style="color: #545b62">뒤로가기</button>
+                <button type="button" class="delete" data-dismiss="modal"
+                        style="color: #545b62">삭제</button>
+            </div>
+        </div>
+    </div></div>
+
 <footer th:replace="fragments/fragments :: footer"></footer>
 <script th:inline="javascript">
     $(document).ready(function () {
@@ -115,6 +145,18 @@
         $('.hiddenReservationId').val(reservationId);
         console.log(reservationId);
         $('.checkInForm').submit();
+    })
+
+    $('.delete').on('click',function () {
+        var tr = $('.reserveCancle').parent().parent();
+        var td = tr.children();
+        var reservationId = td.eq(0).text();
+        var totalPerson = td.eq(7).text();
+
+        console.log(reservationId)
+        $('.removeReserveId').val(reservationId)
+        $('.removeTotalPerson').val(totalPerson)
+        $('.removeForm').submit();
     })
 
     $('.reserveInfo').on('click',function () {

@@ -4,25 +4,31 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationDto {
 
-    @NotEmpty
+    @NotNull
     private Long goAirId;
-    @NotEmpty
+    @NotNull
     private Long backAirId;
-    @NotEmpty
+    @NotBlank
     private String username;
-    @NotEmpty
+    @NotNull
+    @Max(5)
     private int adultCount;
-    @NotEmpty
+    @NotNull
+    @Max(5)
     private int childCount;
-    @NotEmpty
+    @Max(18)
+    @NotNull
     private int totalPerson;
-    @NotEmpty
+    @NotNull
     private int totalPrice;
 }
