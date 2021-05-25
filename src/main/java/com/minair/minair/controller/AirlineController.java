@@ -1,24 +1,21 @@
 package com.minair.minair.controller;
 
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.dto.airline.AirlineDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchResult;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.service.AirlineService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.time.LocalDate;

@@ -1,13 +1,12 @@
 package com.minair.minair.api;
 
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.AirlineCreateDto;
+import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.service.AirlineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

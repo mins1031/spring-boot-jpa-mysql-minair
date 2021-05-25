@@ -1,4 +1,4 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.airline;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
