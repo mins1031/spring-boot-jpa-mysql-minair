@@ -83,7 +83,14 @@ mins;
 
 [[resources-checkIn]]
 == 좌석 체크인
-
+__
 체크인을 위해 해당 항공권 정보를 토대로 좌석데이터를 불러온다.
 
-operation::checkIn[snippets='request-body,response-body,links']
+operation::checkIn[snippets='request-fields,request-body,response-fields,response-body,links']
+
+[[resources-airline-create]]
+== 항공권 생성
+
+항공권을 만들기 위한 정보들을 통해 항공권을 생성한다.
+
+operation::airline-create[snippets='request-header,request-fields,request-body,response-headers,response-fields,response-body,links']

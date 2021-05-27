@@ -49,7 +49,6 @@ public class SeatApiControllerTest {
         Long reserve = 101L;
         int total = 2;
         CheckInDto checkInDto = new CheckInDto(airlineId,reserve,total);
-       // assertThat(checkInDto).isNull();
 
         //When
         this.mockMvc.perform(get("/api/checkIn")
@@ -64,9 +63,11 @@ public class SeatApiControllerTest {
                 .andExpect(jsonPath("reservationId").exists())
                 .andExpect(jsonPath("totalPerson").exists())
                 .andExpect(jsonPath("_links.self").exists())
-        .andDo(document("checkIn",
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("checkIn",
                 links(
-                    linkWithRel("self").description("self href")
+                    linkWithRel("self").description("self href"),
+                    linkWithRel("profile").description("profile href")
                 ),
                 requestHeaders(
                     headerWithName(HttpHeaders.ACCEPT).description("헤더 accept"),
@@ -84,7 +85,9 @@ public class SeatApiControllerTest {
                         fieldWithPath("seatList").description("전체 좌석 리스트"),
                         fieldWithPath("airlineId").description("항공편 코드"),
                         fieldWithPath("reservationId").description("예약 코드"),
-                        fieldWithPath("totalPerson").description("전체 예약자수")
+                        fieldWithPath("totalPerson").description("전체 예약자수"),
+                        fieldWithPath("_links.self.href").description("self href"),
+                        fieldWithPath("_links.profile.href").description("profile href")
                 )
                 ))
         ;

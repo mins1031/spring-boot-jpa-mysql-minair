@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,8 +70,9 @@ public class SeatApiController {
         seatResult.add(linkTo(methodOn(SeatApiController.class)
                 .checkInSeat(checkInDto,errors))
                 .withSelfRel());
+        seatResult.add(new Link("/docs/index.html").withRel("profile"));
         //seatResult.add(linkTo(methodOn(HomeController.class).index()).withRel("index"));
-
+        //여기서 각 좌석값마다 링크를 줄필요는 x
         return ResponseEntity.ok().body(seatResult);
     }
 }

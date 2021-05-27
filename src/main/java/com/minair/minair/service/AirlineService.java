@@ -28,11 +28,12 @@ public class AirlineService {
     private final SeatService seatService;
 
     @Transactional
-    public void createAirline(Airline airline){
+    public Airline createAirline(Airline airline){
         if (airline == null)
             throw new RequestNullException();
-        airlineRepository.save(airline);
+        Airline savedAirline = airlineRepository.save(airline);
         seatService.createSeats(airline,airline.getSeatcount());
+        return savedAirline;
     }
 
     @Transactional
