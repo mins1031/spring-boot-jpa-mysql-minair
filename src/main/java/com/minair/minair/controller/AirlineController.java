@@ -15,9 +15,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,16 +33,12 @@ public class AirlineController {
 
     @GetMapping("/airline")
     public String searchAirline(@ModelAttribute("airlineSearchDto") @Valid AirlineSearchDto airlineSearchDto,
-                                BindingResult bindingResult,
-                                @DateTimeFormat(pattern = "yyyy-MM-dd")
-                               @RequestParam("comebackDate") LocalDate combackDate,
+                                Errors errors,
+                                //@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate comebackDate,
                                 Model model){
-        if (combackDate == null)
-            throw new RequestNullException();
-
-        if (bindingResult.hasErrors()){
+        if (errors.hasErrors())
             throw new IllegalArgumentException();
-        }
+
         List<Airline> searchAirlineList = airlineService.searchAirlines(airlineSearchDto);
         List<AirlineDto> collect = searchAirlineList.stream()
                 .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
@@ -59,7 +57,7 @@ public class AirlineController {
         Distination distination = Distination.valueOf(convertDeparture);
 
         AirlineSearchDto backDto = new AirlineSearchDto(departure,distination,
-                combackDate, airlineSearchDto.getAdult(), airlineSearchDto.getChild()
+                airlineSearchDto.getComebackDate(), airlineSearchDto.getAdult(), airlineSearchDto.getChild()
         );
         //검색시 오는날 데이터만 따로 담아서 오는편 조회시 가는날 데이터로 넣어서 만들어줌.
         List<Airline> backAirlineList = airlineService.searchAirlines(backDto);

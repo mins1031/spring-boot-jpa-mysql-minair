@@ -2,25 +2,45 @@ package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.controller.AdminController;
+import com.minair.minair.controller.HomeController;
+import com.minair.minair.controller.ReservationController;
 import com.minair.minair.domain.Airline;
+import com.minair.minair.domain.dto.AirlineSearchDto;
+import com.minair.minair.domain.dto.ForFindPagingDto;
 import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchApiDto;
+import com.minair.minair.domain.dto.airline.QueryAirlinesDto;
+import com.minair.minair.domain.notEntity.Departure;
+import com.minair.minair.domain.notEntity.Distination;
+import com.minair.minair.exception.NotFoundAirlines;
 import com.minair.minair.service.AirlineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -28,7 +48,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/airline")
+@RequestMapping(value = "/api/airline",produces = MediaTypes.HAL_JSON_VALUE)
 public class AirlineApiController {
 
     private final AirlineService airlineService;
@@ -55,7 +75,7 @@ public class AirlineApiController {
             AirlineDto airlineDto = modelMapper.map(savedAirline, AirlineDto.class);
             EntityModel createAirlineResource = EntityModel.of(airlineDto);
             createAirlineResource.add(webMvcLinkBuilder);
-            createAirlineResource.add(new Link("/docs/index/html").withRel("profile"));
+            createAirlineResource.add(new Link("/docs/index.html").withRel("profile"));
 
             return ResponseEntity.created(createUri).body(createAirlineResource);
             //return new ResponseEntity(HttpStatus.CREATED);
@@ -66,5 +86,70 @@ public class AirlineApiController {
             e.printStackTrace();
             return new ResponseEntity(e,HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    @GetMapping(value = "/search",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity searchAirline(@RequestBody @Valid AirlineSearchDto airlineSearchDto,
+                                        Errors errors) {
+        if (errors.hasErrors())
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+
+        List<Airline> airlineList = airlineService.searchAirlines(airlineSearchDto);
+
+        /*if (airlineList.isEmpty())
+            return new ResponseEntity(new NotFoundAirlines(),HttpStatus.INTERNAL_SERVER_ERROR);
+*/
+        List<AirlineDto> goAirlineList = new ArrayList<>();
+        for (Airline a: airlineList) {
+            goAirlineList.add(modelMapper.map(a,AirlineDto.class));
+        }
+
+        String convertDeparture = airlineSearchDto.getDeparture().toString();
+        String convertDistination = airlineSearchDto.getDistination().toString();
+
+        Departure departure = Departure.valueOf(convertDistination);
+        Distination distination = Distination.valueOf(convertDeparture);
+
+        AirlineSearchDto backAirlineDto = new AirlineSearchDto(departure,distination,
+                airlineSearchDto.getComebackDate(),airlineSearchDto.getAdult(),airlineSearchDto.getChild());
+        List<Airline> backList = airlineService.searchAirlines(backAirlineDto);
+        List<AirlineDto> backAirlineList = new ArrayList<>();
+        for (Airline a: backList) {
+            backAirlineList.add(modelMapper.map(a,AirlineDto.class));
+        }
+        AirlineSearchApiDto<List<AirlineDto>> airlineSearchApiDto
+                = new AirlineSearchApiDto<>(goAirlineList,backAirlineList,airlineSearchDto.getAdult(),
+                airlineSearchDto.getChild());
+        EntityModel airlineResource = EntityModel.of(airlineSearchApiDto);
+        airlineResource.add(new Link("/api/airline/search").withSelfRel());
+        airlineResource.add(new Link("/reservation/complete").withRel("reserve-complete"));
+        airlineResource.add(new Link("/docs/index.html").withRel("profile"));
+        return new ResponseEntity(airlineResource,HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity queryAirlines(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
+                                        Errors errors){
+
+        if (errors.hasErrors())
+            return ResponseEntity.badRequest().build();
+
+        Page<Airline> airlinePage = airlineService.findAllAirline(forFindPagingDto.getPageNum());
+        List<AirlineDto> airlineDtoList = new ArrayList<>();
+
+        for (Airline a:airlinePage.getContent()) {
+            airlineDtoList.add(modelMapper.map(a,AirlineDto.class));
+        }
+
+        QueryAirlinesDto queryAirlinesDto = QueryAirlinesDto.builder()
+                .airlineList(airlineDtoList)
+                .totalPage(airlinePage.getTotalPages())
+                .totalElements(airlinePage.getTotalElements())
+                .build();
+
+        EntityModel pageResource = EntityModel.of(queryAirlinesDto);
+        pageResource.add(linkTo(AirlineApiController.class).withSelfRel());
+        pageResource.add(new Link("/docs/index.htm").withRel("profile"));
+        return ResponseEntity.ok(pageResource);
     }
 }

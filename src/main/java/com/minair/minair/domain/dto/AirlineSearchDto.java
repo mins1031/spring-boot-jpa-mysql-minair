@@ -24,15 +24,25 @@ public class AirlineSearchDto {
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate depart_date;
-    /*@DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate comback_date;*/
+    @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate comebackDate;
     @Max(5)
     private int adult;
     @Max(5)
     private int child;
 
-    public AirlineSearchDto(Departure departure,
-                            Distination distination,
+    public AirlineSearchDto(Departure departure, Distination distination,
+                            LocalDate depart_date, LocalDate comebackDate,
+                            int adult, int child) {
+        this.departure = departure;
+        this.distination = distination;
+        this.depart_date = depart_date;
+        this.comebackDate = comebackDate;
+        this.adult = adult;
+        this.child = child;
+    }
+
+    public AirlineSearchDto(Departure departure, Distination distination,
                             LocalDate depart_date,
                             int adult, int child) {
         this.departure = departure;
@@ -42,16 +52,10 @@ public class AirlineSearchDto {
         this.child = child;
     }
 
+
     public int getTotalPerson(){
         int totalPerson = this.adult + this.child;
         return totalPerson;
     }
 
-    /* @QueryProjection
-    public AirlineSearchDto(Departure departure, Distination distination, LocalDate depart_date, int people) {
-        this.departure = departure;
-        this.distination = distination;
-        this.depart_date = depart_date;
-        this.people = people;
-    }*/
 }

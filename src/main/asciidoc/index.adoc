@@ -94,3 +94,17 @@ operation::checkIn[snippets='request-fields,request-body,response-fields,respons
 항공권을 만들기 위한 정보들을 통해 항공권을 생성한다.
 
 operation::airline-create[snippets='request-header,request-fields,request-body,response-headers,response-fields,response-body,links']
+
+[[resources-airline-search]]
+== 항공권 검색
+
+항공권 검색을 통해 조건에 맞는 항공권 리스트를 출력한다.
+
+operation::airline-search[snippets='request-header,request-body,request-fields,response-body,response-fields']
+
+[[resources-all-airline]]
+== 모든 항공권 조회
+
+모든 항공권 조회를 통해 모든 항공권을 모니터링 할 수 있다.
+
+operation::all-airline[snippets='request-header,request-body,response-body,links']

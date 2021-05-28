@@ -48,17 +48,20 @@ public class AirlineServiceTest {
 
     @Test
     public void testSearch(){
-        AirlineSearchDto airlineSearchDto = new AirlineSearchDto(Departure.ICN, Distination.JEJU,
-                LocalDate.of(2021,04,03)
+        AirlineSearchDto airlineSearchDto = new AirlineSearchDto(Departure.JEJU, Distination.BUS,
+                LocalDate.of(2021,05,20)
                 ,1,2);
 
         AirlineSearchDto airlineSearchDto1 = null;
-        List<Airline> airlineList = airlineService.searchAirlines(airlineSearchDto1);
+        List<Airline> airlineList = airlineService.searchAirlines(airlineSearchDto);
 
         for (Airline a: airlineList) {
-            log.info("항공권="+a.getId());
+            System.out.println("항공권="+a.getId());
         }
         //AirlineService.searchAirline 메서드 테스트
+        //Assertions.assertThat(airlineList.get(0).getId()).isEqualTo(26);
+        //Assertions.assertThat(airlineList.get(1).getId()).isEqualTo(27);
+
     }
 
    /* @Test

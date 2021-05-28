@@ -75,8 +75,10 @@ public class AirlineService {
 
         log.info("항공권 검색");
         List<Airline> findSearchList = airlineRepository.searchResults(airlineSearchDto);
+
         if (findSearchList == null)
             throw new NotFoundAirlines();
+
         return findSearchList;
     }
 

@@ -19,13 +19,7 @@ public class AirlineSearchRepositoryImpl implements AirlineSearchRepository{
 
     @Override
     public List<Airline> searchResults(AirlineSearchDto airlineSearchDto) {
-        System.out.println(airlineSearchDto.getDeparture());
-        System.out.println(airlineSearchDto.getDistination());
-        System.out.println(airlineSearchDto.getDepart_date());
-        System.out.println(airlineSearchDto.getAdult());
-        System.out.println(airlineSearchDto.getChild());
         int totalPerson = airlineSearchDto.getAdult() + airlineSearchDto.getChild();
-
 
         return queryFactory
                 .select(airline)

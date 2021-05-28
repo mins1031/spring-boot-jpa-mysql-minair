@@ -121,7 +121,7 @@ public class SearchTest {
         //서치값 초기화 하면서 끝남
     }*/
 
-    @Test
+    /*@Test
     public void airlineSearchTest(){
         AirlineSearchDto airlineSearchDto = new AirlineSearchDto(Departure.ICN, Distination.JEJU,
                 LocalDate.of(2021,04,03)
@@ -144,7 +144,7 @@ public class SearchTest {
 
         //만든 dto는 검색조건을 담아 가져오는 객체임. dto 파라미터를 활용해 검색 진행할것.
     }
-
+*/
     /*private List<Airline> searchAirline(AirlineSearchDto airlineSearchDto){
         return queryFactory
                 .select(airline)
