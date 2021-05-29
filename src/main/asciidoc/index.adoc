@@ -108,3 +108,10 @@ operation::airline-search[snippets='request-header,request-body,request-fields,r
 모든 항공권 조회를 통해 모든 항공권을 모니터링 할 수 있다.
 
 operation::all-airline[snippets='request-header,request-body,response-body,links']
+
+[[resources-reservation-complete]]
+== 예약완료
+
+항공권 검색후 원하는 항공권을 선택해 예약 완료 할 수 있다.
+
+operation::reservation-complete[snippets='request-body,response-body,links']

@@ -4,7 +4,7 @@ import com.minair.minair.exception.NotFoundAirlines;
 import com.minair.minair.exception.PageNumberException;
 import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.AirlineSearchDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;

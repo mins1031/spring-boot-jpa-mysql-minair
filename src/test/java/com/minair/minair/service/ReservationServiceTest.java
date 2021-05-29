@@ -3,7 +3,7 @@ package com.minair.minair.service;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.Reservation;
-import com.minair.minair.domain.dto.ReservationDto;
+import com.minair.minair.domain.dto.reservation.ReservationDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
@@ -12,7 +12,6 @@ import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j

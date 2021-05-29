@@ -1,7 +1,6 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.reservation;
 
-import com.minair.minair.domain.Reservation;
-import lombok.AllArgsConstructor;
+import com.minair.minair.domain.dto.PageDto;
 import lombok.Data;
 
 import java.util.List;

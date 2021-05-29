@@ -65,7 +65,6 @@
             if (existence) { //existence가 true면 실행됨.= 2토큰,id값이 있으면 실행.
                 tokenResult = tokenExpirationCheck(getTokenInfo().accessToken,
                     getTokenInfo().refreshToken);
-                //console.log(tokenResult.result);
                 if (tokenResult.result === null) {
                     loginStatus = true;
                     console.log("tokenExpirationCheck 200!")

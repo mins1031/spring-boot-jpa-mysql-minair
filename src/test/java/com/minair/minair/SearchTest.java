@@ -1,19 +1,13 @@
 package com.minair.minair;
 
-import com.minair.minair.domain.*;
-import com.minair.minair.domain.dto.AirlineSearchDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.repository.AirlinSeatRepository;
 import com.minair.minair.repository.AirlineRepository;
-import com.minair.minair.repository.ReservationRepository;
 import com.minair.minair.repository.SeatRepository;
 import com.minair.minair.service.AirlineService;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.apache.tomcat.jni.Local;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,15 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import static com.minair.minair.domain.QAirline.airline;
-import static com.minair.minair.domain.QAirlineSeat.airlineSeat;
-import static com.minair.minair.domain.QSeat.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

@@ -7,19 +7,19 @@ import com.minair.minair.jwt.RefreshTokenProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 @Slf4j
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+
 public class Member extends DateEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,4 +103,19 @@ public class Member extends DateEntity {
     public void logout(){
         this.refreshToken.logout();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return Objects.equals(id, member.id) && Objects.equals(username, member.username) && Objects.equals(password, member.password) && Objects.equals(email, member.email) && Objects.equals(birth, member.birth) && Objects.equals(name_kor, member.name_kor) && Objects.equals(name_eng, member.name_eng) && Objects.equals(phone, member.phone) && gender == member.gender && Objects.equals(roles, member.roles) && Objects.equals(refreshToken, member.refreshToken);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, email, birth, name_kor, name_eng, phone, gender, roles, refreshToken);
+    }
+
+
 }

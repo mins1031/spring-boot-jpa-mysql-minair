@@ -97,8 +97,9 @@ public class MemberApiController {
     }
 
     @PostMapping("/refresh")
-    public String refresh(@RequestParam("username") String username){
+    public String refresh(@RequestParam(value = "username") String username){
         log.info("issue refresh token");
+        System.out.println("refresh"+username);
         RefreshTokenProperty r = new RefreshTokenProperty(
                 UUID.randomUUID().toString(), new Date().getTime()
         );
@@ -111,6 +112,8 @@ public class MemberApiController {
     public ResponseEntity reIssue(@RequestParam("refreshToken") String refreshToken){
 
         log.info("reIssue");
+        System.out.println("reIssue"+refreshToken);
+
         if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
 
             Member member = memberService.reIssueRefreshToken(refreshToken);

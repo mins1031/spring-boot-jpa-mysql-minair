@@ -1,7 +1,7 @@
 package com.minair.minair.repository;
 
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.AirlineSearchDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;

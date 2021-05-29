@@ -1,4 +1,4 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.reservation;
 
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.notEntity.Departure;

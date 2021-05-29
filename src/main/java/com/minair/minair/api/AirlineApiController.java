@@ -1,11 +1,8 @@
 package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
-import com.minair.minair.controller.AdminController;
-import com.minair.minair.controller.HomeController;
-import com.minair.minair.controller.ReservationController;
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.AirlineSearchDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.dto.ForFindPagingDto;
 import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineDto;
@@ -13,32 +10,24 @@ import com.minair.minair.domain.dto.airline.AirlineSearchApiDto;
 import com.minair.minair.domain.dto.airline.QueryAirlinesDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
-import com.minair.minair.exception.NotFoundAirlines;
 import com.minair.minair.service.AirlineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,6 +117,7 @@ public class AirlineApiController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity queryAirlines(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
                                         Errors errors){
 
@@ -152,4 +142,7 @@ public class AirlineApiController {
         pageResource.add(new Link("/docs/index.htm").withRel("profile"));
         return ResponseEntity.ok(pageResource);
     }
+
+    //더 추가할거 없는가..? 항공권 검색, 등록, 모든 항공권 조회,  일반 웹은 구현 안했지만 항공권 단건조회와 수정...
+    //도 필요할듯.우선 구현해놨던거 구현하고 추가할것.
 }

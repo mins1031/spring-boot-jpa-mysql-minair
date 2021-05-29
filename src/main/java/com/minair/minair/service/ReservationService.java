@@ -3,7 +3,7 @@ package com.minair.minair.service;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.Reservation;
-import com.minair.minair.domain.dto.ReservationDto;
+import com.minair.minair.domain.dto.reservation.ReservationDto;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;

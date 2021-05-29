@@ -1,17 +1,17 @@
 package com.minair.minair.controller;
 
-import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.dto.reservation.ReservationDetailInfoDto;
+import com.minair.minair.domain.dto.reservation.ReservationDto;
+import com.minair.minair.domain.dto.reservation.ReservationResultDto;
 import com.minair.minair.exception.RequestNullException;
-import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.service.AirlineService;
 import com.minair.minair.service.ReservationService;
 import com.minair.minair.service.SeatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

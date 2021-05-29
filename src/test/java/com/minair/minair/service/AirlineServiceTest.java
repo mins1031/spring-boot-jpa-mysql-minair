@@ -3,20 +3,17 @@ package com.minair.minair.service;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.AirlineSeat;
 import com.minair.minair.domain.Seat;
-import com.minair.minair.domain.dto.AirlineSearchDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.repository.AirlinSeatRepository;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.SeatRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +21,6 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

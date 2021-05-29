@@ -1,12 +1,10 @@
 package com.minair.minair.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minair.minair.domain.date.DateEntity;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -15,11 +13,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
+@ToString(exclude = "seats")
 public class Airline extends DateEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +27,7 @@ public class Airline extends DateEntity {
     private Long id;
 
     @OneToMany(mappedBy = "airline")
+    @JsonIgnore
     private List<Seat> seats = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -92,5 +93,18 @@ public class Airline extends DateEntity {
 
     public void updateDeparture(Departure departure){
         this.departure = departure;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Airline airline = (Airline) o;
+        return seatcount == airline.seatcount && aboveseat == airline.aboveseat && Objects.equals(id, airline.id) && Objects.equals(seats, airline.seats) && departure == airline.departure && distination == airline.distination && Objects.equals(depart_date, airline.depart_date) && Objects.equals(depart_time, airline.depart_time) && Objects.equals(reach_time, airline.reach_time);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, seats, departure, distination, depart_date, depart_time, reach_time, seatcount, aboveseat);
     }
 }

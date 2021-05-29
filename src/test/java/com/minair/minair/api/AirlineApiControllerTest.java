@@ -3,7 +3,7 @@ package com.minair.minair.api;
 import ch.qos.logback.core.encoder.EchoEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.AirlineSearchDto;
+import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.dto.ForFindPagingDto;
 import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineSearchApiDto;
@@ -57,7 +57,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs
 @Import(RestDocsConfiguration.class)
 @Transactional
-
 public class AirlineApiControllerTest {
 
     @Autowired
@@ -264,5 +263,9 @@ public class AirlineApiControllerTest {
                         )
                 ))
         ;
+        //api는 요청도 웬만하면 @RequestParam보단 dto하나 만들어서 @RequestBody로 받아줄것.
+        //테스트 구동할땐 꼭 디비 분리된거 잊지말고 값 넣어주고 테스트 할것.
+        //mock에 단순 wrapper클래스은 int를 넣었더니 캐스팅 오류가 발생함. 앵간하면 1번주석의
+        //내용과 같이 dto로 요청을 받도록 하여 에러를 줄일것.
     }
 }
