@@ -1,6 +1,7 @@
 package com.minair.minair.domain.dto.airline;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.minair.minair.domain.dto.PageDto;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.SafeHtml;
@@ -10,7 +11,5 @@ import org.hibernate.validator.constraints.SafeHtml;
 public class QueryAirlinesDto <T>{
 
     private T airlineList;
-    @JsonProperty("totalPage")
-    private int totalPage;
-    private Long totalElements;
+    private PageDto pageDto;
 }

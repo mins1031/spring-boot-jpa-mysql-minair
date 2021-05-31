@@ -1,18 +1,15 @@
 package com.minair.minair.domain.dto.reservation;
 
 import com.minair.minair.domain.dto.PageDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
-public class ReservationsResultDto {
+@Builder
+public class ReservationsResultDto <T>{
 
-    private List<ReservationResultDto> reservations;
+    private T reservations;
     private PageDto pageDto;
-
-    public ReservationsResultDto(List<ReservationResultDto> reservations, PageDto pageDto) {
-        this.reservations = reservations;
-        this.pageDto = pageDto;
-    }
 }

@@ -1,5 +1,7 @@
 package com.minair.minair.domain.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ForFindPagingDto {
 
-    @NotNull
     @Value("1")
+    @NotNull
     private int pageNum;
+    private String username;
 
 }

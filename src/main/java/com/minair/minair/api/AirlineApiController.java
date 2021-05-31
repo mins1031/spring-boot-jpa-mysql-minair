@@ -2,6 +2,7 @@ package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Airline;
+import com.minair.minair.domain.dto.PageDto;
 import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.dto.ForFindPagingDto;
 import com.minair.minair.domain.dto.airline.AirlineCreateDto;
@@ -130,11 +131,11 @@ public class AirlineApiController {
         for (Airline a:airlinePage.getContent()) {
             airlineDtoList.add(modelMapper.map(a,AirlineDto.class));
         }
-
+        PageDto pageDto = new PageDto(forFindPagingDto.getPageNum(),10,
+                airlinePage.getTotalElements(),airlinePage.getTotalPages());
         QueryAirlinesDto queryAirlinesDto = QueryAirlinesDto.builder()
                 .airlineList(airlineDtoList)
-                .totalPage(airlinePage.getTotalPages())
-                .totalElements(airlinePage.getTotalElements())
+                .pageDto(pageDto)
                 .build();
 
         EntityModel pageResource = EntityModel.of(queryAirlinesDto);
