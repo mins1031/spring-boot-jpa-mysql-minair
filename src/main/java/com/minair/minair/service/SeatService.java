@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,14 +54,18 @@ public class SeatService {
     }
 
     @Transactional
-    public void checkInSeats(Long airlineId, String seats){
+    public List<Seat> checkInSeats(Long airlineId, String seats){
         System.out.println(airlineId);
         System.out.println(seats);
-        List<String> seatList = Arrays.asList(seats.split(","));
-        for (String s:seatList) {
+        List<String> checkInList = Arrays.asList(seats.split(","));
+        List<Seat> seatList = new ArrayList<>();
+        for (String s:checkInList) {
             System.out.println("parameter-seat="+s);
             Seat findSeat = seatRepository.findByAirline_IdAndSeatName(airlineId, s);
+            seatList.add(findSeat);
             findSeat.checkInSeat();
         }
+
+        return seatList;
     }
 }

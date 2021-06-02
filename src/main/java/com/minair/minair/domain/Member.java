@@ -1,5 +1,6 @@
 package com.minair.minair.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minair.minair.domain.date.DateEntity;
 import com.minair.minair.domain.dto.MemberModifyDto;
 import com.minair.minair.domain.notEntity.Gender;
@@ -19,7 +20,6 @@ import java.util.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-
 public class Member extends DateEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +42,7 @@ public class Member extends DateEntity {
     private String roles;
 
     @Embedded
+    @JsonIgnore
     private RefreshTokenProperty refreshToken;
 
     public List<String> getRoleList(){

@@ -19,12 +19,12 @@ public class ReservationDetailInfoDto {
     private String username;
     private int adult;
     private int child;
+    private Long airlineId;
     private Departure departure;
     private Distination distination;
     private LocalDate departDate;
     private LocalTime departTime;
     private LocalTime reachTime;
-    private Long airlineId;
     private int totalPrice;
     private String reserveSeats;
 

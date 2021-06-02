@@ -2,6 +2,7 @@ package com.minair.minair.controller;
 
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.dto.reservation.CheckInRegDto;
 import com.minair.minair.domain.dto.reservation.ReservationDetailInfoDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
 import com.minair.minair.domain.dto.reservation.ReservationResultDto;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -84,19 +86,17 @@ public class ReservationController {
     }
 
     @PostMapping("/checkIn")
-    public String checkIn(@RequestParam("reservationId") Long reservationId,
-                        @RequestParam("totalPerson") int totalPerson,
-                        @RequestParam("airlineId") Long airlineId,
-                        @RequestParam("selectSeats") String selectSeats){
+    public String checkIn(@ModelAttribute("checkIn") @Valid CheckInRegDto checkInRegDto,
+                          Errors errors){
 
-        if (reservationId == null || totalPerson == 0 || airlineId == null || selectSeats == null)
+        if (errors.hasErrors())
             throw new NullPointerException();
 
         // 객체지향의 원칙에 따라
         // 예약에서 체크인 내용에 추가하는건 예약 서비스에서, 항공id통해서 좌석 상태 변경은 좌석서비스 통해서.
-        reservationService.checkSeat(reservationId,selectSeats);
-        seatService.checkInSeats(airlineId,selectSeats);
-        airlineService.subSeatCount(airlineId,totalPerson);
+        reservationService.checkSeat(checkInRegDto.getReservationId(),checkInRegDto.getSelectSeats());
+        seatService.checkInSeats(checkInRegDto.getAirlineId(), checkInRegDto.getSelectSeats());
+        airlineService.subSeatCount(checkInRegDto.getAirlineId(), checkInRegDto.getTotalPerson());
         return "redirect:/";
     }
 
@@ -113,7 +113,6 @@ public class ReservationController {
                 = ReservationDetailInfoDto.ReservationDetailInfoDto(findReservation);
         log.info("test 예약 정보");
         model.addAttribute("reservation", reservationDetailInfoDto);
-        //이것도 dto로 리펙토링때 수정할것.
     }
 
     @GetMapping("/all")

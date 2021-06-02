@@ -115,3 +115,17 @@ operation::all-airline[snippets='request-header,request-body,response-body,links
 항공권 검색후 원하는 항공권을 선택해 예약 완료 할 수 있다.
 
 operation::reservation-complete[snippets='request-body,response-body,links']
+
+[[resources-checkIn]]
+== 좌석체크인
+
+예약후 해당 예약에 대한 좌석 체크인
+
+operation::seat-checkIn[snippets='request-body,request-headers,response-body,links']
+
+[[resources-reservationInfo]]
+== 예약 정보 조회
+
+예약 후 해당 예약에 대한 상세정보 조회
+
+operation::reservation-info[snippets='request-body,response-body,response-fields,links']
