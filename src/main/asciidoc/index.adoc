@@ -129,3 +129,11 @@ operation::seat-checkIn[snippets='request-body,request-headers,response-body,lin
 예약 후 해당 예약에 대한 상세정보 조회
 
 operation::reservation-info[snippets='request-body,response-body,response-fields,links']
+
+[[resources-all-reservation]]
+== 모든 예약 조회
+
+어드민 기능으로 모든 예약 정보 조회
+
+operation::all-reservation[snippets='request-headers,request-body,response-body,links']
+

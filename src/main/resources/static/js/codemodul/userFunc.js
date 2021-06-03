@@ -18,5 +18,36 @@ function userInfo(accessToken,refreshToken) {
             }
         }
     });
+}
+function findUser(accessToken,username) {
 
+    var result = null
+    $.ajax({
+        type : 'get',
+        url : '/user/'+ username ,
+        async:false,
+        beforeSend: function (xhr){
+            xhr.setRequestHeader("Authorization",accessToken);
+        },
+        statusCode:{
+            200 : function (response) {
+                console.log(response);
+                result = response
+            },
+            403 : function (response) {
+                console.log("권한 인증 실패..");
+                alert("권한 인증 실패.. 다시 로그인해주세요");
+                result = false;
+            },
+            404 : function (response) {
+                console.log("해당 유저 없음.");
+                alert("권한 인증 실패.. 다시 로그인해주세요");
+                result = false;
+            }
+        }
+    });
+
+    return{
+        result: result
+    }
 }

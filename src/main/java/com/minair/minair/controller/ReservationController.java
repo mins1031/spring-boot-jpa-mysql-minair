@@ -37,9 +37,9 @@ public class ReservationController {
     public void reserve(@ModelAttribute("ReservationDto") @Valid ReservationDto reservationDto,
                         BindingResult bindingResult, Model model){
 
-        if (bindingResult.hasErrors())
-            throw new IllegalArgumentException();
-
+        if (bindingResult.hasErrors()) {
+            throw new IllegalArgumentException("예약을 위한 파라미터가 재대로 입력되지 않았습니다");
+        }
         List<Reservation> reservationList = reservationService.reservation(reservationDto);
         if (reservationList == null)
             throw new NullPointerException();
@@ -139,18 +139,22 @@ public class ReservationController {
 
     @PostMapping("/remove")
     public String remove(@RequestParam("reservationId") Long reservationId,
-                         @RequestParam("totalPerson") int totalPerson){
+                         @RequestParam("totalPerson") int totalPerson,
+                         @RequestParam("airlineId") Long airlineId){
+
         if (reservationId == null)
             throw new RequestNullException();
+
+        System.out.println("airId"+airlineId);
 
         try {
             Reservation findReservation = reservationService.findOneReservation(reservationId);
             if (findReservation.getReserveSeat() != null) {
                 airlineService.plusSeatCount(findReservation.getAirline().getId(),totalPerson);
+                seatService.cancleSeats(airlineId, findReservation.getReserveSeat());
                 reservationService.remove(findReservation);
             } else
                 reservationService.remove(findReservation);
-
             return "redirect:/";
         } catch (RuntimeException e){
             log.info(e.getMessage());

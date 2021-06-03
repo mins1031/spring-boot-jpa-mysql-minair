@@ -44,6 +44,9 @@ public class Seat {
         this.seatStatus = true;
     }
 
+    public void cancleReservation(){
+        this.seatStatus = false;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

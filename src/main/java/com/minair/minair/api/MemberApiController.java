@@ -12,6 +12,7 @@ import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -38,6 +39,7 @@ public class MemberApiController {
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/member/join")
     public void join(@RequestBody @Valid MemberJoinDto member){
@@ -173,5 +175,15 @@ public class MemberApiController {
             return new ResponseEntity(HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity findMember(@PathVariable String username){
+        Member member = memberRepository.findByUsername(username);
+
+        MemberInfoDto memberInfoDto =
+                MemberInfoDto.memberInfoDto(member);
+
+        return ResponseEntity.ok().body(memberInfoDto);
     }
 }

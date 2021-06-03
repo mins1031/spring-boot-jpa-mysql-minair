@@ -274,4 +274,40 @@ public class ReservationApiControllerTest {
                 ))
         ;
     }
+
+    @Test
+    public void findAllReservation() throws Exception {
+
+        int page = 1;
+
+        ForFindPagingDto forFindPagingDto = new ForFindPagingDto();
+        forFindPagingDto.setPageNum(page);
+
+        this.mockMvc.perform(get("/api/reservation/admin")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(forFindPagingDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("reservations").exists())
+                .andExpect(jsonPath("pageDto").exists())
+                .andExpect(jsonPath("_links.self.href").exists())
+                .andExpect(jsonPath("_links.profile.href").exists())
+                .andExpect(jsonPath("_links.index.href").exists())
+                .andExpect(jsonPath("_links.reservation-info.href").exists())
+        .andDo(document("all-reservation",
+                links(
+                        linkWithRel("self").description("self href"),
+                        linkWithRel("index").description("index href"),
+                        linkWithRel("profile").description("document href for explain this api"),
+                        linkWithRel("reservation-info").description("해당 예약의 상세정보 href")
+                ),
+                requestHeaders(
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("application/json"),
+                        headerWithName(HttpHeaders.ACCEPT).description("hal/json")
+                )
+                ))
+                ;
+
+    }
 }

@@ -17,11 +17,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -170,5 +172,36 @@ public class ReservationApiController {
         resultResource.add(new Link("/docs/index").withRel("profile"));
 
         return ResponseEntity.ok().body(resultResource);
+    }
+
+    @GetMapping("/admin")
+    public ResponseEntity findAllReservation(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
+                                             Errors errors){
+
+        if (errors.hasErrors())
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+
+        Page<Reservation> allReservation = reservationService.findAll(forFindPagingDto.getPageNum());
+        if (allReservation.isEmpty())
+            return ResponseEntity.noContent().build();
+
+        List<ReservationResultApiDto> tempDtos = new ArrayList<>();
+        for (Reservation r : allReservation.getContent()) {
+            tempDtos.add(modelMapper.map(r,ReservationResultApiDto.class));
+        }
+        PageDto pageDto = new PageDto(forFindPagingDto.getPageNum(), 10,
+                allReservation.getTotalElements(),allReservation.getTotalPages());
+
+        ReservationsResultDto result = ReservationsResultDto.builder()
+                .reservations(tempDtos)
+                .pageDto(pageDto)
+                .build();
+        EntityModel reservationResource = EntityModel.of(result);
+        reservationResource.add(new Link("/").withRel("index"));
+        reservationResource.add(new Link("/docs/index").withRel("profile"));
+        reservationResource.add(linkTo(ReservationApiController.class).withSelfRel());
+        reservationResource.add(new Link("/api/reservation/{id}").withRel("reservation-info"));
+
+        return ResponseEntity.ok().body(reservationResource);
     }
 }

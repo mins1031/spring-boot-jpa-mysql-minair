@@ -93,6 +93,7 @@
 <form action="/reservation/remove" method="post" class="removeForm">
     <input type="hidden" name="reservationId" value="" class="removeReserveId">
     <input type="hidden" name="totalPerson" value="" class="removeTotalPerson">
+    <input type="hidden" name="airlineId" value="" class="removeAirlineId">
 </form>
 
 <!-- Modal -->
@@ -117,6 +118,8 @@
 
 <footer th:replace="fragments/fragments :: footer"></footer>
 <script th:inline="javascript">
+    var cancleBtnTr;
+    var cancleBtnTd;
     $(document).ready(function () {
         loginStatus();
         console.log("index test="+tokenCheck().result)
@@ -126,6 +129,11 @@
             $('.user').hide();
             $('.logout').hide();
         }
+
+        $('.reserveCancle').on('click',function () {
+            cancleBtnTr = $(this).parent().parent()
+            cancleBtnTd = cancleBtnTr.children()
+        })
     });
 
     $('.checkInBtn').on('click',function (e) {
@@ -150,12 +158,22 @@
     $('.delete').on('click',function () {
         var tr = $('.reserveCancle').parent().parent();
         var td = tr.children();
-        var reservationId = td.eq(0).text();
-        var totalPerson = td.eq(7).text();
+        var reservationId = cancleBtnTd.eq(0).text();
+        var airlineId = cancleBtnTd.eq(2).text();
+        var totalPerson = cancleBtnTd.eq(7).text();
+        //var reserveSeats = td.eq(8).text();
 
-        console.log(reservationId)
+        console.log(airlineId);
+        console.log(reservationId);
+
+        /* if (reserveSeats ==){
+             $('.removeReserveSeats').val(reserveSeats)
+         } else {
+             $('.removeReserveSeats').val(null)
+         }*/
         $('.removeReserveId').val(reservationId)
         $('.removeTotalPerson').val(totalPerson)
+        $('.removeAirlineId').val(airlineId)
         $('.removeForm').submit();
     })
 
