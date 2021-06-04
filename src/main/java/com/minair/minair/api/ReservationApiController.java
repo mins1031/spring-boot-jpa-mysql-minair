@@ -6,7 +6,9 @@ import com.minair.minair.controller.HomeController;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.Seat;
 import com.minair.minair.domain.dto.ForFindPagingDto;
+import com.minair.minair.domain.dto.LinkDto;
 import com.minair.minair.domain.dto.PageDto;
+import com.minair.minair.domain.dto.ReservationRemoveDto;
 import com.minair.minair.domain.dto.airline.QueryAirlinesDto;
 import com.minair.minair.domain.dto.reservation.*;
 import com.minair.minair.domain.dto.seat.SeatDtoForCheckIn;
@@ -21,8 +23,10 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -204,4 +209,42 @@ public class ReservationApiController {
 
         return ResponseEntity.ok().body(reservationResource);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity cancleReservation(@PathVariable Long id,
+                                            @RequestBody @Valid ReservationRemoveDto reservationRemoveDto,
+                                            Errors errors){
+        if (errors.hasErrors() || id == null)
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+
+        Reservation reservation = reservationService.findOneReservation(id);
+        if (reservation == null)
+            return ResponseEntity.noContent().build();
+
+        if (reservation.getReserveSeat() != null){
+            airlineService.subSeatCount(reservationRemoveDto.getAirlineId(), reservationRemoveDto.getTotalPerson());
+            seatService.cancleSeats(reservationRemoveDto.getAirlineId(), reservation.getReserveSeat());
+            reservationService.remove(reservation);
+        } else {
+            reservationService.remove(reservation);
+        }
+
+        Link selfLink = linkTo(ReservationApiController.class).slash(id).withSelfRel();
+        Link indexLink = new Link("/").withRel("index");
+        Link profileLink = new Link("/docs/index").withRel("profile");
+
+        LinkDto linkDto = LinkDto.builder()
+                .selfLink(selfLink)
+                .indexLink(indexLink)
+                .profileLink(profileLink)
+                .build();
+
+        return ResponseEntity.ok().body(linkDto);
+    }
+
+    /**
+     * 예약 api완료, 리펙토링 요소는 일단 null값이 있는 경우의 예외처리. 예외를 reservationNullException
+     * 이런 식으로 만들어줄것.+ 권한처리 필요한 메서드 @PreAuthorize("hasRole('ROLE_ADMIN')")해줄것
+     * */
 }

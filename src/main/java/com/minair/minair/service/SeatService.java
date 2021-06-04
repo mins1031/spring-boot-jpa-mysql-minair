@@ -72,9 +72,11 @@ public class SeatService {
     @Transactional
     public void cancleSeats(Long airlineId, String seats) throws RuntimeException{
         List<String> cancleList = Arrays.asList(seats.split(","));
+
         for (int i = 0 ; i < cancleList.size(); i++){
             Seat findSeat =
                     seatRepository.findByAirline_IdAndSeatName(airlineId, cancleList.get(i));
+            System.out.println(findSeat);
             findSeat.cancleReservation();
         }
     }

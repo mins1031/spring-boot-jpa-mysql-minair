@@ -137,3 +137,9 @@ operation::reservation-info[snippets='request-body,response-body,response-fields
 
 operation::all-reservation[snippets='request-headers,request-body,response-body,links']
 
+[[resource-delete-reservation]]
+== 예약 삭제
+
+예약했던 내용을 삭제.
+
+operation::delete-reservation[snippets='request-body,response-body']

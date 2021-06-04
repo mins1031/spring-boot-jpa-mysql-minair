@@ -5,17 +5,21 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.ForFindPagingDto;
+import com.minair.minair.domain.dto.ReservationRemoveDto;
 import com.minair.minair.domain.dto.reservation.CheckInRegDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
+import com.minair.minair.domain.dto.token.AccessTokenDto;
 import com.minair.minair.domain.dto.token.RefreshToken;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
+import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
 import com.minair.minair.service.AirlineService;
+import com.minair.minair.service.MemberService;
 import com.minair.minair.service.SeatService;
 import com.minair.minair.testconfig.RestDocsConfiguration;
 import org.junit.Before;
@@ -46,8 +50,7 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,6 +83,9 @@ public class ReservationApiControllerTest {
     @Autowired
     AirlineService airlineService;
 
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
+
     @Before
     public void before(){
         Airline goAir = Airline.createAirline(Departure.JEJU, Distination.BUS, LocalDate.of(2021,05,20),
@@ -94,7 +100,7 @@ public class ReservationApiControllerTest {
         Member member = Member.joinMember("user1","alsdud","min@min",
                 LocalDate.of(2021,05,30),"민","min","010-2222-2222",
                 Gender.F);
-        member.investRole("ROLE_MEMBER");
+        member.investRole("ROLE_MEMBER,ROLE_ADMIN");
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);
@@ -309,5 +315,41 @@ public class ReservationApiControllerTest {
                 ))
                 ;
 
+    }
+
+    @Test
+    public void cancleReservation() throws Exception {
+        Long id = 1L;
+        Long airId = 1L;
+        int total = 2;
+        String username = "user1";
+        Member member = memberRepository.findByUsername(username);
+
+        AccessTokenDto accessTokenDto = AccessTokenDto.builder()
+                .accessToken(jwtTokenProvider
+                        .createToken(member.getUsername(),member.getRoleList()))
+                .build();
+        ReservationRemoveDto reservationRemoveDto = ReservationRemoveDto.builder()
+                .airlineId(airId)
+                .totalPerson(total)
+                .build();
+
+        this.mockMvc.perform(delete("/api/reservation/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .header("Authorization",accessTokenDto.getAccessToken())
+                .content(objectMapper.writeValueAsString(reservationRemoveDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("selfLink").exists())
+                .andExpect(jsonPath("profileLink").exists())
+                .andExpect(jsonPath("indexLink").exists())
+        .andDo(document("delete-reservation",
+                requestFields(
+                        fieldWithPath("airlineId").description("해당 예약의 항공 코드 값"),
+                        fieldWithPath("totalPerson").description("해당 예약의 전체 인원 수")
+                )
+        ))
+                ;
     }
 }

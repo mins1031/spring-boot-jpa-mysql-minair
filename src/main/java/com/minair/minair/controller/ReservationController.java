@@ -147,6 +147,7 @@ public class ReservationController {
 
         System.out.println("airId"+airlineId);
 
+
         try {
             Reservation findReservation = reservationService.findOneReservation(reservationId);
             if (findReservation.getReserveSeat() != null) {
@@ -162,4 +163,8 @@ public class ReservationController {
             throw new RuntimeException();
         }
     }
+    /**
+     * 삭제나 변경 같이 위험한 동작 같은경우 보안측면에서 더 신경써서 파라미터의 예약id와 유저id를 통해 해당 유저의
+     * 예약 목록을 받아ㅇ와 목록안헤 해다 예약이 있다면 변경이나 삭제를 진행하는 로직도 괜찮을것 같다.
+     * */
 }
