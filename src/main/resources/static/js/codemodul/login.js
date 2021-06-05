@@ -8,7 +8,7 @@ var login = (function(){
         var status = 0;
         $.ajax({
             type : 'post',
-            url : '/login',
+            url : '/api/member/login',
             data : JSON.stringify(loginForm),
             contentType : "application/json; charset=utf-8",
             async:false,
@@ -33,7 +33,7 @@ var login = (function(){
 
         $.ajax({
             type: 'post',
-            url: '/refresh',
+            url: '/api/token/refresh',
             data: {
                 "username": username
             },

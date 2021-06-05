@@ -17,6 +17,7 @@ import java.time.LocalTime;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class AirlineCreateDto {
 
     @NotNull
@@ -24,12 +25,12 @@ public class AirlineCreateDto {
     @NotNull
     private Distination distination;
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    //@DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate depart_date;
     @NotNull
-    @DateTimeFormat(pattern = "HH:mm")
+    //@DateTimeFormat(pattern = "HH:mm")
     private LocalTime depart_time;
     @NotNull
-    @DateTimeFormat(pattern = "HH:mm")
+    //@DateTimeFormat(pattern = "HH:mm")
     private LocalTime reach_time;
 }

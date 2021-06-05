@@ -2,6 +2,7 @@ package com.minair.minair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.minair.minair.config.JacksonConfig;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,6 +32,8 @@ public class MinairApplication {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		MappingJackson2HttpMessageConverter converter =
 				new MappingJackson2HttpMessageConverter(mapper);
+		converter.setObjectMapper(new JacksonConfig.CustomObjectMapper1());
 		return converter;
 	}
+
 }

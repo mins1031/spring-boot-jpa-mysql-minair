@@ -29,7 +29,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public void join(MemberJoinDto memberJoinDto){
+    public Member join(MemberJoinDto memberJoinDto){
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
         String role = "ROLE_MEMBER";
         Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
@@ -43,7 +43,8 @@ public class MemberService {
                 = new RefreshTokenProperty(null,0);
         joinMember.issueRefreshToken(refreshTokenProperty);
 
-        memberRepository.save(joinMember);
+        Member save = memberRepository.save(joinMember);
+        return save;
     }
 
     @Transactional

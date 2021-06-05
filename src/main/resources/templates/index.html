@@ -341,7 +341,6 @@
         if (tokenCheck().result === false){
             alert("로그인후 이용해주세요.")
         }
-
         var username = localStorage.getItem("memberId");
         console.log(username);
         $('.userId').val(username);
@@ -366,42 +365,3 @@
 </script>
 </body>
 </html>
-
-<!-- loginStatus() 초기 버전-->
-<!--밑의 함수는 1) 토큰 체크,2) 유효기간 체크,3) 2)값을 바탕으로 엑세스토큰재발급 기능이 있는 함수임.
-/*function loginCheck() {
-var existence = tokenCheck().result;
-console.log("test="+existence);
-//로컬스토리지에 엑세스,리프레시토큰,memberId값이 있으면 true값이 existence에 반환
-var loginStatus = false;
-//토큰 유무값 리턴변수
-let tokenResult = null;
-if (existence) { //existence가 true면 실행됨.= 2토큰,id값이 있으면 실행.
-tokenResult = tokenExpirationCheck(getTokenInfo().accessToken,
-getTokenInfo().refreshToken);
-//console.log(tokenResult.result);
-if (tokenResult.result === null) {
-loginStatus = true;
-console.log("tokenExpirationCheck 200!")
-} else {
-loginStatus = true;
-console.log("tokenExpirationCheck 401...")
-localStorage.setItem("Authorization", tokenResult.result);
-}
-}
-return {
-loginStatus:loginStatus
-}
-}
-var status = loginCheck().loginStatus;
-console.log("status="+status);
-
-if (status === true){
-$('.login').hide();
-console.log("실행됨");
-//var state = $('#login').css('display');
-
-} else {
-$('.user').hide();
-$('.logout').hide();
-}-->

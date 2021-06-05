@@ -53,7 +53,9 @@ public class ReservationApiController {
     private final SeatService seatService;
     private final ModelMapper modelMapper;
 
+    //예약 완료 페이지
     @PostMapping("/new")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity complete(@RequestBody @Valid ReservationDto reservationDto,
                                    Errors errors){
         if (errors.hasErrors())
@@ -83,7 +85,9 @@ public class ReservationApiController {
         return ResponseEntity.ok().body(reservationResource);
     }
 
+    //내 예약 목록 조회 api
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity myReservations(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
                                          Errors errors){
 
@@ -124,7 +128,9 @@ public class ReservationApiController {
         return ResponseEntity.ok(reservationResource);
     }
 
+    //좌석 체크인 등록 api
     @PostMapping("/checkIn")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity checkInSeat(@RequestBody @Valid CheckInRegDto checkInRegDto,
                                       Errors errors){
 
@@ -157,7 +163,9 @@ public class ReservationApiController {
         return ResponseEntity.ok().body(resultResource);
     }
 
+    //단건예약 상세 조회
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity getReservation(@PathVariable("id")  Long reservationId){
 
         Reservation reservation = reservationService.findOneReservation(reservationId);
@@ -180,6 +188,7 @@ public class ReservationApiController {
     }
 
     @GetMapping("/admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity findAllReservation(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
                                              Errors errors){
 
@@ -211,7 +220,7 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity cancleReservation(@PathVariable Long id,
                                             @RequestBody @Valid ReservationRemoveDto reservationRemoveDto,
                                             Errors errors){

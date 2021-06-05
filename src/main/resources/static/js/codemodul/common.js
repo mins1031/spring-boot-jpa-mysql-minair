@@ -25,7 +25,7 @@
 
         $.ajax({
             method: "get",
-            url: "/tokenExpirationCheck",
+            url: "/api/token/tokenExpirationCheck",
             data: {
                 "accessToken": access
             },
@@ -101,10 +101,10 @@
         var status;
         $.ajax({
             method : 'get',
-            url : "/checkAdmin",
-            data : {
+            url : "/api/member/checkAdmin/" + username,
+            /*data : {
                 "username":username
-            },
+            },*/
             async: false,
             statusCode: {
                 200: function (response) {
@@ -123,12 +123,13 @@
     }
 
     function logout(accessToken,refreshToken) {
+        var token = refreshToken;
         $.ajax({
             method : 'get',
-            url : "/logout",
-            data : {
+            url : "/api/member/logout/" + token,
+            /*data : {
                 "refreshToken":refreshToken
-            },
+            },*/
             async: false,
             beforeSend: function (xhr){
                 xhr.setRequestHeader("Authorization",accessToken);

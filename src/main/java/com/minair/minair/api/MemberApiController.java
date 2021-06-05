@@ -1,6 +1,7 @@
 package com.minair.minair.api;
 
 import com.minair.minair.auth.PrincipalDetails;
+import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.LoginRequestDto;
 import com.minair.minair.domain.dto.MemberInfoDto;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,21 +43,21 @@ public class MemberApiController {
     private final MemberService memberService;
     private final ModelMapper modelMapper;
 
-    @PostMapping("/member/join")
-    public void join(@RequestBody @Valid MemberJoinDto member){
-        String inputPw = member.getPassword();
-        String encodePw = passwordEncoder.encode(inputPw);
+    @PostMapping("/api/member/new")
+    public ResponseEntity join(@RequestBody @Valid MemberJoinDto member,Errors errors){
 
-        /*Member joinMember = Member.joinMember(member.getUsername(), encodePw,
-                member.getName_kor(), member.getName_eng(), member.getEmail(), member.getPhone(),
-                member.getBirth(),member.getGender());
-        joinMember.investRole("ROLE_MEMBER");
-        memberService.join(joinMember);*/
-        //API회원가입으로 바꿀것임.
-    }//04-16 회원가입 로직 완료 시큐리티 설정 덜됨 로그인과정으로 jwt설정해줘야함.
+        if (errors.hasErrors())
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-    @PostMapping("/checkId")
-    public String checkId(@RequestParam(value = "idVal") String idVal){
+        Member join = memberService.join(member);
+        if (join == null)
+            return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok().body(join);
+    }
+
+    @GetMapping("/api/member/checkId/{idVal}")
+    public String checkId(@PathVariable String idVal){
         System.out.println(idVal);
         int checkResult = memberRepository.checkId(idVal);
         String result;
@@ -67,10 +69,22 @@ public class MemberApiController {
         System.out.println(result);
         return result;
     }
+/**
+ * 프로젝트 자체를 분리...하는거 보다는 웹과 api를 컨트롤러만 분리해주면 될것같았는데 음.........
+ * 멤버에서 막혀버림. 이미 멤버의 일부 기능들은 rest로 구현이 되어있는데 이것 들을 포함해서 api컨트롤러를 만들어야할지.
+ * 1) 포함해서 새로 만든다. => 시간 오래걸림, 코드중복이 제일 걸려버림. 구지 같은요청에 같은 응답을 주는 코드가 있는데
+ * 이걸 중복해서 사용하는 것도 말이 안됨.
+ * 2) 갈무리해서 그대로 사용할것 사용하고 아닌건 새로 만들기 => 이게 베스트...인듯?, 토큰에 대한 api는 따로 빼주고
+ * 웹에서 ajax로 사용하던 내역들 모두 앞에 '/api' 정도만 붙혀주면 될듯
+ * */
 
-    @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequestDto loginRequestDto){
+    @PostMapping("/api/member/login")
+    public ResponseEntity login(@RequestBody @Valid LoginRequestDto loginRequestDto, Errors errors){
         log.info("post login");
+
+        if (errors.hasErrors())
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
         if (!passwordEncoder.matches(loginRequestDto.getPassword(),member.getPassword())){
             System.out.println("비밀번호가 일치하지 않습니다.");
@@ -82,9 +96,9 @@ public class MemberApiController {
         }
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/api/member/logout/{token}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public ResponseEntity logout(@RequestParam("refreshToken") String refreshToken){
+    public ResponseEntity logout(/*@RequestParam("refreshToken")*/@PathVariable("token") String refreshToken){
         log.info("로그아웃");
         if (refreshToken == null)
             return  new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -98,67 +112,9 @@ public class MemberApiController {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/refresh")
-    public String refresh(@RequestParam(value = "username") String username){
-        log.info("issue refresh token");
-        System.out.println("refresh"+username);
-        RefreshTokenProperty r = new RefreshTokenProperty(
-                UUID.randomUUID().toString(), new Date().getTime()
-        );
-        memberService.issueRefreshToken(username,r);//토큰 DB저장
-        return jwtTokenProvider.createRefreshToken(r);
-    }
-
-    //토큰 재발급 함수 refresh의 호출 대상
-    @PostMapping("/reissue")
-    public ResponseEntity reIssue(@RequestParam("refreshToken") String refreshToken){
-
-        log.info("reIssue");
-        System.out.println("reIssue"+refreshToken);
-
-        if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
-
-            Member member = memberService.reIssueRefreshToken(refreshToken);
-
-            if (member != null) {
-                String reIssueToken = jwtTokenProvider.createToken(member.getUsername(), member.getRoleList());
-                Authentication authentication = jwtTokenProvider.getAuthentication(reIssueToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                return new ResponseEntity(reIssueToken, HttpStatus.OK);
-            } else {
-                return new ResponseEntity("로그인 정보 확인불가! 다시 로그인 해주세요",
-                        HttpStatus.UNAUTHORIZED);
-            }
-        } else
-            return new ResponseEntity("기한만료!! 다시 로그인 해주세요",HttpStatus.FORBIDDEN);
-    }
-
-    @GetMapping("/tokenExpirationCheck")
-    public ResponseEntity tokenCheck(@RequestParam("accessToken") String accessToken){
-        log.info("엑세스 토큰 유효기간 확인 요청");
-        boolean result = jwtTokenProvider.validateToken(accessToken);
-        //토큰의 유효기간 체크후 기한 남았으면 true / 기한 만료 되었으면 false
-
-        if (result) //기한 유효시
-            return new ResponseEntity(HttpStatus.OK);
-        else //기한 만료시
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-    }
-
-    @GetMapping("/user/info")
-    public ResponseEntity<MemberInfoDto> userInfo(@RequestParam("token") String token){
-
-        Member findMember = memberService.findUserInfo(token);
-        MemberInfoDto memberInfoDto = MemberInfoDto.memberInfoDto(findMember);
-
-        return new ResponseEntity<>(memberInfoDto, HttpStatus.OK);
-    }//이친구도 보류
-    //검증시 필요한 값은 새 access토큰(id, roles),
-    // 회원id와 동일한 값을 db에서 가져와 헤더의 refreshToken값과 비교
-    //비교후 둘이 동일하다면 새 토큰 응답해줘야함.
-
-    @GetMapping("/checkAdmin")
-    public ResponseEntity checkAdmin(@RequestParam("username") String username){
+    //admin 페이지 진입시 admin계정인지 인증해주는 메서드
+    @GetMapping("/api/member/checkAdmin/{username}")
+    public ResponseEntity checkAdmin(/*@RequestParam("username")*/@PathVariable String username){
         Member findUsername = memberRepository.findByUsername(username);
         List<String> roleList = findUsername.getRoleList();
         System.out.println(roleList);
@@ -177,6 +133,22 @@ public class MemberApiController {
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 
+
+
+    //이 밑은 뭔지 모르는 메서드. 확인 안되면 지울것.
+    @GetMapping("/user/info")
+    public ResponseEntity<MemberInfoDto> userInfo(@RequestParam("token") String token){
+
+        Member findMember = memberService.findUserInfo(token);
+        MemberInfoDto memberInfoDto = MemberInfoDto.memberInfoDto(findMember);
+
+        return new ResponseEntity<>(memberInfoDto, HttpStatus.OK);
+    }//이친구도 보류
+    //검증시 필요한 값은 새 access토큰(id, roles),
+    // 회원id와 동일한 값을 db에서 가져와 헤더의 refreshToken값과 비교
+    //비교후 둘이 동일하다면 새 토큰 응답해줘야함.
+    //이거 일단 아무것도 없는 역할 없는 메서드임
+
     @GetMapping("/user/{username}")
     public ResponseEntity findMember(@PathVariable String username){
         Member member = memberRepository.findByUsername(username);
@@ -185,5 +157,5 @@ public class MemberApiController {
                 MemberInfoDto.memberInfoDto(member);
 
         return ResponseEntity.ok().body(memberInfoDto);
-    }
+    }//앤 뭐지..?
 }

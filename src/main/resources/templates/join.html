@@ -165,11 +165,11 @@
             alert("id를 입력해 주세요.")
         } else {
             $.ajax({
-                type: "post",
-                url: "/checkId",
-                data: {
+                type: "get",
+                url: "/api/member/checkId"+idVal ,
+                /*data: {
                     "idVal": idVal
-                },
+                },*/
                 success: function (result) {
                     if (result == "YES") {
                         alert("사용 가능한 Id입니다.")

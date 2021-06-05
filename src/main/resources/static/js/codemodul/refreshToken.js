@@ -10,7 +10,7 @@ function refresh(data) {
 
     $.ajax({
         method: "POST",
-        url: "/reissue",
+        url: "/api/token/reissue",
         data: {
             "refreshToken":refreshToken
         },
