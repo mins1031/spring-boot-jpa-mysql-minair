@@ -1,6 +1,7 @@
 package com.minair.minair.api;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.service.MemberService;
@@ -30,14 +31,17 @@ public class TokenApiController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/refresh")
-    public String refresh(@RequestParam(value = "username") String username){
+    public ResponseEntity refresh(@RequestParam(value = "username") String username){
         log.info("issue refresh token");
         System.out.println("refresh"+username);
         RefreshTokenProperty r = new RefreshTokenProperty(
                 UUID.randomUUID().toString(), new Date().getTime()
         );
         memberService.issueRefreshToken(username,r);//토큰 DB저장
-        return jwtTokenProvider.createRefreshToken(r);
+        TokenDto tokenDto = TokenDto.builder()
+                .token(jwtTokenProvider.createRefreshToken(r))
+                .build();
+        return ResponseEntity.ok().body(tokenDto);
     }
 
     //토큰 재발급 함수 refresh의 호출 대상

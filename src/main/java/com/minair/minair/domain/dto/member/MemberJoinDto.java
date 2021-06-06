@@ -1,4 +1,4 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.minair.minair.domain.notEntity.Gender;

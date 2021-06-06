@@ -1,21 +1,19 @@
 package com.minair.minair.service;
 
 import com.minair.minair.domain.Member;
-import com.minair.minair.domain.dto.MemberJoinDto;
-import com.minair.minair.domain.dto.MemberModifyDto;
+import com.minair.minair.domain.dto.member.MemberJoinDto;
+import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.implementation.bytecode.StackSize;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

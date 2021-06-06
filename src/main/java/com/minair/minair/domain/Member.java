@@ -2,18 +2,16 @@ package com.minair.minair.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minair.minair.domain.date.DateEntity;
-import com.minair.minair.domain.dto.MemberModifyDto;
+import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j

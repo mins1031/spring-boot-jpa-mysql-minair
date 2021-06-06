@@ -8,8 +8,7 @@ import com.minair.minair.domain.dto.ForFindPagingDto;
 import com.minair.minair.domain.dto.ReservationRemoveDto;
 import com.minair.minair.domain.dto.reservation.CheckInRegDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
-import com.minair.minair.domain.dto.token.AccessTokenDto;
-import com.minair.minair.domain.dto.token.RefreshToken;
+import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
@@ -325,8 +324,8 @@ public class ReservationApiControllerTest {
         String username = "user1";
         Member member = memberRepository.findByUsername(username);
 
-        AccessTokenDto accessTokenDto = AccessTokenDto.builder()
-                .accessToken(jwtTokenProvider
+        TokenDto accessTokenDto = TokenDto.builder()
+                .token(jwtTokenProvider
                         .createToken(member.getUsername(),member.getRoleList()))
                 .build();
         ReservationRemoveDto reservationRemoveDto = ReservationRemoveDto.builder()
@@ -337,7 +336,7 @@ public class ReservationApiControllerTest {
         this.mockMvc.perform(delete("/api/reservation/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON_VALUE)
-                .header("Authorization",accessTokenDto.getAccessToken())
+                .header("Authorization",accessTokenDto.getToken())
                 .content(objectMapper.writeValueAsString(reservationRemoveDto)))
                 .andDo(print())
                 .andExpect(status().isOk())

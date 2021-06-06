@@ -1,40 +1,36 @@
 package com.minair.minair.api;
 
-import com.minair.minair.auth.PrincipalDetails;
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.LoginRequestDto;
-import com.minair.minair.domain.dto.MemberInfoDto;
-import com.minair.minair.domain.dto.MemberJoinDto;
-import com.minair.minair.domain.notEntity.Gender;
+import com.minair.minair.domain.dto.member.MemberInfoDto;
+import com.minair.minair.domain.dto.member.MemberJoinDto;
+import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.jwt.JwtTokenProvider;
-import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api/member")
 public class MemberApiController {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -43,21 +39,31 @@ public class MemberApiController {
     private final MemberService memberService;
     private final ModelMapper modelMapper;
 
-    @PostMapping("/api/member/new")
+    @PostMapping("/new")
     public ResponseEntity join(@RequestBody @Valid MemberJoinDto member,Errors errors){
 
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        Member join = memberService.join(member);
-        if (join == null)
-            return ResponseEntity.noContent().build();
+        Member join ;
+        try {
+            join = memberService.join(member);
+        } catch (RuntimeException e){
+            e.printStackTrace();
+            String errorMessage = "서버에러! "+ e.getMessage();
+            return new ResponseEntity(errorMessage,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        MemberInfoDto resultMember = modelMapper.map(join,MemberInfoDto.class);
+        EntityModel resource = EntityModel.of(resultMember);
+        resource.add(linkTo(methodOn(MemberApiController.class).join(member,errors)).withSelfRel());
+        resource.add(new Link("/").withRel("index"));
+        resource.add(new Link("/docs/index").withRel("profile"));
 
-        return ResponseEntity.ok().body(join);
+        return ResponseEntity.ok().body(resource);
     }
 
-    @GetMapping("/api/member/checkId/{idVal}")
-    public String checkId(@PathVariable String idVal){
+    @GetMapping("/checkId/{idVal}")
+    public ResponseEntity checkId(@PathVariable String idVal){
         System.out.println(idVal);
         int checkResult = memberRepository.checkId(idVal);
         String result;
@@ -67,8 +73,9 @@ public class MemberApiController {
             result = "NO";
 
         System.out.println(result);
-        return result;
+        return ResponseEntity.ok().body(result);
     }
+
 /**
  * 프로젝트 자체를 분리...하는거 보다는 웹과 api를 컨트롤러만 분리해주면 될것같았는데 음.........
  * 멤버에서 막혀버림. 이미 멤버의 일부 기능들은 rest로 구현이 되어있는데 이것 들을 포함해서 api컨트롤러를 만들어야할지.
@@ -78,7 +85,7 @@ public class MemberApiController {
  * 웹에서 ajax로 사용하던 내역들 모두 앞에 '/api' 정도만 붙혀주면 될듯
  * */
 
-    @PostMapping("/api/member/login")
+    @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid LoginRequestDto loginRequestDto, Errors errors){
         log.info("post login");
 
@@ -87,18 +94,22 @@ public class MemberApiController {
 
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
         if (!passwordEncoder.matches(loginRequestDto.getPassword(),member.getPassword())){
-            System.out.println("비밀번호가 일치하지 않습니다.");
-            return new ResponseEntity(null,HttpStatus.BAD_REQUEST);
+            String errorMessage = "not matche password!";
+            log.info(errorMessage);
+            return new ResponseEntity(errorMessage,HttpStatus.BAD_REQUEST);
         } else {
             log.info("pw clean!");
-            return new ResponseEntity(jwtTokenProvider.createToken(member.getUsername()
-                    , member.getRoleList()), HttpStatus.OK);
+            TokenDto tokenDto = TokenDto.builder()
+                    .token(jwtTokenProvider.createToken(member.getUsername(),
+                            member.getRoleList()))
+                    .build();
+            return ResponseEntity.ok().body(tokenDto);
         }
     }
 
-    @GetMapping("/api/member/logout/{token}")
+    @GetMapping("/logout/{token}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public ResponseEntity logout(/*@RequestParam("refreshToken")*/@PathVariable("token") String refreshToken){
+    public ResponseEntity logout(@PathVariable("token") String refreshToken){
         log.info("로그아웃");
         if (refreshToken == null)
             return  new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -113,8 +124,8 @@ public class MemberApiController {
     }
 
     //admin 페이지 진입시 admin계정인지 인증해주는 메서드
-    @GetMapping("/api/member/checkAdmin/{username}")
-    public ResponseEntity checkAdmin(/*@RequestParam("username")*/@PathVariable String username){
+    @GetMapping("/checkAdmin/{username}")
+    public ResponseEntity checkAdmin(@PathVariable String username){
         Member findUsername = memberRepository.findByUsername(username);
         List<String> roleList = findUsername.getRoleList();
         System.out.println(roleList);
@@ -132,6 +143,7 @@ public class MemberApiController {
         }
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
+
 
 
 

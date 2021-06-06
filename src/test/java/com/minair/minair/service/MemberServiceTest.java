@@ -1,10 +1,8 @@
 package com.minair.minair.service;
 
 import com.minair.minair.domain.Member;
-import com.minair.minair.domain.dto.MemberJoinDto;
+import com.minair.minair.domain.dto.member.MemberJoinDto;
 import com.minair.minair.domain.notEntity.Gender;
-import com.minair.minair.jwt.RefreshTokenProperty;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional(readOnly = true)

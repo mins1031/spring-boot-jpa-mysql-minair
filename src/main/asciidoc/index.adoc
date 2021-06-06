@@ -143,3 +143,17 @@ operation::all-reservation[snippets='request-headers,request-body,response-body,
 예약했던 내용을 삭제.
 
 operation::delete-reservation[snippets='request-body,response-body']
+
+[[resource-join]]
+== 회원가입
+
+minair 회원가입을 위한 정보.
+
+operation::join[snippets='request-body,request-fields,response-body,response-fields,links']
+
+[[resource-login]]
+== 로그인
+
+minair 회원 로그인을 위한 정보.
+
+operation::login[snippets='request-body,request-fields,response-body,response-fields']

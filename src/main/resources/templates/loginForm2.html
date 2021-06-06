@@ -39,10 +39,12 @@
             if (loginInfo.status === 200) {
                 localStorage.setItem("Authorization", loginInfo.result);
                 localStorage.setItem("memberId",username);
-                login.issueRefresh(username, function (result, xhr) {
-                    console.log("result2=" + result)
-                    localStorage.setItem("refreshToken", result);
-                });
+                var refreshTokenValue = login.issueRefresh(username)
+                console.log("result2=" + refreshTokenValue.result)
+                console.log("result2=" + refreshTokenValue.status)
+
+                localStorage.setItem("refreshToken", refreshTokenValue.result);
+
                 $(location).attr('href',"/");
             } else if (loginInfo.status === 400){
                 alert("로그인 실패. 아이디,패스워드를 확인해주세요.")

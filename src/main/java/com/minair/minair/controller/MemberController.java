@@ -2,6 +2,10 @@ package com.minair.minair.controller;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.dto.member.MemberInfoDto;
+import com.minair.minair.domain.dto.member.MemberJoinDto;
+import com.minair.minair.domain.dto.member.MemberListDto;
+import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.exception.MemberListException;
 import com.minair.minair.exception.NotFoundMember;
 import com.minair.minair.exception.RequestNullException;
@@ -18,7 +22,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;

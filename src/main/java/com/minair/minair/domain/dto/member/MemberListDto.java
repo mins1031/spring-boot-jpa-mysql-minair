@@ -1,11 +1,9 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.member;
 
 import com.minair.minair.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor

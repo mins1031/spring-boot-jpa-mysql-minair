@@ -1,6 +1,6 @@
 package com.minair.minair.controller;
 
-import com.minair.minair.domain.dto.MemberJoinDto;
+import com.minair.minair.domain.dto.member.MemberJoinDto;
 import com.minair.minair.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

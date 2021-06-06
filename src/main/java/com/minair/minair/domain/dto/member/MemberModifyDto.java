@@ -1,4 +1,4 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.member;
 
 import com.minair.minair.domain.notEntity.Gender;
 import lombok.AllArgsConstructor;

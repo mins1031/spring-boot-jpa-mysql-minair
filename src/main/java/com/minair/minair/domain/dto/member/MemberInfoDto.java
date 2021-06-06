@@ -1,24 +1,26 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.member;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.notEntity.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.tomcat.jni.Local;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class MemberInfoDto {
 
     private String username;
     private String email;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    //@DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
     private String name_kor;
     private String name_eng;

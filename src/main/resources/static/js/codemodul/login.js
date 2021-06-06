@@ -15,7 +15,7 @@ var login = (function(){
             statusCode: {
                 200: function (response) {
                     status = 200;
-                    result = response
+                    result = response.token
                 },
                 400: function (response) {
                     status = 400;
@@ -30,7 +30,8 @@ var login = (function(){
     }
 
     function issueRefresh(username,callback,error){
-
+        var result = null
+        var status = 0
         $.ajax({
             type: 'post',
             url: '/api/token/refresh',
@@ -38,17 +39,21 @@ var login = (function(){
                 "username": username
             },
             async: false,
-            success: function (result, status, xhr) {
-                if (callback) {
-                    callback(result, xhr)
-                }
-            },
-            error: function (xhr, status, er) {
-                if (error) {
-                    error(er);
+            statusCode: {
+                200: function (response) {
+                    status = 200;
+                    result = response.token
+                },
+                400: function (response) {
+                    status = 400;
+                    result = null;
                 }
             }
         })
+        return {
+            status:status,
+            result:result
+        }
     }
 
     return {
