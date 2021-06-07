@@ -1,12 +1,17 @@
 package com.minair.minair.domain.dto.member;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.notEntity.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class MemberListDto {
 
@@ -14,7 +19,10 @@ public class MemberListDto {
     private String username;
     private String email;
     private String name_kor;
+    private String name_eng;
     private String phone;
+    private Gender gender;
+    private LocalDateTime regDate;
 
     public static MemberListDto memberListDto(Member member){
         return MemberListDto.builder()

@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MemberJoinDto {
 
     @NotNull(message = "ID는 꼭 입력해주세요.")

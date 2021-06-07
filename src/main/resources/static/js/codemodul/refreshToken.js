@@ -10,10 +10,10 @@ function refresh(data) {
 
     $.ajax({
         method: "POST",
-        url: "/api/token/reissue",
-        data: {
+        url: "/api/token/reissue/" + refreshToken ,
+        /*data: {
             "refreshToken":refreshToken
-        },
+        },*/
         async: false,
         statusCode: {
             200: function (response) {
@@ -44,7 +44,6 @@ function getTokenInfo() {
     let accessToken = localStorage.getItem('Authorization');
     let refreshToken = localStorage.getItem('refreshToken');
     let memberId = localStorage.getItem('memberId');
-
 
     if (accessToken == null) {
         console.log("Local storage is null.");

@@ -2,10 +2,7 @@ package com.minair.minair.controller;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.*;
-import com.minair.minair.domain.dto.member.MemberInfoDto;
-import com.minair.minair.domain.dto.member.MemberJoinDto;
-import com.minair.minair.domain.dto.member.MemberListDto;
-import com.minair.minair.domain.dto.member.MemberModifyDto;
+import com.minair.minair.domain.dto.member.*;
 import com.minair.minair.exception.MemberListException;
 import com.minair.minair.exception.NotFoundMember;
 import com.minair.minair.exception.RequestNullException;
@@ -104,7 +101,8 @@ public class MemberController {
         }
         List<MemberListDto> memberListDtos = memberList.getContent().stream()
                 .map(m -> new MemberListDto(m.getId(),m.getUsername(),m.getEmail(),
-                        m.getName_kor(),m.getPhone()))
+                        m.getName_kor(),m.getName_eng(),m.getPhone(),m.getGender(),
+                        m.getRegDate()))
                 .collect(Collectors.toList());
 
         PageDto pageDto = new PageDto(pageNum,10,memberList.getTotalElements(),

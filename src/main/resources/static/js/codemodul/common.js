@@ -22,7 +22,6 @@
 
     function tokenExpirationCheck(access,refreshToken) {
         let result = null;
-
         $.ajax({
             method: "get",
             url: "/api/token/tokenExpirationCheck",
@@ -65,14 +64,14 @@
             if (existence) { //existence가 true면 실행됨.= 2토큰,id값이 있으면 실행.
                 tokenResult = tokenExpirationCheck(getTokenInfo().accessToken,
                     getTokenInfo().refreshToken);
-                if (tokenResult.result === null) {
+                if (tokenResult.result === null) { //엑세스 토큰 유효기간 남아있는 경우
                     loginStatus = true;
                     console.log("tokenExpirationCheck 200!")
-                } else if (tokenResult.result === 401){
+                } else if (tokenResult.result === 401){ //엑세스 토큰 유효기간 끝난경우
                     loginStatus = 401;
                     localStorage.clear();
                     console.log("로그인 정보 확인불가! 다시 로그인 해주세요.");
-                } else if (tokenResult.result === 403){
+                } else if (tokenResult.result === 403){ //로그인 정보 잘못된경우.
                     loginStatus = 403;
                     localStorage.clear();
                     console.log("로그인 기한만료! 다시 로그인 해주세요.");

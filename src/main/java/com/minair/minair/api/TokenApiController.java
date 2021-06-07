@@ -30,8 +30,8 @@ public class TokenApiController {
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/refresh")
-    public ResponseEntity refresh(@RequestParam(value = "username") String username){
+    @PostMapping("/refresh/{username}")
+    public ResponseEntity refresh(@PathVariable String username){
         log.info("issue refresh token");
         System.out.println("refresh"+username);
         RefreshTokenProperty r = new RefreshTokenProperty(
@@ -45,8 +45,8 @@ public class TokenApiController {
     }
 
     //토큰 재발급 함수 refresh의 호출 대상
-    @PostMapping("/reissue")
-    public ResponseEntity reIssue(@RequestParam("refreshToken") String refreshToken){
+    @PostMapping("/reissue/{refreshToken}")
+    public ResponseEntity reIssue(/*@RequestParam("refreshToken")*/@PathVariable String refreshToken){
 
         log.info("reIssue");
         System.out.println("reIssue"+refreshToken);

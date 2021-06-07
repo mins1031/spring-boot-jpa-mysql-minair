@@ -2,9 +2,10 @@ package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.dto.ForFindPagingDto;
 import com.minair.minair.domain.dto.LoginRequestDto;
-import com.minair.minair.domain.dto.member.MemberInfoDto;
-import com.minair.minair.domain.dto.member.MemberJoinDto;
+import com.minair.minair.domain.dto.PageDto;
+import com.minair.minair.domain.dto.member.*;
 import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.repository.MemberRepository;
@@ -12,6 +13,7 @@ import com.minair.minair.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -111,16 +114,17 @@ public class MemberApiController {
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity logout(@PathVariable("token") String refreshToken){
         log.info("로그아웃");
-        if (refreshToken == null)
-            return  new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        System.out.println(refreshToken);
 
         boolean logoutCheck = memberService.logout(refreshToken);
         System.out.println(logoutCheck);
-        if (logoutCheck)
-            return new ResponseEntity(HttpStatus.OK);
-        else
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        String returnMesseage ;
+        if (logoutCheck) {
+            returnMesseage = "로그아웃!";
+            return new ResponseEntity(returnMesseage, HttpStatus.OK);
+        } else {
+            returnMesseage = "로그아웃 실패! 새로고침해주세요.";
+            return new ResponseEntity(returnMesseage,HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //admin 페이지 진입시 admin계정인지 인증해주는 메서드
@@ -144,6 +148,81 @@ public class MemberApiController {
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 
+    @GetMapping("/{username}")
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity findMember(@PathVariable String username){
+        Member member = memberRepository.findByUsername(username);
+
+        MemberInfoDto memberInfoDto =
+                MemberInfoDto.memberInfoDto(member);
+
+        EntityModel memberResource = EntityModel.of(memberInfoDto);
+        memberResource.add(linkTo(methodOn(MemberApiController.class).findMember(username)).withSelfRel());
+        memberResource.add(new Link("/").withRel("index"));
+        memberResource.add(new Link("/docs/index").withRel("profile"));
+
+        return ResponseEntity.ok().body(memberResource);
+    }
+
+    @PutMapping
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity modifyMember(@RequestBody MemberModifyDto memberModifyDto){
+
+        try {
+            memberService.updateMember(memberModifyDto);
+        } catch (RuntimeException e){
+            e.printStackTrace();
+            return new ResponseEntity(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Member m = memberService.findByUserInfo(memberModifyDto.getUsername());
+        if (m == null)
+            return ResponseEntity.noContent().build();
+
+        MemberInfoDto memberInfoDto =
+                MemberInfoDto.memberInfoDto(m);
+
+        EntityModel memberResource = EntityModel.of(memberInfoDto);
+        memberResource.add(new Link("/api/member/{username}").withRel("member-info"));
+        memberResource.add(linkTo(MemberApiController.class).withSelfRel());
+        memberResource.add(new Link("/").withRel("index"));
+        memberResource.add(new Link("/docs/index").withRel("profile"));
+
+        return ResponseEntity.ok().body(memberResource);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    public ResponseEntity findAllMember(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
+                                        Errors errors){
+        if (errors.hasErrors())
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+
+        Page<Member> members = memberService.findByAll(forFindPagingDto.getPageNum());
+        if (members.getContent().isEmpty())
+            return ResponseEntity.noContent().build();
+
+        List<MemberListDto> memberListDtos = new ArrayList<>();
+        for (Member m : members) {
+            memberListDtos.add(modelMapper.map(m,MemberListDto.class));
+        }
+
+        PageDto pageDto = new PageDto(forFindPagingDto.getPageNum(), 10
+                        ,members.getTotalElements(),members.getTotalPages());
+
+        QueryMemberDto q = QueryMemberDto.builder()
+                .memberList(memberListDtos)
+                .pageDto(pageDto)
+                .build();
+
+        EntityModel memberResource = EntityModel.of(q);
+        memberResource.add(new Link("/api/member/{username}").withRel("member-info"));
+        memberResource.add(linkTo(MemberApiController.class).withSelfRel());
+        memberResource.add(new Link("/").withRel("index"));
+        memberResource.add(new Link("/docs/index").withRel("profile"));
+
+        return ResponseEntity.ok().body(memberResource);
+    }
 
 
 
@@ -161,13 +240,4 @@ public class MemberApiController {
     //비교후 둘이 동일하다면 새 토큰 응답해줘야함.
     //이거 일단 아무것도 없는 역할 없는 메서드임
 
-    @GetMapping("/user/{username}")
-    public ResponseEntity findMember(@PathVariable String username){
-        Member member = memberRepository.findByUsername(username);
-
-        MemberInfoDto memberInfoDto =
-                MemberInfoDto.memberInfoDto(member);
-
-        return ResponseEntity.ok().body(memberInfoDto);
-    }//앤 뭐지..?
 }

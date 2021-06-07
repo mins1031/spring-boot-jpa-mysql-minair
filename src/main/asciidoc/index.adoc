@@ -157,3 +157,36 @@ operation::join[snippets='request-body,request-fields,response-body,response-fie
 minair 회원 로그인을 위한 정보.
 
 operation::login[snippets='request-body,request-fields,response-body,response-fields']
+
+[[resource-memberInfo]]
+== 회원정보
+
+회원에 대한 상세 정보 확인.
+
+operation::member_info[snippets='request-headers,response-body,response-fields,links']
+
+[[resource-member-modify]]
+== 회원수정
+
+회원 상세정보를 수정 하기 위한 정보.
+
+operation::member-modify[snippets='request-headers,request-body,request-fields,response-body,response-fileds,links']
+
+[[resource-all-member]]
+== 모든 회원 조회
+
+모든 회원을 조회하기 위한 정보.
+
+operation::allmember-find[snippets='request-headers,request-body,request-fields,response-body,response-fields,links']
+
+[[resource-issue-refreshToken]]
+== refreshToken 발급
+
+로그인시 accessToken을 발급하고 refreshToken을 함께 발급해준다.
+
+!회원 username을 URI에 함께 전달해 줘야 한다.
+
+operation::refreshToken-issue[snippets='response-body,response-fields']
+
+
+
