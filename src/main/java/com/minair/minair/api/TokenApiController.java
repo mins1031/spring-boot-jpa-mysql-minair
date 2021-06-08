@@ -68,8 +68,8 @@ public class TokenApiController {
             return new ResponseEntity("기한만료!! 다시 로그인 해주세요",HttpStatus.FORBIDDEN);
     }
 
-    @GetMapping("/tokenExpirationCheck")
-    public ResponseEntity tokenCheck(@RequestParam("accessToken") String accessToken){
+    @GetMapping("/tokenExpirationCheck/{accessToken}")
+    public ResponseEntity tokenCheck(/*@RequestParam("accessToken")*/@PathVariable String accessToken){
         log.info("엑세스 토큰 유효기간 확인 요청");
         boolean result = jwtTokenProvider.validateToken(accessToken);
         //토큰의 유효기간 체크후 기한 남았으면 true / 기한 만료 되었으면 false

@@ -1,7 +1,7 @@
 package com.minair.minair.controller;
 
 import com.minair.minair.domain.Reservation;
-import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.reservation.CheckInRegDto;
 import com.minair.minair.domain.dto.reservation.ReservationDetailInfoDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;

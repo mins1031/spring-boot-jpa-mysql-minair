@@ -20,7 +20,7 @@ public class MemberInfoDto {
 
     private String username;
     private String email;
-    //@DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
     private String name_kor;
     private String name_eng;

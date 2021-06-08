@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.minair.minair.domain.QReservation.reservation;
@@ -23,7 +24,6 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
     public CustomReservationRepositoryImpl(EntityManager em) {
         queryFactory = new JPAQueryFactory(em);
     }
-
 
     @Override
     public Page<Reservation> pageReservations(Member member, Pageable pageable) {
@@ -57,5 +57,20 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
                 .fetchCount();
 
         return new PageImpl<>(reservations,pageable,total);
+    }
+
+    @Override
+    public boolean findReservationNotOverDate(String username) {
+        LocalDate data = LocalDate.now();
+        long fetchCount = queryFactory
+                .selectFrom(reservation)
+                .where(reservation.airline().depart_date.after(data))
+                .fetchCount();
+
+        boolean result = false ;
+        if (fetchCount > 0)
+            result = true;
+
+        return result;
     }
 }

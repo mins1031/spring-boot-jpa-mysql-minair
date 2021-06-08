@@ -1,4 +1,4 @@
-package com.minair.minair.domain.dto;
+package com.minair.minair.domain.dto.common;
 
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

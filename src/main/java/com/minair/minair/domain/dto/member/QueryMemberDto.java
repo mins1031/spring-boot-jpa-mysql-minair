@@ -1,6 +1,6 @@
 package com.minair.minair.domain.dto.member;
 
-import com.minair.minair.domain.dto.PageDto;
+import com.minair.minair.domain.dto.common.PageDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

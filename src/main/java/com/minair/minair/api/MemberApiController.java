@@ -2,11 +2,12 @@ package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
-import com.minair.minair.domain.dto.ForFindPagingDto;
-import com.minair.minair.domain.dto.LoginRequestDto;
-import com.minair.minair.domain.dto.PageDto;
+import com.minair.minair.domain.dto.common.ForFindPagingDto;
+import com.minair.minair.domain.dto.member.LoginRequestDto;
+import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.member.*;
 import com.minair.minair.domain.dto.token.TokenDto;
+import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.service.MemberService;
@@ -224,6 +225,19 @@ public class MemberApiController {
         return ResponseEntity.ok().body(memberResource);
     }
 
+
+    @DeleteMapping("/{username}")
+    public boolean removeMember(@PathVariable String username){
+
+        if (username == null)
+            throw new RequestNullException();
+        boolean deleteResult = memberService.delete(username);
+
+        return deleteResult;
+        //deleteResult가 false => 삭제 완료!
+        //deleteResult가 true => 예약 먼저 삭제한후 탈퇴 해라!
+
+    }
 
 
     //이 밑은 뭔지 모르는 메서드. 확인 안되면 지울것.

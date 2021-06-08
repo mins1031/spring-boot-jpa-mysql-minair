@@ -10,7 +10,6 @@
        style="background-color: #7cc67c">
     <thead style="background-color: #f0ad4e">
     <tr>
-        <th>선택</th>
         <th>항공코드</th>
         <th>출발지</th>
         <th>도착지</th>
@@ -18,11 +17,12 @@
         <th>출발시간</th>
         <th>도착시간</th>
         <th>잔여좌석</th>
+        <th>상세정보</th>
+        <th>항공권삭제</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="airline : ${airlineList}">
-        <td><input type="radio" name="goSelect" class="goSelected"></td>
         <td style="color: #0b0b0b" th:text="${airline?.id}"/></td>
         <td th:text="${airline?.departure}"></td>
         <td th:text="${airline?.distination}"></td>
@@ -30,6 +30,10 @@
         <td th:text="${airline?.depart_time}"></td>
         <td th:text="${airline?.reach_time}"></td>
         <td th:text="${airline?.aboveseat}"></td>
+        <td><button type="button" style="color: #545b62"
+                    class="airlineInfo">상세정보</button></td>
+        <td><button type="button" style="color: #545b62"
+                    class="deleteAirline">항공권삭제</button></td>
     </tr>
     </tbody>
 </table><br/>

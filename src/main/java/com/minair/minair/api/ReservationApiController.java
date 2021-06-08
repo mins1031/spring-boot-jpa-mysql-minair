@@ -1,15 +1,12 @@
 package com.minair.minair.api;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.minair.minair.common.ErrorResource;
-import com.minair.minair.controller.HomeController;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.Seat;
-import com.minair.minair.domain.dto.ForFindPagingDto;
-import com.minair.minair.domain.dto.LinkDto;
-import com.minair.minair.domain.dto.PageDto;
-import com.minair.minair.domain.dto.ReservationRemoveDto;
-import com.minair.minair.domain.dto.airline.QueryAirlinesDto;
+import com.minair.minair.domain.dto.common.ForFindPagingDto;
+import com.minair.minair.domain.dto.common.LinkDto;
+import com.minair.minair.domain.dto.common.PageDto;
+import com.minair.minair.domain.dto.reservation.ReservationRemoveDto;
 import com.minair.minair.domain.dto.reservation.*;
 import com.minair.minair.domain.dto.seat.SeatDtoForCheckIn;
 import com.minair.minair.service.AirlineService;
@@ -19,28 +16,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Slf4j

@@ -2,6 +2,7 @@ package com.minair.minair.api;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.member.MemberJoinDto;
+import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -114,8 +116,15 @@ public class TokenApiControllerTest {
     }
 
     @Test
-    public void tokenCheck() {
+    public void tokenCheck() throws Exception {
+        String username = "user1";
+        Member byUsername = memberRepository.findByUsername(username);
 
+        String token = jwtTokenProvider.createToken(byUsername.getUsername(),byUsername.getRoleList());
 
+        this.mockMvc.perform(get("/api/token/tokenExpirationCheck/{accessToken}",token))
+                .andDo(print())
+                .andExpect(status().isOk())
+                ;
     }
 }

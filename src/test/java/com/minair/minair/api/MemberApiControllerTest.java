@@ -1,20 +1,24 @@
 package com.minair.minair.api;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
-import com.minair.minair.domain.dto.ForFindPagingDto;
-import com.minair.minair.domain.dto.LoginRequestDto;
+import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.common.ForFindPagingDto;
+import com.minair.minair.domain.dto.member.LoginRequestDto;
 import com.minair.minair.domain.dto.member.MemberJoinDto;
 import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.domain.dto.token.TokenDto;
+import com.minair.minair.domain.notEntity.Departure;
+import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
+import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
+import com.minair.minair.repository.ReservationRepository;
 import com.minair.minair.service.MemberService;
 import com.minair.minair.testconfig.RestDocsConfiguration;
-import org.attoparser.IDocumentHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -434,5 +440,39 @@ public class MemberApiControllerTest {
 
     @Test
     public void checkAdmin() {
+    }
+
+    @Autowired
+    AirlineRepository airlineRepository;
+    @Autowired
+    ReservationRepository reservationRepository;
+
+    @Test
+    public void removeMember() throws Exception {
+        //Given
+        Airline airline1 = Airline.createAirline(Departure.JEJU, Distination.BUS,
+                LocalDate.of(2021,05,20), LocalTime.of(13,55),
+                LocalTime.of(14,20),18);
+        Airline airline2 = Airline.createAirline(Departure.JEJU,Distination.BUS,
+                LocalDate.of(2021,05,20), LocalTime.of(14,55),
+                LocalTime.of(15,20),18);
+        Member member = memberRepository.findByUsername("user1");
+        Reservation reservation =
+                Reservation.createReservation(member,airline1,1,1,2,80000);
+        Reservation reservation2 =
+                Reservation.createReservation(member,airline2,1,1,2,80000);
+
+        airlineRepository.save(airline1);
+        airlineRepository.save(airline2);
+        reservationRepository.save(reservation);
+        reservationRepository.save(reservation2);
+
+        String username = member.getUsername();
+        //When & Then
+        this.mockMvc.perform(delete("/api/member/{username}",username))
+                .andDo(print())
+                .andExpect(status().isOk())
+        .andExpect(content().string("false"))
+                ;
     }
 }

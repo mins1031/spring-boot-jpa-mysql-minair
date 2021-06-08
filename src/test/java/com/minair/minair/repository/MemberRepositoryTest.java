@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 @Rollback(value = false)
 class MemberRepositoryTest {
 

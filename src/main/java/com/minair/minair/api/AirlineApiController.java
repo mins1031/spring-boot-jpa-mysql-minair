@@ -2,9 +2,9 @@ package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.PageDto;
+import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.airline.AirlineSearchDto;
-import com.minair.minair.domain.dto.ForFindPagingDto;
+import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineDto;
 import com.minair.minair.domain.dto.airline.AirlineSearchApiDto;

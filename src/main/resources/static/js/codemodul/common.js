@@ -24,10 +24,10 @@
         let result = null;
         $.ajax({
             method: "get",
-            url: "/api/token/tokenExpirationCheck",
-            data: {
+            url: "/api/token/tokenExpirationCheck/" + access,
+            /*data: {
                 "accessToken": access
-            },
+            },*/
             async: false,
             statusCode: {
                 200: function (response) {

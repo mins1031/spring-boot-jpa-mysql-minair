@@ -1,11 +1,13 @@
 package com.minair.minair.service;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.member.MemberJoinDto;
 import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.MemberRepository;
+import com.minair.minair.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final ReservationRepository reservationRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -145,4 +149,20 @@ public class MemberService {
         Member findMember = memberRepository.findByUsername(memberModifyDto.getUsername());
         findMember.updateMember(memberModifyDto);
     }
+
+    @Transactional
+    public boolean delete(String username) {
+
+        boolean reservationDateCheck = reservationRepository.findReservationNotOverDate(username);
+        boolean result = true;
+
+        if (!reservationDateCheck){ //reservationDateCheck = false => 현재날짜 이후의 예약이 없는 경우 바로 삭제
+            Member member = memberRepository.findByUsername(username);
+            memberRepository.delete(member);
+            result = false;
+        }
+        return result;
+    }
+    //폴인키 묶인것 무시하고 그냥 삭제하려 했는데 안됨. =>  결국 모든 예약 값들도 같이 지워줘야함.
+    //이건 기준정해서 예약 값남기고 예약자만 null처리 할건지, 아예 모두 삭제 시켜버릴건지 정하고 구현할것.
 }

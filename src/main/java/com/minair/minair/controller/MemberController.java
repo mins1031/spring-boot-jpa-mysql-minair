@@ -1,7 +1,7 @@
 package com.minair.minair.controller;
 
 import com.minair.minair.domain.Member;
-import com.minair.minair.domain.dto.*;
+import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.member.*;
 import com.minair.minair.exception.MemberListException;
 import com.minair.minair.exception.NotFoundMember;
@@ -111,4 +111,20 @@ public class MemberController {
         model.addAttribute("memberList", memberListDtos);
         model.addAttribute("pageMaker", pageDto);
     }
+
+    /*@PostMapping("/member/delete")
+    public void removeMember(@RequestParam("username") String username){
+
+        if (username == null)
+            throw new RequestNullException();
+        String resultMessege ;
+        boolean deleteResult = memberService.delete(username);
+        if (deleteResult)
+            model.addAttribute("result",deleteResult);
+        else
+            model.addAttribute("result",deleteResult);
+        //deleteResult가 false => 삭제 완료!
+        //deleteResult가 true => 예약 먼저 삭제한후 탈퇴 해라!
+
+    }*/
 }
