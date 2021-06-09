@@ -37,12 +37,12 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository{
 
     @Override
     public Member findByRefreshToken(String refreshToken) {
-        Member member = queryFactory
-                .selectFrom(QMember.member)
-                .where(QMember.member.refreshToken().refreshTokenValue.eq(refreshToken))
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.refreshToken().refreshTokenValue.eq(refreshToken))
                 .fetchOne();
 
-        return member;
+        return findMember;
     }
 
     @Override

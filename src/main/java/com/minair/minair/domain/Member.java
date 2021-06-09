@@ -1,11 +1,11 @@
 package com.minair.minair.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minair.minair.domain.date.DateEntity;
 import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +30,8 @@ public class Member extends DateEntity {
 
     private LocalDate birth;
 
-    private String name_kor;
-    private String name_eng;
+    private String nameKor;
+    private String nameEng;
     private String phone;
 
     @Enumerated(EnumType.STRING)
@@ -40,7 +40,7 @@ public class Member extends DateEntity {
     private String roles;
 
     @Embedded
-    @JsonIgnore
+    //@JsonIgnore
     private RefreshTokenProperty refreshToken;
 
     public List<String> getRoleList(){
@@ -56,18 +56,46 @@ public class Member extends DateEntity {
     private List<Reservation> reservationList = new ArrayList<>();
     회원에서 예약을 조회하는것보다 예약에서 회원값으로 조회하는게 더 객체지향적임.*/
 
+    @Builder
+    public Member(Long id, String username, String password, String email, LocalDate birth, String nameKor, String nameEng, String phone, Gender gender, String roles, RefreshTokenProperty refreshToken) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.birth = birth;
+        this.nameKor = nameKor;
+        this.nameEng = nameEng;
+        this.phone = phone;
+        this.gender = gender;
+        this.roles = roles;
+        this.refreshToken = refreshToken;
+    }
+
     //Member생성 메서드
     public static Member joinMember(String username,String password,
-                             String email, LocalDate birth,String name_kor,
-                             String name_eng, String phone,
+                             String email, LocalDate birth,String nameKor,
+                             String nameEng, String phone,
                              Gender gender){
 
+        /*Member.builder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .birth(birth)
+                .nameKor(nameKor)
+                .nameEng(nameEng)
+                .phone(phone)
+                .gender(gender)
+                .roles()
+                .refreshToken(refreshToken)
+                .build();
+*/
         Member member = new Member();
         member.username  = username;
         member.password = password;
         member.email = email;
-        member.name_eng = name_eng;
-        member.name_kor = name_kor;
+        member.nameEng = nameEng;
+        member.nameKor = nameKor;
         member.phone = phone;
         member.birth = birth;
         member.gender = gender;
@@ -88,8 +116,8 @@ public class Member extends DateEntity {
 
     public void updateMember(MemberModifyDto memberModifyDto){
         this.email = memberModifyDto.getEmail();
-        this.name_kor = memberModifyDto.getName_kor();
-        this.name_eng = memberModifyDto.getName_eng();
+        this.nameKor = memberModifyDto.getName_kor();
+        this.nameEng = memberModifyDto.getName_eng();
         this.phone = memberModifyDto.getPhone();
         this.birth = memberModifyDto.getBirth();
         this.gender = memberModifyDto.getGender();
@@ -108,12 +136,12 @@ public class Member extends DateEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return Objects.equals(id, member.id) && Objects.equals(username, member.username) && Objects.equals(password, member.password) && Objects.equals(email, member.email) && Objects.equals(birth, member.birth) && Objects.equals(name_kor, member.name_kor) && Objects.equals(name_eng, member.name_eng) && Objects.equals(phone, member.phone) && gender == member.gender && Objects.equals(roles, member.roles) && Objects.equals(refreshToken, member.refreshToken);
+        return Objects.equals(id, member.id) && Objects.equals(username, member.username) && Objects.equals(password, member.password) && Objects.equals(email, member.email) && Objects.equals(birth, member.birth) && Objects.equals(nameKor, member.nameKor) && Objects.equals(nameEng, member.nameEng) && Objects.equals(phone, member.phone) && gender == member.gender && Objects.equals(roles, member.roles) && Objects.equals(refreshToken, member.refreshToken);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, email, birth, name_kor, name_eng, phone, gender, roles, refreshToken);
+        return Objects.hash(id, username, password, email, birth, nameKor, nameEng, phone, gender, roles, refreshToken);
     }
 
 

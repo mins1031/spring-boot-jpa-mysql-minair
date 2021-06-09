@@ -1,5 +1,6 @@
 package com.minair.minair.api;
 
+import com.minair.minair.auth.PrincipalDetails;
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
@@ -20,6 +21,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -66,7 +68,7 @@ public class MemberApiController {
         return ResponseEntity.ok().body(resource);
     }
 
-    @GetMapping("/checkId/{idVal}")
+    @GetMapping("/check-id/{idVal}")
     public ResponseEntity checkId(@PathVariable String idVal){
         System.out.println(idVal);
         int checkResult = memberRepository.checkId(idVal);
@@ -79,6 +81,7 @@ public class MemberApiController {
         System.out.println(result);
         return ResponseEntity.ok().body(result);
     }
+    //@PathVariable 민감한 정보 url post 대체요망
 
 /**
  * 프로젝트 자체를 분리...하는거 보다는 웹과 api를 컨트롤러만 분리해주면 될것같았는데 음.........
@@ -116,17 +119,22 @@ public class MemberApiController {
     public ResponseEntity logout(@PathVariable("token") String refreshToken){
         log.info("로그아웃");
 
+        PrincipalDetails principal = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Member principalMember = principal.getMember();
+        Long memberId = principalMember.getId();
+
         boolean logoutCheck = memberService.logout(refreshToken);
         System.out.println(logoutCheck);
-        String returnMesseage ;
+        String returnMessage ;
         if (logoutCheck) {
-            returnMesseage = "로그아웃!";
-            return new ResponseEntity(returnMesseage, HttpStatus.OK);
+            returnMessage = "로그아웃!";
+            return new ResponseEntity(returnMessage, HttpStatus.OK);
         } else {
-            returnMesseage = "로그아웃 실패! 새로고침해주세요.";
-            return new ResponseEntity(returnMesseage,HttpStatus.UNAUTHORIZED);
+            returnMessage = "로그아웃 실패! 새로고침해주세요.";
+//            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnMessage);
+            return new ResponseEntity(returnMessage,HttpStatus.UNAUTHORIZED);
         }
-    }
+    }//
 
     //admin 페이지 진입시 admin계정인지 인증해주는 메서드
     @GetMapping("/checkAdmin/{username}")

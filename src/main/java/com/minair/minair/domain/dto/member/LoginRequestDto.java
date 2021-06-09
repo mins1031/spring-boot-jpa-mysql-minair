@@ -11,8 +11,8 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class LoginRequestDto {
 
-    @NotNull
+    @NotNull(message = "로그인 시점에 필요한 이름을 입력해 주세요.")
     private String username;
-    @NotNull
+    @NotNull(message = "로그인 시점에 필요한 비밀번호를 입력해 주세요.")
     private String password;
 }
