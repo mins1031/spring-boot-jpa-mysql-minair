@@ -25,4 +25,4 @@
     * Spring Security의 세션방식의 로드벨런싱 문제를 해결하기 위해 JWT Token을 활용해 회원, 로그인상태 검증
 ## 제작기간 - 2021-04-01 ~ ing
 ## DataBase ERD
-![Alt text](C:\minairErd.jpg)
+![ERD](images/minairErd.jpg)
