@@ -325,7 +325,7 @@
 
     $('.logout').on('click', function () {
         console.log("logout 버튼")
-        logout(getTokenInfo().accessToken,getTokenInfo().refreshToken);
+        logout(getTokenInfo().accessToken,getTokenInfo().memberId);
     });
 
     $('.myReserveBtn').on('click',function (e) {

@@ -14,6 +14,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,11 +37,12 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String joinWeb(@ModelAttribute("memberjoinDto") @Valid MemberJoinDto memberJoinDto,
-                          BindingResult bindingResult){
+    public String join(@ModelAttribute("memberjoinDto") @Valid MemberJoinDto memberJoinDto,
+                          Errors errors){
         log.info("회원가입 요청!");
-        if (bindingResult.hasErrors()) {
+        if (errors.hasErrors()) {
             log.info("valid error!!");
+            System.out.println(errors.getFieldErrors());
             throw new RequestNullException();
         }
         memberService.join(memberJoinDto);
@@ -67,11 +69,12 @@ public class MemberController {
 
         MemberInfoDto memberInfoDto =
                 MemberInfoDto.memberInfoDto(findMember);
+        System.out.println(memberInfoDto);
         model.addAttribute("memberInfo",memberInfoDto);
     }
 
     @GetMapping("/member/modify")
-    public void memberModifyGet(@ModelAttribute("memberDto") MemberInfoDto memberInfoDto){
+    public void memberModifyGet(@ModelAttribute("memberInfoDto") MemberInfoDto memberInfoDto){
         log.info("회원 수정 페이지 전환");
         System.out.println(memberInfoDto);
         if (memberInfoDto == null)
@@ -101,7 +104,7 @@ public class MemberController {
         }
         List<MemberListDto> memberListDtos = memberList.getContent().stream()
                 .map(m -> new MemberListDto(m.getId(),m.getUsername(),m.getEmail(),
-                        m.getName_kor(),m.getName_eng(),m.getPhone(),m.getGender(),
+                        m.getNameKor(),m.getNameEng(),m.getPhone(),m.getGender(),
                         m.getRegDate()))
                 .collect(Collectors.toList());
 

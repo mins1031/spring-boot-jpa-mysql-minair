@@ -3,6 +3,7 @@ package com.minair.minair.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.reservation.ReservationRemoveDto;
@@ -92,7 +93,8 @@ public class ReservationApiControllerTest {
         Member member = Member.joinMember("user1","alsdud","min@min",
                 LocalDate.of(2021,05,30),"민","min","010-2222-2222",
                 Gender.F);
-        member.investRole("ROLE_MEMBER,ROLE_ADMIN");
+        MemberRole memberRole = MemberRole.ROLE_ADMIN;
+        member.investMemberRole(memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);
@@ -169,7 +171,8 @@ public class ReservationApiControllerTest {
         Member member = Member.joinMember("user1","alsdud","min@min",
                 LocalDate.of(2021,05,30),"민","min","010-2222-2222",
                 Gender.F);
-        member.investRole("ROLE_MEMBER");
+        MemberRole memberRole = MemberRole.ROLE_MEMBER;
+        member.investMemberRole(memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);
@@ -319,7 +322,7 @@ public class ReservationApiControllerTest {
 
         TokenDto accessTokenDto = TokenDto.builder()
                 .token(jwtTokenProvider
-                        .createToken(member.getUsername(),member.getRoleList()))
+                        .createToken(member.getUsername(),member.getRole()))
                 .build();
         ReservationRemoveDto reservationRemoveDto = ReservationRemoveDto.builder()
                 .airlineId(airId)

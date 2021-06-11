@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public enum MemberRole {
-    MEMBER("ROLE_MEMBER","일반 회원 권한"),
-    ADMIN("ROLE_ADMIN","관리자 권한");
 
-    private final String roleName;
+    ROLE_MEMBER("일반 회원 권한"),
+    ROLE_ADMIN("관리자 권한");
+
 
     private final String description;
 

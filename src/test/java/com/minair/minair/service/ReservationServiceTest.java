@@ -2,6 +2,7 @@ package com.minair.minair.service;
 
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
 import com.minair.minair.domain.notEntity.Departure;
@@ -74,14 +75,13 @@ class ReservationServiceTest {
         String phone = "010-1111-2222";
         Gender gender = Gender.M;
 
-        String role = "ROLE_MEMBER";
-
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(null,0);
         Member member = Member.joinMember(username,password,email,birth,name_kor,name_eng,
                 phone,gender);
 
-        member.investRole(role);
+        MemberRole memberRole = MemberRole.ROLE_MEMBER;
+        member.investMemberRole(memberRole);
         member.issueRefreshToken(refreshTokenProperty);
         airlineRepository.save(airline);
         airlineRepository.save(airline2);

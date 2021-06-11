@@ -1,15 +1,14 @@
 package com.minair.minair.auth;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Data
 public class PrincipalDetails implements UserDetails {
@@ -23,8 +22,10 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        member.getRoleList().forEach(r -> {
-                authorities.add(()-> r);
+        List<MemberRole> roleList = new ArrayList<>();
+        roleList.add(member.getRole());
+        roleList.forEach(r -> {
+                authorities.add(()-> r.name());
         });
         return authorities;
     }

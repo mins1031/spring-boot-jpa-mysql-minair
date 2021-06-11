@@ -1,8 +1,10 @@
 package com.minair.minair.repository;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.RefreshTokenProperty;
+import com.minair.minair.service.SeatService;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +34,30 @@ class MemberRepositoryTest {
     EntityManager em;
 
 
-    /*@BeforeEach
+    @BeforeEach
     public void test(){
-        Member member = Member.joinMember("min","test","t@t", LocalDate.of(1999,02,21),
-                "민","min","010", Gender.M);
+        String username = "member";
+        String pw = "test";
+        String email = "ee@ee";
+        LocalDate birth = LocalDate.of(2000,02,22);
+        String name_kor = "테스트";
+        String name_eng = "test";
+        String phone = "010-4533-2222";
+        Gender gender = Gender.F;
+        String role = "ROLE_MEMBER";
+        MemberRole memberRole = MemberRole.ROLE_MEMBER;
+        RefreshTokenProperty refreshTokenProperty =
+                new RefreshTokenProperty(
+                        UUID.randomUUID().toString(),
+                        new Date().getTime()
+                );
+        Member member = Member.joinMember(username,pw,email,birth,name_kor,name_eng,
+                phone,gender);
+        //member.investRole(role);
+        member.investMemberRole(memberRole);
+        member.issueRefreshToken(refreshTokenProperty);
         memberRepository.save(member);
-    }*/
+    }
 
     @Test
     public void testCheckId(){
@@ -50,31 +70,18 @@ class MemberRepositoryTest {
     @Transactional
     @Test
     public void refreshTest(){
-        String username = "member";
-        String pw = "test";
-        String email = "ee@ee";
-        LocalDate birth = LocalDate.of(2000,02,22);
-        String name_kor = "테스트";
-        String name_eng = "test";
-        String phone = "010-4533-2222";
-        Gender gender = Gender.F;
-        String role = "ROLE_MEMBER";
-        RefreshTokenProperty refreshTokenProperty =
-                new RefreshTokenProperty(
-                        UUID.randomUUID().toString(),
-                        new Date().getTime()
-                );
-        Member member = Member.joinMember(username,pw,email,birth,name_kor,name_eng,
-                phone,gender);
-        member.investRole(role);
-        member.issueRefreshToken(refreshTokenProperty);
-        memberRepository.save(member);
-        em.flush();
-        em.clear();
-        String refreshTokenValue = refreshTokenProperty.getRefreshTokenValue();
+
+        Member member = memberRepository.findByUsername("member");
+        String refreshTokenValue = member.getRefreshToken().getRefreshTokenValue();
         Member member1 = memberRepository.findByRefreshToken(refreshTokenValue);
-
+        System.out.println(member1);
         Assertions.assertThat(member1.getUsername()).isEqualTo(member.getUsername());
+    }
 
+    @Test
+    public void findOne(){
+        Member member = memberRepository.findByUsername("member");
+        System.out.println(member.getRole());
+        Assertions.assertThat(member).isNotNull();
     }
 }

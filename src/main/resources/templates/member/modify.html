@@ -25,42 +25,42 @@
                             <h6 class="heading">* 생년월일은 'yyyy-mm-dd' 양식을 지켜서 작성해주세요 *</h6>
                             <div class="form-group">
                                 <input type="hidden" class="form-control"
-                                       name="username" th:value="${memberDto.username}"/>
+                                       name="username" th:value="${memberInfoDto.username}"/>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-envelope-o"></i>
                                         이메일</label>
                                     <input type="text" class="form-control"
-                                           name="email" th:value="${memberDto.email}"/>
+                                           name="email" th:value="${memberInfoDto.email}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-calendar"></i>
                                         생년월일</label>
                                     <input type="text" class="form-control"
-                                           name="birth" th:value="${memberDto.birth}"/>
+                                           name="birth" th:value="${memberInfoDto.birth}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         한글이름</label>
                                     <input type="text" class="form-control"
-                                           name="name_kor" th:value="${memberDto.name_kor}"/>
+                                           name="name_kor" th:value="${memberInfoDto.nameKor}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         영문이름</label>
                                     <input type="text" class="form-control"
-                                           name="name_eng" th:value="${memberDto.name_eng}"/>
+                                           name="name_eng" th:value="${memberInfoDto.nameEng}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-lock"></i>
                                         Phone</label>
                                     <input type="text" class="form-control"
-                                           name="phone" th:value="${memberDto.phone}"/>
+                                           name="phone" th:value="${memberInfoDto.phone}"/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="control-label" style="color: #0b0b0b"><i class="fa fa-user"></i>
                                         성별</label>
                                     <input type="text" class="form-control"
-                                           name="gender" th:value="${memberDto.gender}"/>
+                                           name="gender" th:value="${memberInfoDto.gender}"/>
                                 </div>
                             </div>
                             <div align="center">

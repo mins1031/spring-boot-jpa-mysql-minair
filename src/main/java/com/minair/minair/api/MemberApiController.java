@@ -3,6 +3,7 @@ package com.minair.minair.api;
 import com.minair.minair.auth.PrincipalDetails;
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.member.LoginRequestDto;
 import com.minair.minair.domain.dto.common.PageDto;
@@ -99,31 +100,25 @@ public class MemberApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
+        boolean loginResult = memberService.login(loginRequestDto);
+        if (!loginResult){
+            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+        } //이거 notmatch로 바꿔줄것
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(),member.getPassword())){
-            String errorMessage = "not matche password!";
-            log.info(errorMessage);
-            return new ResponseEntity(errorMessage,HttpStatus.BAD_REQUEST);
-        } else {
-            log.info("pw clean!");
-            TokenDto tokenDto = TokenDto.builder()
-                    .token(jwtTokenProvider.createToken(member.getUsername(),
-                            member.getRoleList()))
-                    .build();
-            return ResponseEntity.ok().body(tokenDto);
-        }
+
+        TokenDto tokenDto = TokenDto.builder()
+                .token(jwtTokenProvider.createToken(member.getUsername(),
+                        member.getRole()))
+                .build();
+        return ResponseEntity.ok().body(tokenDto);
     }
 
-    @GetMapping("/logout/{token}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public ResponseEntity logout(@PathVariable("token") String refreshToken){
+    @GetMapping("/logout/{username}")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity logout(@PathVariable String username){
         log.info("로그아웃");
 
-        PrincipalDetails principal = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member principalMember = principal.getMember();
-        Long memberId = principalMember.getId();
-
-        boolean logoutCheck = memberService.logout(refreshToken);
+        boolean logoutCheck = memberService.logout(username);
         System.out.println(logoutCheck);
         String returnMessage ;
         if (logoutCheck) {
@@ -132,7 +127,7 @@ public class MemberApiController {
         } else {
             returnMessage = "로그아웃 실패! 새로고침해주세요.";
 //            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnMessage);
-            return new ResponseEntity(returnMessage,HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(returnMessage, HttpStatus.UNAUTHORIZED);
         }
     }//
 
@@ -140,17 +135,12 @@ public class MemberApiController {
     @GetMapping("/checkAdmin/{username}")
     public ResponseEntity checkAdmin(@PathVariable String username){
         Member findUsername = memberRepository.findByUsername(username);
-        List<String> roleList = findUsername.getRoleList();
-        System.out.println(roleList);
+        //단순 조회기 때문에 컨트롤러 -> 리포지토리로 바로 조회
         boolean result = false;
-        String admin = "ROLE_ADMIN";
-        for (String s: roleList) {
-            System.out.println(s);
-            if (s.equals(admin)) {
-                System.out.println("!");
-                result = true;
-            }
-        }
+        MemberRole pivotRole = MemberRole.ROLE_ADMIN;
+        if (pivotRole == findUsername.getRole())
+            result = true;
+
         if (result == true) {
             return new ResponseEntity(HttpStatus.OK);
         }
@@ -158,7 +148,7 @@ public class MemberApiController {
     }
 
     @GetMapping("/{username}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity findMember(@PathVariable String username){
         Member member = memberRepository.findByUsername(username);
 
@@ -174,7 +164,7 @@ public class MemberApiController {
     }
 
     @PutMapping
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity modifyMember(@RequestBody MemberModifyDto memberModifyDto){
 
         try {
@@ -201,7 +191,7 @@ public class MemberApiController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity findAllMember(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
                                         Errors errors){
         if (errors.hasErrors())
@@ -246,20 +236,5 @@ public class MemberApiController {
         //deleteResult가 true => 예약 먼저 삭제한후 탈퇴 해라!
 
     }
-
-
-    //이 밑은 뭔지 모르는 메서드. 확인 안되면 지울것.
-    @GetMapping("/user/info")
-    public ResponseEntity<MemberInfoDto> userInfo(@RequestParam("token") String token){
-
-        Member findMember = memberService.findUserInfo(token);
-        MemberInfoDto memberInfoDto = MemberInfoDto.memberInfoDto(findMember);
-
-        return new ResponseEntity<>(memberInfoDto, HttpStatus.OK);
-    }//이친구도 보류
-    //검증시 필요한 값은 새 access토큰(id, roles),
-    // 회원id와 동일한 값을 db에서 가져와 헤더의 refreshToken값과 비교
-    //비교후 둘이 동일하다면 새 토큰 응답해줘야함.
-    //이거 일단 아무것도 없는 역할 없는 메서드임
 
 }

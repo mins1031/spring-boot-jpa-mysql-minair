@@ -29,7 +29,7 @@ public class MemberListDto {
                 .id(member.getId())
                 .username(member.getUsername())
                 .email(member.getEmail())
-                .name_kor(member.getName_kor())
+                .name_kor(member.getNameKor())
                 .phone(member.getPhone())
                 .build();
     }

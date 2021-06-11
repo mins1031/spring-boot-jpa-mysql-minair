@@ -3,6 +3,7 @@ package com.minair.minair.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.member.LoginRequestDto;
@@ -33,7 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
@@ -80,8 +80,10 @@ public class MemberApiControllerTest {
         Member member2 = Member.joinMember("user2",passwordEncoder.encode("jae"),"jae@jae",
                 LocalDate.of(2021,05,30),"재","jae","010-2222-2222",
                 Gender.M);
-        member.investRole("ROLE_MEMBER,ROLE_ADMIN");
-        member2.investRole("ROLE_MEMBER");
+        MemberRole memberRole = MemberRole.ROLE_ADMIN;
+        member.investMemberRole(memberRole);
+        MemberRole memberRole2 = MemberRole.ROLE_MEMBER;
+        member2.investMemberRole(memberRole2);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         member2.issueRefreshToken(r);
@@ -205,7 +207,7 @@ public class MemberApiControllerTest {
         memberRepository.save(user1);
 
         TokenDto accessToken = TokenDto.builder()
-                .token(jwtTokenProvider.createToken(user1.getUsername(),user1.getRoleList()))
+                .token(jwtTokenProvider.createToken(user1.getUsername(),user1.getRole()))
                 .build();
         TokenDto refreshToken = TokenDto.builder()
                 .token(jwtTokenProvider.createRefreshToken(refreshTokenProperty))
@@ -228,7 +230,7 @@ public class MemberApiControllerTest {
         String username = "user1";
         Member member = memberRepository.findByUsername(username);
         TokenDto tokenDto = new TokenDto(jwtTokenProvider.createToken(
-                member.getUsername(),member.getRoleList()));
+                member.getUsername(),member.getRole()));
         //When & Then
         this.mockMvc.perform(get("/api/member/{username}", username)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -279,19 +281,19 @@ public class MemberApiControllerTest {
         String username = "user1";
         Member member = memberRepository.findByUsername(username);
         System.out.println(member);
-        System.out.println(member.getName_eng());
+        System.out.println(member.getNameEng());
         String updateNameEng = "kkkkkk";
         MemberModifyDto memberModifyDto = MemberModifyDto.builder()
                 .username(member.getUsername())
                 .email(member.getEmail())
                 .birth(member.getBirth())
-                .name_kor(member.getName_kor())
+                .name_kor(member.getNameKor())
                 .name_eng(updateNameEng)
                 .phone(member.getPhone())
                 .gender(member.getGender())
                 .build();
         TokenDto tokenDto = TokenDto.builder()
-                .token(jwtTokenProvider.createToken(member.getUsername(),member.getRoleList()))
+                .token(jwtTokenProvider.createToken(member.getUsername(),member.getRole()))
                 .build();
 
         //When & Then
@@ -363,7 +365,7 @@ public class MemberApiControllerTest {
         String findMemberName = "user1";
         Member member = memberRepository.findByUsername(findMemberName);
         TokenDto tokenDto = TokenDto.builder()
-                .token(jwtTokenProvider.createToken(member.getUsername(),member.getRoleList()))
+                .token(jwtTokenProvider.createToken(member.getUsername(),member.getRole()))
                 .build();
 
         //When & Then

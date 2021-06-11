@@ -37,27 +37,39 @@ public class Member extends DateEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String roles;
+    //private String roles;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "roles")
+    private MemberRole roles;
+
+    /**
+     * enum으로 바꾼 시점에서 체크해야 할부분 : 권한 부여 부분, 체크 부분, 디비 권한값 하나로 바꾸기 getRoleList사용하는곳
+     * 모두 단일 Role체크로 바꾸기.
+     */
     @Embedded
-    //@JsonIgnore
     private RefreshTokenProperty refreshToken;
 
-    public List<String> getRoleList(){
-        if(this.roles.length() > 0){
+    public MemberRole getRole(){
+        return this.roles;
+        /*if(this.roles.length() > 0){
             return Arrays.asList(this.roles.split(","));
             //Arrays.asList는 배열을 리스트형태로 변환하지만 변환된 리스트가 배열의 주소값을 매게로 형태만 변하기에
             //Arrays.asList로만든 리스트는 값의 추가가 안되고 값을 변경하면 기존 배열의 값까지 변해버림.
             //이 경우는 값을 추가하지 못하게 하기 위함임.
         }
-        return new ArrayList<>();
+
+        return new ArrayList<>();*/
     }
+
+
     /*@OneToMany(mappedBy = "member" , cascade = CascadeType.ALL)
     private List<Reservation> reservationList = new ArrayList<>();
     회원에서 예약을 조회하는것보다 예약에서 회원값으로 조회하는게 더 객체지향적임.*/
 
     @Builder
-    public Member(Long id, String username, String password, String email, LocalDate birth, String nameKor, String nameEng, String phone, Gender gender, String roles, RefreshTokenProperty refreshToken) {
+    public Member(Long id, String username, String password, String email, LocalDate birth,
+                  String nameKor, String nameEng, String phone, Gender gender) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -67,8 +79,6 @@ public class Member extends DateEntity {
         this.nameEng = nameEng;
         this.phone = phone;
         this.gender = gender;
-        this.roles = roles;
-        this.refreshToken = refreshToken;
     }
 
     //Member생성 메서드
@@ -77,7 +87,7 @@ public class Member extends DateEntity {
                              String nameEng, String phone,
                              Gender gender){
 
-        /*Member.builder()
+        /*return Member.builder()
                 .username(username)
                 .password(password)
                 .email(email)
@@ -86,10 +96,9 @@ public class Member extends DateEntity {
                 .nameEng(nameEng)
                 .phone(phone)
                 .gender(gender)
-                .roles()
-                .refreshToken(refreshToken)
                 .build();
 */
+
         Member member = new Member();
         member.username  = username;
         member.password = password;
@@ -103,10 +112,9 @@ public class Member extends DateEntity {
         return member;
     }
 
-    public void investRole(String roles){
+    public void investMemberRole(MemberRole roles){
         this.roles = roles;
     }
-
     public void issueRefreshToken(RefreshTokenProperty refreshTokenProperty){
         this.refreshToken = refreshTokenProperty;
         log.info(refreshToken.getRefreshTokenValue());
@@ -130,19 +138,5 @@ public class Member extends DateEntity {
     public void logout(){
         this.refreshToken.logout();
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Member member = (Member) o;
-        return Objects.equals(id, member.id) && Objects.equals(username, member.username) && Objects.equals(password, member.password) && Objects.equals(email, member.email) && Objects.equals(birth, member.birth) && Objects.equals(nameKor, member.nameKor) && Objects.equals(nameEng, member.nameEng) && Objects.equals(phone, member.phone) && gender == member.gender && Objects.equals(roles, member.roles) && Objects.equals(refreshToken, member.refreshToken);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username, password, email, birth, nameKor, nameEng, phone, gender, roles, refreshToken);
-    }
-
 
 }

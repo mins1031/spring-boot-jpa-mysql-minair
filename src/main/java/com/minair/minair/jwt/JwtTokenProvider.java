@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.minair.minair.auth.PrincipalDetails;
 import com.minair.minair.auth.PrincipalDetailsService;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.repository.MemberRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class JwtTokenProvider {
     }
 
     //Jwt토큰 생성
-    public String createToken(String userPk, List<String> roles){
+    public String createToken(String userPk, MemberRole roles){
         Claims claims = Jwts.claims().setSubject(userPk);
         //payload에 저장되는 정보
         claims.put("roles",roles);// 정보는 key/value로 저장됨

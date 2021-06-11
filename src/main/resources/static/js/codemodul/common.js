@@ -121,14 +121,10 @@
         }
     }
 
-    function logout(accessToken,refreshToken) {
-        var token = refreshToken;
+    function logout(accessToken,username) {
         $.ajax({
             method : 'get',
-            url : "/api/member/logout/" + token,
-            /*data : {
-                "refreshToken":refreshToken
-            },*/
+            url : "/api/member/logout/" + username,
             async: false,
             beforeSend: function (xhr){
                 xhr.setRequestHeader("Authorization",accessToken);

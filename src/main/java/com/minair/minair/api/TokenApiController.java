@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.SequenceGenerators;
 import java.util.Date;
 import java.util.UUID;
 
@@ -46,7 +45,7 @@ public class TokenApiController {
 
     //토큰 재발급 함수 refresh의 호출 대상
     @PostMapping("/reissue/{refreshToken}")
-    public ResponseEntity reIssue(/*@RequestParam("refreshToken")*/@PathVariable String refreshToken){
+    public ResponseEntity reIssue(@PathVariable String refreshToken){
 
         log.info("reIssue");
         System.out.println("reIssue"+refreshToken);
@@ -56,7 +55,7 @@ public class TokenApiController {
             Member member = memberService.reIssueRefreshToken(refreshToken);
 
             if (member != null) {
-                String reIssueToken = jwtTokenProvider.createToken(member.getUsername(), member.getRoleList());
+                String reIssueToken = jwtTokenProvider.createToken(member.getUsername(), member.getRole());
                 Authentication authentication = jwtTokenProvider.getAuthentication(reIssueToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 return new ResponseEntity(reIssueToken, HttpStatus.OK);
@@ -69,7 +68,7 @@ public class TokenApiController {
     }
 
     @GetMapping("/tokenExpirationCheck/{accessToken}")
-    public ResponseEntity tokenCheck(/*@RequestParam("accessToken")*/@PathVariable String accessToken){
+    public ResponseEntity tokenCheck(@PathVariable String accessToken){
         log.info("엑세스 토큰 유효기간 확인 요청");
         boolean result = jwtTokenProvider.validateToken(accessToken);
         //토큰의 유효기간 체크후 기한 남았으면 true / 기한 만료 되었으면 false

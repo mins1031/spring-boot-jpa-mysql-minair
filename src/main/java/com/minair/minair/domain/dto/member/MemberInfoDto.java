@@ -22,8 +22,8 @@ public class MemberInfoDto {
     private String email;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
-    private String name_kor;
-    private String name_eng;
+    private String nameKor;
+    private String nameEng;
     private String phone;
     private Gender gender;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -34,8 +34,8 @@ public class MemberInfoDto {
                 .username(member.getUsername())
                 .email(member.getEmail())
                 .birth(member.getBirth())
-                .name_kor(member.getName_kor())
-                .name_eng(member.getName_eng())
+                .nameKor(member.getNameKor())
+                .nameEng(member.getNameEng())
                 .phone(member.getPhone())
                 .gender(member.getGender())
                 .regDate(member.getRegDate())

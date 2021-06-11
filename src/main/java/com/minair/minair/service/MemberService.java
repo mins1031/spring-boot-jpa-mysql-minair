@@ -1,9 +1,10 @@
 package com.minair.minair.service;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
-import com.minair.minair.domain.dto.member.MemberJoinDto;
-import com.minair.minair.domain.dto.member.MemberModifyDto;
+import com.minair.minair.domain.dto.member.*;
+import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.MemberRepository;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +36,13 @@ public class MemberService {
     @Transactional
     public Member join(MemberJoinDto memberJoinDto){
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
-        String role = "ROLE_MEMBER";
+        MemberRole memberRole = MemberRole.ROLE_MEMBER;
         Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
                         encodePw, memberJoinDto.getEmail(),
-                        memberJoinDto.getBirth(),memberJoinDto.getName_kor(),
-                        memberJoinDto.getName_eng(),memberJoinDto.getPhone(),
+                        memberJoinDto.getBirth(),memberJoinDto.getNameKor(),
+                        memberJoinDto.getNameEng(),memberJoinDto.getPhone(),
                         memberJoinDto.getGender());
-        joinMember.investRole(role);
+        joinMember.investMemberRole(memberRole);
 
         RefreshTokenProperty refreshTokenProperty
                 = new RefreshTokenProperty(null,0);
@@ -49,16 +52,30 @@ public class MemberService {
         return save;
     }
 
+    //@Transactional
+    public boolean login(LoginRequestDto loginRequestDto) {
+        Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
+        boolean result;
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
+            log.info("not match password!");
+            result = false;
+        } else {
+            log.info("pw clean!");
+            result = true;
+        }
+        return result;
+    }
+
     @Transactional
     public void joinAdmin(MemberJoinDto memberJoinDto){
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
-        String role = "ROLE_MEMBER,ROLE_ADMIN";
+        MemberRole memberRole = MemberRole.ROLE_ADMIN;
         Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
                 encodePw, memberJoinDto.getEmail(),
-                memberJoinDto.getBirth(),memberJoinDto.getName_kor(),
-                memberJoinDto.getName_eng(),memberJoinDto.getPhone(),
+                memberJoinDto.getBirth(),memberJoinDto.getNameKor(),
+                memberJoinDto.getNameEng(),memberJoinDto.getPhone(),
                 memberJoinDto.getGender());
-        joinMember.investRole(role);
+        joinMember.investMemberRole(memberRole);
 
         RefreshTokenProperty refreshTokenProperty
                 = new RefreshTokenProperty(null,0);
@@ -98,7 +115,6 @@ public class MemberService {
         }catch (NullPointerException e){
 
         }
-
     }//refreshToken DB에 저장
 
     @Transactional
@@ -121,18 +137,25 @@ public class MemberService {
         return memberByRefreshToken;
     }
 
+/**
+ * 과연 리턴 값을 boolean으로? 아님 따로 클래스 만들어서...?
+ * 불린으로 하면 컨트롤러에서 토큰 값을 생성해줘야함. 따로 DTO만들어서 리턴하는것도 좋아보임
+ * 범용성 있게..는 불가하고 LoginResultDto 만들어서 ture,false값과 true면 member 변환해서 보내줌.
+ * => 모든 디비와의 동작은 서비스까지만 오게 구현 해볼것.(정말 간단한 동작은 바로 오고가는것 가능.)
+ */
+
     @Transactional
-    public boolean logout(String refreshToken){
-        String convertToken = jwtTokenProvider.getMemberName(refreshToken);
-        Member member = memberRepository.findByRefreshToken(convertToken);
+    public boolean logout(String username){
         log.info("로그아웃 서비스");
-        boolean logoutCheck = false;
+        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByUsername(username));
+        Member member = optionalMember.get();
+
+        boolean logoutResult = false;
         if (member != null) {
-            logoutCheck = true;
+            logoutResult = true;
             member.logout();
         }
-
-        return logoutCheck;
+        return logoutResult;
     }
 
     @Transactional

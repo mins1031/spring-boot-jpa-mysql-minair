@@ -26,12 +26,12 @@ public class MemberJoinDto {
     @NotNull(message = "Email은 꼭 입력해주세요.")
     private String email;
     @NotNull
-    //@DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
     @NotNull(message = "한글이름은 꼭 입력해주세요.")
-    private String name_kor;
+    private String nameKor;
     @NotNull(message = "영문이름 꼭 입력해주세요.")
-    private String name_eng;
+    private String nameEng;
     @NotNull(message = "폰 번호는 꼭 입력해주세요.")
     private String phone;
     @NotNull(message = "성별은 꼭 입력해주세요.")

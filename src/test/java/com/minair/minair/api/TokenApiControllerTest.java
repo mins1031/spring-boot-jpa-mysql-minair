@@ -1,8 +1,8 @@
 package com.minair.minair.api;
 
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.dto.member.MemberJoinDto;
-import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -62,8 +61,10 @@ public class TokenApiControllerTest {
         Member member2 = Member.joinMember("user2",passwordEncoder.encode("jae"),"jae@jae",
                 LocalDate.of(2021,05,30),"재","jae","010-2222-2222",
                 Gender.M);
-        member.investRole("ROLE_MEMBER,ROLE_ADMIN");
-        member2.investRole("ROLE_MEMBER");
+        MemberRole memberRole = MemberRole.ROLE_ADMIN;
+        member.investMemberRole(memberRole);
+        MemberRole memberRole2 = MemberRole.ROLE_MEMBER;
+        member2.investMemberRole(memberRole2);
         RefreshTokenProperty r = new RefreshTokenProperty(
                 UUID.randomUUID().toString(), new Date().getTime()
         );
@@ -120,7 +121,7 @@ public class TokenApiControllerTest {
         String username = "user1";
         Member byUsername = memberRepository.findByUsername(username);
 
-        String token = jwtTokenProvider.createToken(byUsername.getUsername(),byUsername.getRoleList());
+        String token = jwtTokenProvider.createToken(byUsername.getUsername(),byUsername.getRole());
 
         this.mockMvc.perform(get("/api/token/tokenExpirationCheck/{accessToken}",token))
                 .andDo(print())

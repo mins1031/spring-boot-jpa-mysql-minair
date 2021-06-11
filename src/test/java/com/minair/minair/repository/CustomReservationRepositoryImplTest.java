@@ -2,6 +2,7 @@ package com.minair.minair.repository;
 
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
+import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
@@ -59,7 +60,7 @@ public class CustomReservationRepositoryImplTest {
         String name_eng = "test";
         String phone = "010-4533-2222";
         Gender gender = Gender.F;
-        String role = "ROLE_MEMBER";
+
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(
                         UUID.randomUUID().toString(),
@@ -67,7 +68,8 @@ public class CustomReservationRepositoryImplTest {
                 );
         Member member = Member.joinMember(username,pw,email,birth,name_kor,name_eng,
                 phone,gender);
-        member.investRole(role);
+        MemberRole memberRole = MemberRole.ROLE_MEMBER;
+        member.investMemberRole(memberRole);
         //member.issueRefreshToken(refreshTokenProperty);
         //memberRepository.save(member);
         /*Member member = Member.joinMember("user1",passwordEncoder.encode("alsdud"),"min@min",
