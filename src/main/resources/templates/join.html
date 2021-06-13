@@ -167,11 +167,8 @@
             $.ajax({
                 type: "get",
                 url: "/api/member/check-id/"+idVal ,
-                /*data: {
-                    "idVal": idVal
-                },*/
                 success: function (result) {
-                    if (result == "YES") {
+                    if (result) {
                         alert("사용 가능한 Id입니다.")
                     } else {
                         alert("중복된 Id입니다.")

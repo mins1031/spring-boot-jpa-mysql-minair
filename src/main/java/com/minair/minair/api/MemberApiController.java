@@ -1,6 +1,7 @@
 package com.minair.minair.api;
 
 import com.minair.minair.auth.PrincipalDetails;
+import com.minair.minair.common.BasicResource;
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
@@ -52,37 +53,37 @@ public class MemberApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        Member join ;
         try {
-            join = memberService.join(member);
+
+            MemberInfoDto join = memberService.join(member);
+
+            BasicResource basicResource = new BasicResource(join);
+            basicResource.add(linkTo(methodOn(MemberApiController.class).join(member,errors)).withSelfRel());
+
+            return ResponseEntity.ok().body(basicResource);
         } catch (RuntimeException e){
             e.printStackTrace();
             String errorMessage = "서버에러! "+ e.getMessage();
             return new ResponseEntity(errorMessage,HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        MemberInfoDto resultMember = modelMapper.map(join,MemberInfoDto.class);
-        EntityModel resource = EntityModel.of(resultMember);
-        resource.add(linkTo(methodOn(MemberApiController.class).join(member,errors)).withSelfRel());
-        resource.add(new Link("/").withRel("index"));
-        resource.add(new Link("/docs/index").withRel("profile"));
-
-        return ResponseEntity.ok().body(resource);
     }
+    /**
+     * 회원가입 로직:
+     * joinDto -> if valid걸리면 에러리턴 ,
+     * */
 
     @GetMapping("/check-id/{idVal}")
     public ResponseEntity checkId(@PathVariable String idVal){
-        System.out.println(idVal);
         int checkResult = memberRepository.checkId(idVal);
-        String result;
+        boolean result;
         if (checkResult == 0)
-            result = "YES";
+            result = true;
         else
-            result = "NO";
+            result = false;
 
-        System.out.println(result);
         return ResponseEntity.ok().body(result);
     }
-    //@PathVariable 민감한 정보 url post 대체요망
+    //@PathVariable 민감한 정보 url post 대체요망 => 조금더 고민해보장
 
 /**
  * 프로젝트 자체를 분리...하는거 보다는 웹과 api를 컨트롤러만 분리해주면 될것같았는데 음.........
@@ -104,6 +105,7 @@ public class MemberApiController {
         if (!loginResult){
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
         } //이거 notmatch로 바꿔줄것
+
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
 
         TokenDto tokenDto = TokenDto.builder()
@@ -119,34 +121,29 @@ public class MemberApiController {
         log.info("로그아웃");
 
         boolean logoutCheck = memberService.logout(username);
-        System.out.println(logoutCheck);
         String returnMessage ;
         if (logoutCheck) {
             returnMessage = "로그아웃!";
             return new ResponseEntity(returnMessage, HttpStatus.OK);
         } else {
             returnMessage = "로그아웃 실패! 새로고침해주세요.";
-//            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnMessage);
             return new ResponseEntity(returnMessage, HttpStatus.UNAUTHORIZED);
         }
     }//
 
     //admin 페이지 진입시 admin계정인지 인증해주는 메서드
-    @GetMapping("/checkAdmin/{username}")
+    @GetMapping("/check-admin/{username}")
     public ResponseEntity checkAdmin(@PathVariable String username){
         Member findUsername = memberRepository.findByUsername(username);
         //단순 조회기 때문에 컨트롤러 -> 리포지토리로 바로 조회
-        boolean result = false;
-        MemberRole pivotRole = MemberRole.ROLE_ADMIN;
-        if (pivotRole == findUsername.getRole())
-            result = true;
 
-        if (result == true) {
+        if (MemberRole.ROLE_ADMIN == findUsername.getRole())
             return new ResponseEntity(HttpStatus.OK);
-        }
+
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 
+    //회원 단건 조회
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity findMember(@PathVariable String username){
@@ -155,18 +152,17 @@ public class MemberApiController {
         MemberInfoDto memberInfoDto =
                 MemberInfoDto.memberInfoDto(member);
 
-        EntityModel memberResource = EntityModel.of(memberInfoDto);
+        BasicResource memberResource = new BasicResource(memberInfoDto);
         memberResource.add(linkTo(methodOn(MemberApiController.class).findMember(username)).withSelfRel());
-        memberResource.add(new Link("/").withRel("index"));
-        memberResource.add(new Link("/docs/index").withRel("profile"));
-
         return ResponseEntity.ok().body(memberResource);
     }
 
+    //회원 수정
     @PutMapping
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity modifyMember(@RequestBody MemberModifyDto memberModifyDto){
-
+        //변경이기 때문에 validation은 x.
+        //update의 경우 민감할수 있는 id,password는 따로 변경 루트를 제공하고 편하게 바뀌어도 되는 부분들을 변경한다.
         try {
             memberService.updateMember(memberModifyDto);
         } catch (RuntimeException e){
@@ -181,15 +177,15 @@ public class MemberApiController {
         MemberInfoDto memberInfoDto =
                 MemberInfoDto.memberInfoDto(m);
 
-        EntityModel memberResource = EntityModel.of(memberInfoDto);
-        memberResource.add(new Link("/api/member/{username}").withRel("member-info"));
-        memberResource.add(linkTo(MemberApiController.class).withSelfRel());
-        memberResource.add(new Link("/").withRel("index"));
-        memberResource.add(new Link("/docs/index").withRel("profile"));
+        BasicResource basicResource = new BasicResource(memberInfoDto);
+        basicResource.add(linkTo(MemberApiController.class).withSelfRel());
+        basicResource.add(new Link("/api/member/{username}").withRel("member-info"));
 
-        return ResponseEntity.ok().body(memberResource);
+        return ResponseEntity.ok().body(basicResource);
     }
-
+/**
+ * 클래스명과 메서드명은 이름을 보고 대강의 역할을 파악할수 있게 만들어야 한다.
+ * */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity findAllMember(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
@@ -214,13 +210,10 @@ public class MemberApiController {
                 .pageDto(pageDto)
                 .build();
 
-        EntityModel memberResource = EntityModel.of(q);
-        memberResource.add(new Link("/api/member/{username}").withRel("member-info"));
-        memberResource.add(linkTo(MemberApiController.class).withSelfRel());
-        memberResource.add(new Link("/").withRel("index"));
-        memberResource.add(new Link("/docs/index").withRel("profile"));
-
-        return ResponseEntity.ok().body(memberResource);
+        BasicResource basicResource = new BasicResource(q);
+        basicResource.add(linkTo(MemberApiController.class).withSelfRel());
+        basicResource.add(new Link("/api/member/{username}").withRel("member-info"));
+        return ResponseEntity.ok().body(basicResource);
     }
 
 
@@ -234,7 +227,6 @@ public class MemberApiController {
         return deleteResult;
         //deleteResult가 false => 삭제 완료!
         //deleteResult가 true => 예약 먼저 삭제한후 탈퇴 해라!
-
     }
 
 }

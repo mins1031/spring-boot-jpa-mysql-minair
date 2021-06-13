@@ -100,14 +100,11 @@
         var status;
         $.ajax({
             method : 'get',
-            url : "/api/member/checkAdmin/" + username,
-            /*data : {
-                "username":username
-            },*/
+            url : "/api/member/check-admin/" + username,
             async: false,
             statusCode: {
                 200: function (response) {
-                   console.log("어드민 계정 인증완료")
+                    console.log("어드민 계정 인증완료")
                     status = 200;
                 },
                 403: function (response) {

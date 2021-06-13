@@ -1,6 +1,7 @@
 package com.minair.minair.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minair.minair.common.TestDescription;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
@@ -91,6 +92,9 @@ public class MemberApiControllerTest {
         memberRepository.save(member);
     }
 
+    /**
+     * 회원가입 테스트
+     * */
     @Test
     public void join() throws Exception {
         //Given
@@ -154,20 +158,55 @@ public class MemberApiControllerTest {
         ))
         ;
     }
-
+    /**
+     * 회원가입 부적절한 파라미터값 입력시.
+     * */
     @Test
-    public void checkId() throws Exception {
-        String id = "user1";
-        String newId = "mmm";
+    public void badRequestJoin() throws Exception {
+        //Given
+        String username = "member";
+        String password = "alsdud";
+        String email = "memda";
+        String name_kor = "멤버";
+        String name_eng = "member";
+        String phone = "010-1111-0000";
+        Gender gender = Gender.M;
+        LocalDate birth = LocalDate.of(2020,8,19);
+        MemberJoinDto wrongEmailDto =
+                new MemberJoinDto(username,password,email,birth,name_kor,name_eng,phone,gender);
+        //When & Then
+        this.mockMvc.perform(post("/api/member/new")
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(wrongEmailDto)))
+                .andDo(print())
+                .andExpect(status().isOk());
 
-        this.mockMvc.perform(get("/api/member/checkId/{id}",newId))
+    }
+    @Test
+    public void checkIdTrue() throws Exception {
+        String id = "mmm";
+
+        this.mockMvc.perform(get("/api/member/check-id/{id}",id))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("YES"))
+                .andExpect(content().string("true"))
         ;
     }
 
     @Test
+    public void checkIdFalse() throws Exception {
+        String id = "user1";
+
+        this.mockMvc.perform(get("/api/member/check-id/{id}",id))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("false"))
+        ;
+    }
+
+    @Test
+    @TestDescription("정상적 로그인 테스트")
     public void login() throws Exception {
         String username = "user1";
         String password = "alsdud";
@@ -191,7 +230,23 @@ public class MemberApiControllerTest {
                 ))
         ;
     }
+    @Test
+    @TestDescription("로그인시 패스워드 불일치 테스트")
+    public void wrongPwdLogin() throws Exception {
+        String username = "user1";
+        String password = "wrongpwd";
 
+        LoginRequestDto loginRequestDto = new LoginRequestDto(username,password);
+        this.mockMvc.perform(post("/api/member/login")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaTypes.HAL_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(loginRequestDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                //.andExpect(jsonPath("token").exists())
+
+        ;
+    }
     @Test
     public void logout() throws Exception {
         //Given
@@ -213,15 +268,14 @@ public class MemberApiControllerTest {
                 .token(jwtTokenProvider.createRefreshToken(refreshTokenProperty))
                 .build();
         //When & Then
-        this.mockMvc.perform(get("/api/member/logout/{token}",
-                refreshToken.getToken())
+        this.mockMvc.perform(get("/api/member/logout/{username}",
+                user1.getUsername())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE)
         .header("Authorization",accessToken.getToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
         ;
-
     }
 
     @Test
@@ -241,8 +295,8 @@ public class MemberApiControllerTest {
                 .andExpect(jsonPath("username").exists())
                 .andExpect(jsonPath("email").exists())
                 .andExpect(jsonPath("birth").exists())
-                .andExpect(jsonPath("name_kor").exists())
-                .andExpect(jsonPath("name_eng").exists())
+                .andExpect(jsonPath("nameKor").exists())
+                .andExpect(jsonPath("nameEng").exists())
                 .andExpect(jsonPath("phone").exists())
                 .andExpect(jsonPath("gender").exists())
                 .andExpect(jsonPath("regDate").exists())
@@ -262,15 +316,14 @@ public class MemberApiControllerTest {
                         fieldWithPath("username").description("회원 id 값"),
                         fieldWithPath("email").description("회원 email 값"),
                         fieldWithPath("birth").description("회원 생년월일 값"),
-                        fieldWithPath("name_kor").description("회원 한국이름 값"),
-                        fieldWithPath("name_eng").description("회원 영어이름 값"),
+                        fieldWithPath("nameKor").description("회원 한국이름 값"),
+                        fieldWithPath("nameEng").description("회원 영어이름 값"),
                         fieldWithPath("phone").description("회원 휴대번호 값"),
                         fieldWithPath("gender").description("회원 성별 값"),
                         fieldWithPath("regDate").description("회원 등록일 값"),
                         fieldWithPath("_links.self.href").description("self href"),
                         fieldWithPath("_links.index.href").description("index href"),
-                        fieldWithPath("_links.profile.href").description("document href for explain this api")
-                )
+                        fieldWithPath("_links.profile.href").description("document href for explain this api"))
                 ))
         ;
     }
@@ -307,8 +360,8 @@ public class MemberApiControllerTest {
                 .andExpect(jsonPath("username").exists())
                 .andExpect(jsonPath("email").exists())
                 .andExpect(jsonPath("birth").exists())
-                .andExpect(jsonPath("name_kor").exists())
-                .andExpect(jsonPath("name_eng").exists())
+                .andExpect(jsonPath("nameKor").exists())
+                .andExpect(jsonPath("nameEng").exists())
                 .andExpect(jsonPath("phone").exists())
                 .andExpect(jsonPath("gender").exists())
                 .andExpect(jsonPath("regDate").exists())
@@ -339,8 +392,8 @@ public class MemberApiControllerTest {
                         fieldWithPath("username").description("회원 id 값"),
                         fieldWithPath("email").description("회원 email 값"),
                         fieldWithPath("birth").description("회원 생년월일 값"),
-                        fieldWithPath("name_kor").description("회원 한국이름 값"),
-                        fieldWithPath("name_eng").description("회원 영어이름 값"),
+                        fieldWithPath("nameKor").description("회원 한국이름 값"),
+                        fieldWithPath("nameEng").description("회원 영어이름 값"),
                         fieldWithPath("phone").description("회원 휴대번호 값"),
                         fieldWithPath("gender").description("회원 성별 값"),
                         fieldWithPath("regDate").description("회원 등록일 값"),

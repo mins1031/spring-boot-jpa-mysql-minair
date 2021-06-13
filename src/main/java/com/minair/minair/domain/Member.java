@@ -52,16 +52,7 @@ public class Member extends DateEntity {
 
     public MemberRole getRole(){
         return this.roles;
-        /*if(this.roles.length() > 0){
-            return Arrays.asList(this.roles.split(","));
-            //Arrays.asList는 배열을 리스트형태로 변환하지만 변환된 리스트가 배열의 주소값을 매게로 형태만 변하기에
-            //Arrays.asList로만든 리스트는 값의 추가가 안되고 값을 변경하면 기존 배열의 값까지 변해버림.
-            //이 경우는 값을 추가하지 못하게 하기 위함임.
-        }
-
-        return new ArrayList<>();*/
     }
-
 
     /*@OneToMany(mappedBy = "member" , cascade = CascadeType.ALL)
     private List<Reservation> reservationList = new ArrayList<>();

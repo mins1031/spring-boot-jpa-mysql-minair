@@ -11,6 +11,7 @@ import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -32,9 +33,10 @@ public class MemberService {
     private final ReservationRepository reservationRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ModelMapper modelMapper;
 
     @Transactional
-    public Member join(MemberJoinDto memberJoinDto){
+    public MemberInfoDto join(MemberJoinDto memberJoinDto){
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
         Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
@@ -49,13 +51,21 @@ public class MemberService {
         joinMember.issueRefreshToken(refreshTokenProperty);
 
         Member save = memberRepository.save(joinMember);
-        return save;
+        MemberInfoDto resultMember = modelMapper.map(save,MemberInfoDto.class);
+
+        return resultMember;
     }
 
     //@Transactional
     public boolean login(LoginRequestDto loginRequestDto) {
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
         boolean result;
+
+        if (member == null) {
+            result = false;
+            return result;
+        }
+
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
             log.info("not match password!");
             result = false;
