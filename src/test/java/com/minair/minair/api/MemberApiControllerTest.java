@@ -158,10 +158,9 @@ public class MemberApiControllerTest {
         ))
         ;
     }
-    /**
-     * 회원가입 부적절한 파라미터값 입력시.
-     * */
-    @Test
+
+    /*@Test
+    @TestDescription("회원가입 부적절한 파라미터값 입력시 테스트")
     public void badRequestJoin() throws Exception {
         //Given
         String username = "member";
@@ -182,8 +181,10 @@ public class MemberApiControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-    }
+    }*/
+
     @Test
+    @TestDescription("id 중복체크 중복되 id가 아닌 경우")
     public void checkIdTrue() throws Exception {
         String id = "mmm";
 
@@ -195,6 +196,7 @@ public class MemberApiControllerTest {
     }
 
     @Test
+    @TestDescription("id 중복체크시 중복된 id인 경우")
     public void checkIdFalse() throws Exception {
         String id = "user1";
 
@@ -244,18 +246,17 @@ public class MemberApiControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 //.andExpect(jsonPath("token").exists())
-
         ;
     }
+
     @Test
+    @TestDescription("로그아웃 테스트")
     public void logout() throws Exception {
         //Given
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(
                         UUID.randomUUID().toString(),new Date().getTime()
                 );
-        System.out.println(refreshTokenProperty.getRefreshTokenValue());
-        System.out.println(refreshTokenProperty.getRefreshTokenExpirationPeriod());
 
         Member user1 = memberRepository.findByUsername("user1");
         user1.issueRefreshToken(refreshTokenProperty);
@@ -279,6 +280,7 @@ public class MemberApiControllerTest {
     }
 
     @Test
+    @TestDescription("유저 단건 조회")
     public void findMember() throws Exception {
         //Given
         String username = "user1";
@@ -327,7 +329,25 @@ public class MemberApiControllerTest {
                 ))
         ;
     }
+    /*
+    @Test
+    @TestDescription("유저 단건 조회 없는 회원 요청값인 경우=> @PreAuthorize를 주석처리하고 진행시 badRequest리턴 받았다.")
+    public void wrongUsernameFindMember() throws Exception {
+        //Given
+        String username = "wrongName";
+        //Member member = memberRepository.findByUsername(username);
+        //TokenDto tokenDto = new TokenDto(jwtTokenProvider.createToken(
+               // username, MemberRole.ROLE_MEMBER));
+        //When & Then
+        this.mockMvc.perform(get("/api/member/{username}", username)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaTypes.HAL_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                ;
+    }
 
+     */
     @Test
     public void modifyMember() throws Exception {
         //Given

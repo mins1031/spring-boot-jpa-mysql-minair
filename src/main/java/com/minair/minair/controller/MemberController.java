@@ -62,15 +62,13 @@ public class MemberController {
             new NullPointerException();
         }
 
-        Member findMember = memberService.findByUserInfo(username);
+        MemberInfoDto findMember = memberService.findByUserInfo(username);
         if (findMember == null){
             throw new NotFoundMember();
         }
 
-        MemberInfoDto memberInfoDto =
-                MemberInfoDto.memberInfoDto(findMember);
-        System.out.println(memberInfoDto);
-        model.addAttribute("memberInfo",memberInfoDto);
+        System.out.println(findMember);
+        model.addAttribute("memberInfo",findMember);
     }
 
     @GetMapping("/member/modify")

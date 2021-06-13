@@ -101,10 +101,11 @@ public class MemberApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        boolean loginResult = memberService.login(loginRequestDto);
-        if (!loginResult){
-            return ResponseEntity.badRequest().body(new ErrorResource(errors));
-        } //이거 notmatch로 바꿔줄것
+        LoginServiceDto loginResult = memberService.login(loginRequestDto);
+        if (loginResult.isIdNotMatch()){
+            return ResponseEntity.badRequest().body(1000);
+        } else if (loginResult.isWrongPwd())
+            return ResponseEntity.badRequest().body(1001);
 
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
 
@@ -148,6 +149,8 @@ public class MemberApiController {
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity findMember(@PathVariable String username){
         Member member = memberRepository.findByUsername(username);
+        if (member == null)
+            return new ResponseEntity("존재하지 않는 회원입니다. 로그인 해주세요",HttpStatus.BAD_REQUEST);
 
         MemberInfoDto memberInfoDto =
                 MemberInfoDto.memberInfoDto(member);
@@ -161,7 +164,7 @@ public class MemberApiController {
     @PutMapping
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity modifyMember(@RequestBody MemberModifyDto memberModifyDto){
-        //변경이기 때문에 validation은 x.
+        //변경이기 때문에 validation은 x. 또한 @PreAuthorize로 필터에서 기본적인 인증이 이루어지기 때문에 요청값 유효성 검사는 x
         //update의 경우 민감할수 있는 id,password는 따로 변경 루트를 제공하고 편하게 바뀌어도 되는 부분들을 변경한다.
         try {
             memberService.updateMember(memberModifyDto);
@@ -169,23 +172,17 @@ public class MemberApiController {
             e.printStackTrace();
             return new ResponseEntity(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        Member m = memberService.findByUserInfo(memberModifyDto.getUsername());
-        if (m == null)
+        //update시 혹여나 발생할 예외를 대비
+        MemberInfoDto memberInfoDto = memberService.findByUserInfo(memberModifyDto.getUsername());
+        if (memberInfoDto == null)
             return ResponseEntity.noContent().build();
-
-        MemberInfoDto memberInfoDto =
-                MemberInfoDto.memberInfoDto(m);
-
         BasicResource basicResource = new BasicResource(memberInfoDto);
         basicResource.add(linkTo(MemberApiController.class).withSelfRel());
         basicResource.add(new Link("/api/member/{username}").withRel("member-info"));
 
         return ResponseEntity.ok().body(basicResource);
     }
-/**
- * 클래스명과 메서드명은 이름을 보고 대강의 역할을 파악할수 있게 만들어야 한다.
- * */
+
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity findAllMember(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
@@ -227,6 +224,7 @@ public class MemberApiController {
         return deleteResult;
         //deleteResult가 false => 삭제 완료!
         //deleteResult가 true => 예약 먼저 삭제한후 탈퇴 해라!
+        //delete는 db관계 해결후 다시 정의 할것.
     }
 
 }

@@ -57,23 +57,24 @@ public class MemberService {
     }
 
     //@Transactional
-    public boolean login(LoginRequestDto loginRequestDto) {
+    public LoginServiceDto login(LoginRequestDto loginRequestDto) {
+        LoginServiceDto loginServiceDto = new LoginServiceDto();
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
-        boolean result;
 
         if (member == null) {
-            result = false;
-            return result;
+            loginServiceDto.setIdNotMatch(true);
+            return loginServiceDto;
         }
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
             log.info("not match password!");
-            result = false;
+            loginServiceDto.setWrongPwd(true);
         } else {
             log.info("pw clean!");
-            result = true;
+            loginServiceDto.setWrongPwd(true);
         }
-        return result;
+
+        return loginServiceDto;
     }
 
     @Transactional
@@ -169,12 +170,15 @@ public class MemberService {
     }
 
     @Transactional
-    public Member findByUserInfo(String username){
+    public MemberInfoDto findByUserInfo(String username){
         Member findMember = memberRepository.findByUsername(username);
         if (findMember == null)
             new NullPointerException();
 
-        return findMember;
+        MemberInfoDto memberInfoDto =
+                MemberInfoDto.memberInfoDto(findMember);
+
+        return memberInfoDto;
     }
 
     @Transactional
