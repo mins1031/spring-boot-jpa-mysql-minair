@@ -1,6 +1,7 @@
 package com.minair.minair.service;
 
 import com.minair.minair.domain.Airline;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.repository.SeatRepository;
@@ -29,17 +30,19 @@ class SeatServiceTest {
 
     @Test
     public void CTest(){
-        Departure departure = Departure.JEJU;
-        Distination distination = Distination.DAE;
-        LocalDate depart_date = LocalDate.of(2021,04,03);
-        LocalTime depart_time = LocalTime.of(12,45);
-        LocalTime reach_time = LocalTime.of(13,55);
 
-        Airline airline = Airline.createAirline(departure,distination,depart_date,
-                depart_time,reach_time,18);
+        AirlineGenerateDto airlineGenerateDto = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.DAE)
+                .departDate(LocalDate.of(2021,04,03))
+                .departTime(LocalTime.of(12,45))
+                .reachTime(LocalTime.of(13,55))
+                .build();
+
+        Airline airline = Airline.createAirline(airlineGenerateDto);
 
         //airlineService.createAirline(airline);
 
-        seatService.createSeats(airline,airline.getSeatcount());
+        seatService.createSeats(airline,airline.getSeatCount());
     }
 }

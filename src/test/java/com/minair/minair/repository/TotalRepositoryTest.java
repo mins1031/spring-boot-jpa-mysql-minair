@@ -3,6 +3,7 @@ package com.minair.minair.repository;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.AirlineSeat;
 import com.minair.minair.domain.Seat;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import org.assertj.core.api.Assertions;
@@ -41,11 +42,6 @@ public class TotalRepositoryTest {
 
     @Test
     public void testAirline(){
-        Departure departure = Departure.ICN;
-        Distination distination = Distination.JEJU;
-        LocalDate depart_date = LocalDate.of(2021,04,03);
-        LocalTime depart_time = LocalTime.of(12,45);
-        LocalTime reach_time = LocalTime.of(13,55);
 
         List<Seat> seats = new ArrayList<>();
 
@@ -59,14 +55,16 @@ public class TotalRepositoryTest {
         //원래는 db에 좌석들의 값이 있어야 하지만 초기 테스트이므로 직접 생성해 넣어줌
 
         List<Seat> seatList = seatRepository.findAll();
+        AirlineGenerateDto airlineGenerateDto = AirlineGenerateDto.builder()
+                .departure(Departure.ICN)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,04,03))
+                .departTime(LocalTime.of(12,45))
+                .reachTime(LocalTime.of(13,55))
+                .build();
+        Airline airline = Airline.createAirline(airlineGenerateDto);
 
-       Airline airline = Airline.createAirline(departure,distination, depart_date,
-              depart_time,reach_time,9);
 
-        for (Seat s: seatList) {
-            //AirlineSeat airlineSeats = AirlineSeat.createAirlineSeat(airline,s);
-           // airlinSeatRepository.save(airlineSeats);
-        }
         //우선 항공권을 추가하려면 각 좌석에 좌석 정보를 넣어야 하고 좌석정보는 좌석의 정보가 있어야하기에
         //좌석생성 -> 좌석과항공의 정보 생성 -> 항공권 생성시 정보 넣어줌 이 식으로 진행 되어야 한다.
         //다만 항공 좌석의 정보가 생성되어 항공에 입력되야하는데 항공좌석정보생성은 항공에 대한 정보가 필요함,즉

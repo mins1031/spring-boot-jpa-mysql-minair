@@ -51,8 +51,7 @@ public class AirlineApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        try {
-
+        /*try {
             Airline airline = Airline.createAirline(airlineCreateDto.getDeparture()
                     , airlineCreateDto.getDistination(), airlineCreateDto.getDepart_date(),
                     airlineCreateDto.getDepart_time(), airlineCreateDto.getReach_time(), 18);
@@ -75,7 +74,8 @@ public class AirlineApiController {
         } catch (NullPointerException e){
             e.printStackTrace();
             return new ResponseEntity(e,HttpStatus.UNAUTHORIZED);
-        }
+        }*/
+        return null; //=> !!!!!리펙토링 해줘야함!!!!!
     }
 
     @GetMapping(value = "/search",consumes = MediaType.APPLICATION_JSON_VALUE)

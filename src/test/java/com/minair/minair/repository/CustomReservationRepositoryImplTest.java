@@ -4,6 +4,8 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
@@ -60,39 +62,39 @@ public class CustomReservationRepositoryImplTest {
         String name_eng = "test";
         String phone = "010-4533-2222";
         Gender gender = Gender.F;
+        MemberCreateDto memberCreateDto = MemberCreateDto.builder()
+                .username(username)
+                .password(pw)
+                .email(email)
+                .birth(birth)
+                .nameKor(name_kor)
+                .nameEng(name_eng)
+                .phone(phone)
+                .gender(gender)
+                .build();
 
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(
                         UUID.randomUUID().toString(),
                         new Date().getTime()
                 );
-        Member member = Member.joinMember(username,pw,email,birth,name_kor,name_eng,
-                phone,gender);
+        Member member = Member.createMember(memberCreateDto);
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
         member.investMemberRole(memberRole);
-        //member.issueRefreshToken(refreshTokenProperty);
-        //memberRepository.save(member);
-        /*Member member = Member.joinMember("user1",passwordEncoder.encode("alsdud"),"min@min",
-                LocalDate.of(2021,05,30),"민","min","010-2222-2222",
-                Gender.F);
-        System.out.println(member);
-        member.investRole("ROLE_MEMBER,ROLE_ADMIN");
-        RefreshTokenProperty refreshTokenProperty =
-                new RefreshTokenProperty(
-                        UUID.randomUUID().toString(),
-                        new Date().getTime()
-                );
-        member.issueRefreshToken(refreshTokenProperty);
-        */RefreshTokenProperty r = new RefreshTokenProperty();
+        RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);
 
-        Airline airline1 = Airline.createAirline(Departure.JEJU, Distination.DAE,
-                LocalDate.of(2021,06,03),
-                LocalTime.of(13,20),LocalTime.of(14,00),18);
-        Airline airline2 = Airline.createAirline(Departure.JEJU, Distination.DAE,
-                LocalDate.of(2021,06,03),
-                LocalTime.of(13,20),LocalTime.of(14,00),18);
+        AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.DAE)
+                .departDate(LocalDate.of(2021,06,03))
+                .departTime(LocalTime.of(13,20))
+                .reachTime(LocalTime.of(14,00))
+                .build();
+
+        Airline airline1 = Airline.createAirline(airlineGenerateDto1);
+        Airline airline2 = Airline.createAirline(airlineGenerateDto1);
 
         airlineRepository.save(airline1);
         airlineRepository.save(airline2);

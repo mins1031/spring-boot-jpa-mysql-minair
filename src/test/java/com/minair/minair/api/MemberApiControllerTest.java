@@ -6,8 +6,10 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.member.LoginRequestDto;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.dto.member.MemberJoinDto;
 import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.domain.dto.token.TokenDto;
@@ -75,19 +77,24 @@ public class MemberApiControllerTest {
     @Before
     public void before(){
 
-        Member member = Member.joinMember("user1",passwordEncoder.encode("alsdud"),"min@min",
-                LocalDate.of(2021,05,30),"민","min","010-2222-2222",
-                Gender.F);
-        Member member2 = Member.joinMember("user2",passwordEncoder.encode("jae"),"jae@jae",
-                LocalDate.of(2021,05,30),"재","jae","010-2222-2222",
-                Gender.M);
+        MemberCreateDto createDto = MemberCreateDto.builder()
+                .username("user1")
+                .password(passwordEncoder.encode("alsdud"))
+                .email("min@min")
+                .birth(LocalDate.of(2021,05,30))
+                .nameKor("민")
+                .nameEng("min")
+                .phone("010-2222-2222")
+                .gender(Gender.F)
+                .build();
+
+        Member member = Member.createMember(createDto);
+
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
         member.investMemberRole(memberRole);
         MemberRole memberRole2 = MemberRole.ROLE_MEMBER;
-        member2.investMemberRole(memberRole2);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
-        member2.issueRefreshToken(r);
 
         memberRepository.save(member);
     }
@@ -525,12 +532,24 @@ public class MemberApiControllerTest {
     @Test
     public void removeMember() throws Exception {
         //Given
-        Airline airline1 = Airline.createAirline(Departure.JEJU, Distination.BUS,
-                LocalDate.of(2021,05,20), LocalTime.of(13,55),
-                LocalTime.of(14,20),18);
-        Airline airline2 = Airline.createAirline(Departure.JEJU,Distination.BUS,
-                LocalDate.of(2021,05,20), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
+        AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.BUS)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(13,55))
+                .reachTime(LocalTime.of(14,20))
+                .build();
+        AirlineGenerateDto airlineGenerateDto2 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.BUS)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+
+        Airline airline1 = Airline.createAirline(airlineGenerateDto1);
+        Airline airline2 = Airline.createAirline(airlineGenerateDto2);
+
         Member member = memberRepository.findByUsername("user1");
         Reservation reservation =
                 Reservation.createReservation(member,airline1,1,1,2,80000);

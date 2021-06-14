@@ -4,6 +4,8 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,8 @@ class ReservationServiceTest {
     AirlineRepository airlineRepository;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void beford(){
@@ -53,8 +58,16 @@ class ReservationServiceTest {
         LocalTime depart_time1 = LocalTime.of(12,45);
         LocalTime reach_time1 = LocalTime.of(13,55);
 
-        Airline airline = Airline.createAirline(departure1,distination1,depart_date1,
-                depart_time1,reach_time1,18);
+        AirlineGenerateDto airlineGenerateDto = AirlineGenerateDto.builder()
+                .departure(departure1)
+                .distination(distination1)
+                .departDate(depart_date1)
+                .departTime(depart_time1)
+                .reachTime(reach_time1)
+                .build();
+
+
+        Airline airline = Airline.createAirline(airlineGenerateDto);
 
         Departure departure2 = Departure.JEJU;
         Distination distination2 = Distination.ICN;
@@ -62,23 +75,30 @@ class ReservationServiceTest {
         LocalTime depart_time2 = LocalTime.of(16,25);
         LocalTime reach_time2 = LocalTime.of(17,35);
 
-        Airline airline2 = Airline.createAirline(departure2,distination2,depart_date2,
-                depart_time2,reach_time2,18);
+        AirlineGenerateDto airlineGenerateDto2 = AirlineGenerateDto.builder()
+                .departure(departure2)
+                .distination(distination2)
+                .departDate(depart_date2)
+                .departTime(depart_time2)
+                .reachTime(reach_time2)
+                .build();
 
+        Airline airline2 = Airline.createAirline(airlineGenerateDto2);
 
-        String username = "member";
-        String password = "test";
-        String email = "test@test";
-        LocalDate birth = LocalDate.of(2000,02,20);
-        String name_kor = "민영";
-        String name_eng = "minyoung";
-        String phone = "010-1111-2222";
-        Gender gender = Gender.M;
+        MemberCreateDto createDto = MemberCreateDto.builder()
+                .username("user1")
+                .password(passwordEncoder.encode("test"))
+                .email("min@min")
+                .birth(LocalDate.of(2021,05,30))
+                .nameKor("민")
+                .nameEng("minyoung")
+                .phone("010-2222-2222")
+                .gender(Gender.F)
+                .build();
 
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(null,0);
-        Member member = Member.joinMember(username,password,email,birth,name_kor,name_eng,
-                phone,gender);
+        Member member = Member.createMember(createDto);
 
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
         member.investMemberRole(memberRole);

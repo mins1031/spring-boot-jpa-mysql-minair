@@ -115,10 +115,10 @@
             <input type="email" class="form-control" name="email" placeholder="이메일" required="required">
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" name="name_kor" placeholder="한국이름" required="required">
+            <input type="text" class="form-control" name="nameKor" placeholder="한국이름" required="required">
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" name="name_eng" placeholder="영어이름" required="required">
+            <input type="text" class="form-control" name="nameEng" placeholder="영어이름" required="required">
         </div>
         <div class="form-group">
             <input type="text" class="form-control" name="birth" placeholder="생년월일" required="required">
@@ -168,13 +168,10 @@
             alert("id를 입력해 주세요.")
         } else {
             $.ajax({
-                type: "post",
-                url: "/checkId",
-                data: {
-                    "idVal": idVal
-                },
+                type: "get",
+                url: "/api/member/check-id/" + idVal,
                 success: function (result) {
-                    if (result == "YES") {
+                    if (result) {
                         alert("사용 가능한 Id입니다.")
                     } else {
                         alert("중복된 Id입니다.")

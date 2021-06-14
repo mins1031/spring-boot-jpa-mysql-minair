@@ -39,8 +39,8 @@ public class AirlineController {
         List<Airline> searchAirlineList = airlineService.searchAirlines(airlineSearchDto);
         List<AirlineDto> collect = searchAirlineList.stream()
                 .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
-                        a.getDepart_date(),a.getDepart_time(),a.getReach_time(),
-                        a.getAboveseat()))
+                        a.getDepartDate(),a.getDepartTime(),a.getReachTime(),
+                        a.getAboveSeat()))
                 .collect(Collectors.toList());
 
         AirlineSearchResult<List<AirlineDto>> goAirResult =
@@ -60,8 +60,8 @@ public class AirlineController {
         List<Airline> backAirlineList = airlineService.searchAirlines(backDto);
         List<AirlineDto> backCollect = backAirlineList.stream()
                 .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
-                        a.getDepart_date(),a.getDepart_time(),a.getReach_time(),
-                        a.getAboveseat()))
+                        a.getDepartDate(),a.getDepartTime(),a.getReachTime(),
+                        a.getAboveSeat()))
                 .collect(Collectors.toList());
         AirlineSearchResult<List<AirlineDto>> backAirResult =
                 new AirlineSearchResult<List<AirlineDto>>(backCollect);
@@ -98,8 +98,8 @@ public class AirlineController {
         Page<Airline> allAirline = airlineService.findAllAirline(pageNum);
         List<AirlineDto> airlineDtoList = allAirline.getContent().stream()
                 .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
-                        a.getDepart_date(),a.getDepart_time(),a.getReach_time(),
-                        a.getAboveseat()))
+                        a.getDepartDate(),a.getDepartTime(),a.getReachTime(),
+                        a.getAboveSeat()))
                 .collect(Collectors.toList());
         PageDto pageDto = new PageDto(pageNum,10,allAirline.getTotalElements()
                 ,allAirline.getTotalPages());

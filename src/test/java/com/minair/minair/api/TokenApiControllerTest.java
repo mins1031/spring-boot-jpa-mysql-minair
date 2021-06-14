@@ -2,6 +2,7 @@ package com.minair.minair.api;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.dto.member.MemberJoinDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.JwtTokenProvider;
@@ -54,23 +55,25 @@ public class TokenApiControllerTest {
 
     @Before
     public void before(){
+        MemberCreateDto createDto = MemberCreateDto.builder()
+                .username("user1")
+                .password(passwordEncoder.encode("alsdud"))
+                .email("min@min")
+                .birth(LocalDate.of(2021,05,30))
+                .nameKor("민")
+                .nameEng("min")
+                .phone("010-2222-2222")
+                .gender(Gender.F)
+                .build();
 
-        Member member = Member.joinMember("user1",passwordEncoder.encode("alsdud"),"min@min",
-                LocalDate.of(2021,05,30),"민","min","010-2222-2222",
-                Gender.F);
-        Member member2 = Member.joinMember("user2",passwordEncoder.encode("jae"),"jae@jae",
-                LocalDate.of(2021,05,30),"재","jae","010-2222-2222",
-                Gender.M);
+        Member member = Member.createMember(createDto);
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
         member.investMemberRole(memberRole);
-        MemberRole memberRole2 = MemberRole.ROLE_MEMBER;
-        member2.investMemberRole(memberRole2);
         RefreshTokenProperty r = new RefreshTokenProperty(
                 UUID.randomUUID().toString(), new Date().getTime()
         );
 
         member.issueRefreshToken(r);
-        member2.issueRefreshToken(r);
 
         memberRepository.save(member);
     }

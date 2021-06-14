@@ -32,7 +32,7 @@ public class AirlineService {
         if (airline == null)
             throw new RequestNullException();
         Airline savedAirline = airlineRepository.save(airline);
-        seatService.createSeats(airline,airline.getSeatcount());
+        seatService.createSeats(airline,airline.getSeatCount());
         return savedAirline;
     }
 

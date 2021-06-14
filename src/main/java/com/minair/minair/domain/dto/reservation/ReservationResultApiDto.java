@@ -4,7 +4,6 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,8 +32,8 @@ public class ReservationResultApiDto {
         this.airlineId = airline.getId();
         this.departure = airline.getDeparture();
         this.distination = airline.getDistination();
-        this.depart_date = airline.getDepart_date();
-        this.depart_time = airline.getDepart_time();
+        this.depart_date = airline.getDepartDate();
+        this.depart_time = airline.getDepartTime();
         this.totalPerson = totalPerson;
         this.totalPrice = totalPrice;
         this.reserveSeat = reserveSeat;

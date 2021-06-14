@@ -5,7 +5,9 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.dto.reservation.ReservationRemoveDto;
 import com.minair.minair.domain.dto.reservation.CheckInRegDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
@@ -32,6 +34,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -79,20 +83,43 @@ public class ReservationApiControllerTest {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
     @Before
     public void before(){
-        Airline goAir = Airline.createAirline(Departure.JEJU, Distination.BUS, LocalDate.of(2021,05,20),
-                LocalTime.of(13,50),LocalTime.of(14,30),18);
-        Airline backAir = Airline.createAirline(Departure.BUS, Distination.DAE, LocalDate.of(2021,05,23),
-                LocalTime.of(13,50),LocalTime.of(14,30),18);
-        //seatService.createSeats(goAir,18);
-        //seatService.createSeats(backAir,18);
+        AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.BUS)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(13,50))
+                .reachTime(LocalTime.of(14,30))
+                .build();
+        AirlineGenerateDto airlineGenerateDto2 = AirlineGenerateDto.builder()
+                .departure(Departure.BUS)
+                .distination(Distination.DAE)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(13,50))
+                .reachTime(LocalTime.of(14,30))
+                .build();
+
+        Airline goAir = Airline.createAirline(airlineGenerateDto1);
+        Airline backAir = Airline.createAirline(airlineGenerateDto2);
+
         airlineService.createAirline(goAir);
         airlineService.createAirline(backAir);
 
-        Member member = Member.joinMember("user1","alsdud","min@min",
-                LocalDate.of(2021,05,30),"민","min","010-2222-2222",
-                Gender.F);
+        MemberCreateDto createDto = MemberCreateDto.builder()
+                .username("user1")
+                .password(passwordEncoder.encode("alsdud"))
+                .email("min@min")
+                .birth(LocalDate.of(2021,05,30))
+                .nameKor("민")
+                .nameEng("min")
+                .phone("010-2222-2222")
+                .gender(Gender.F)
+                .build();
+
+        Member member = Member.createMember(createDto);
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
         member.investMemberRole(memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
@@ -116,10 +143,23 @@ public class ReservationApiControllerTest {
 
     @Test
     public void newTest() throws Exception {
-        Airline goAir = Airline.createAirline(Departure.JEJU, Distination.BUS, LocalDate.of(2021,05,20),
-                LocalTime.of(13,50),LocalTime.of(14,30),18);
-        Airline backAir = Airline.createAirline(Departure.BUS, Distination.DAE, LocalDate.of(2021,05,23),
-                LocalTime.of(13,50),LocalTime.of(14,30),18);
+        AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.BUS)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(13,50))
+                .reachTime(LocalTime.of(14,30))
+                .build();
+        AirlineGenerateDto airlineGenerateDto2 = AirlineGenerateDto.builder()
+                .departure(Departure.BUS)
+                .distination(Distination.DAE)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(13,50))
+                .reachTime(LocalTime.of(14,30))
+                .build();
+
+        Airline goAir = Airline.createAirline(airlineGenerateDto1);
+        Airline backAir = Airline.createAirline(airlineGenerateDto2);
         Airline goAirResult = airlineRepository.save(goAir);
         Airline bakcAirResult = airlineRepository.save(backAir);
         String username = "ppap";
@@ -162,15 +202,35 @@ public class ReservationApiControllerTest {
 
     @Test
     public void myReservations() throws Exception {
-        Airline goAir = Airline.createAirline(Departure.JEJU, Distination.BUS, LocalDate.of(2021,05,20),
-                LocalTime.of(13,50),LocalTime.of(14,30),18);
-        Airline backAir = Airline.createAirline(Departure.BUS, Distination.DAE, LocalDate.of(2021,05,23),
-                LocalTime.of(13,50),LocalTime.of(14,30),18);
+        AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.BUS)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(13,50))
+                .reachTime(LocalTime.of(14,30))
+                .build();
+        AirlineGenerateDto airlineGenerateDto2 = AirlineGenerateDto.builder()
+                .departure(Departure.BUS)
+                .distination(Distination.DAE)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(13,50))
+                .reachTime(LocalTime.of(14,30))
+                .build();
+        Airline goAir = Airline.createAirline(airlineGenerateDto1);
+        Airline backAir = Airline.createAirline(airlineGenerateDto2);
         Airline goAirResult = airlineRepository.save(goAir);
         Airline bakcAirResult = airlineRepository.save(backAir);
-        Member member = Member.joinMember("user1","alsdud","min@min",
-                LocalDate.of(2021,05,30),"민","min","010-2222-2222",
-                Gender.F);
+        MemberCreateDto createDto = MemberCreateDto.builder()
+                .username("user1")
+                .password(passwordEncoder.encode("alsdud"))
+                .email("min@min")
+                .birth(LocalDate.of(2021,05,30))
+                .nameKor("민")
+                .nameEng("min")
+                .phone("010-2222-2222")
+                .gender(Gender.F)
+                .build();
+        Member member = Member.createMember(createDto);
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
         member.investMemberRole(memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();

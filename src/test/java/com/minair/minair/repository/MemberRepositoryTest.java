@@ -2,6 +2,7 @@ package com.minair.minair.repository;
 
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.service.SeatService;
@@ -51,8 +52,18 @@ class MemberRepositoryTest {
                         UUID.randomUUID().toString(),
                         new Date().getTime()
                 );
-        Member member = Member.joinMember(username,pw,email,birth,name_kor,name_eng,
-                phone,gender);
+        MemberCreateDto memberCreateDto = MemberCreateDto.builder()
+                .username(username)
+                .password(pw)
+                .email(email)
+                .birth(birth)
+                .nameKor(name_kor)
+                .nameEng(name_eng)
+                .phone(phone)
+                .gender(gender)
+                .build();
+
+        Member member = Member.createMember(memberCreateDto);
         //member.investRole(role);
         member.investMemberRole(memberRole);
         member.issueRefreshToken(refreshTokenProperty);

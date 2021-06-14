@@ -2,6 +2,7 @@ package com.minair.minair.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minair.minair.domain.Airline;
+import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.airline.AirlineCreateDto;
@@ -10,6 +11,7 @@ import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.testconfig.RestDocsConfiguration;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -115,44 +117,104 @@ public class AirlineApiControllerTest {
         ;
     }
 
-
+    @BeforeEach
     public void be(){
-        Airline airline1 = Airline.createAirline(Departure.JEJU,Distination.BUS,
-                LocalDate.of(2021,05,20), LocalTime.of(13,55),
-                LocalTime.of(14,20),18);
-        Airline airline2 = Airline.createAirline(Departure.JEJU,Distination.BUS,
-                LocalDate.of(2021,05,20), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline3 = Airline.createAirline(Departure.BUS,Distination.JEJU,
-                LocalDate.of(2021,05,23), LocalTime.of(13,55),
-                LocalTime.of(14,20),18);
-        Airline airline4 = Airline.createAirline(Departure.BUS,Distination.JEJU,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline5 = Airline.createAirline(Departure.JEJU,Distination.ICN,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline6 = Airline.createAirline(Departure.JEJU,Distination.ICN,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline7 = Airline.createAirline(Departure.ICN,Distination.JEJU,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline8 = Airline.createAirline(Departure.ICN,Distination.JEJU,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline9 = Airline.createAirline(Departure.GWANG,Distination.JEJU,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline10 = Airline.createAirline(Departure.GWANG,Distination.JEJU,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline11 = Airline.createAirline(Departure.JEJU,Distination.GWANG,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
-        Airline airline12 = Airline.createAirline(Departure.JEJU,Distination.GWANG,
-                LocalDate.of(2021,05,23), LocalTime.of(14,55),
-                LocalTime.of(15,20),18);
+        AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.DAE)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(13,55))
+                .reachTime(LocalTime.of(14,20))
+                .build();
+        Airline airline1 = Airline.createAirline(airlineGenerateDto1);
+        AirlineGenerateDto airlineGenerateDto2 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.BUS)
+                .departDate(LocalDate.of(2021,05,20))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline2 = Airline.createAirline(airlineGenerateDto2);
+        AirlineGenerateDto airlineGenerateDto3 = AirlineGenerateDto.builder()
+                .departure(Departure.BUS)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(13,55))
+                .reachTime(LocalTime.of(14,20))
+                .build();
+        Airline airline3 = Airline.createAirline(airlineGenerateDto3);
+        AirlineGenerateDto airlineGenerateDto4 = AirlineGenerateDto.builder()
+                .departure(Departure.BUS)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline4 = Airline.createAirline(airlineGenerateDto4);
+        AirlineGenerateDto airlineGenerateDto5 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.ICN)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline5 = Airline.createAirline(airlineGenerateDto5);
+        AirlineGenerateDto airlineGenerateDto6 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.ICN)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline6 = Airline.createAirline(airlineGenerateDto6);
+        AirlineGenerateDto airlineGenerateDto7 = AirlineGenerateDto.builder()
+                .departure(Departure.ICN)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline7 = Airline.createAirline(airlineGenerateDto7);
+        AirlineGenerateDto airlineGenerateDto8 = AirlineGenerateDto.builder()
+                .departure(Departure.ICN)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline8 = Airline.createAirline(airlineGenerateDto8);
+        AirlineGenerateDto airlineGenerateDto9 = AirlineGenerateDto.builder()
+                .departure(Departure.GWANG)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline9 = Airline.createAirline(airlineGenerateDto9);
+        AirlineGenerateDto airlineGenerateDto10 = AirlineGenerateDto.builder()
+                .departure(Departure.GWANG)
+                .distination(Distination.JEJU)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline10 = Airline.createAirline(airlineGenerateDto10);
+        AirlineGenerateDto airlineGenerateDto11 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.GWANG)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline11 = Airline.createAirline(airlineGenerateDto11);
+        AirlineGenerateDto airlineGenerateDto12 = AirlineGenerateDto.builder()
+                .departure(Departure.JEJU)
+                .distination(Distination.GWANG)
+                .departDate(LocalDate.of(2021,05,23))
+                .departTime(LocalTime.of(14,55))
+                .reachTime(LocalTime.of(15,20))
+                .build();
+        Airline airline12 = Airline.createAirline(airlineGenerateDto12);
 
         em.persist(airline1);
         em.persist(airline2);
@@ -175,7 +237,6 @@ public class AirlineApiControllerTest {
     @Rollback(value = false)
     public void searchAirline() throws Exception{
 
-        be();
         Departure departure = Departure.JEJU;
         Distination distination = Distination.BUS;
         LocalDate depart_date = LocalDate.of(2021,05,20);
@@ -220,7 +281,6 @@ public class AirlineApiControllerTest {
     @Test
     @Rollback(value = false)
     public void allList() throws Exception{
-        be();
 
         int pageNum = 2;
         ForFindPagingDto forFindPagingDto = new ForFindPagingDto();

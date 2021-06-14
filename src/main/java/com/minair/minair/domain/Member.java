@@ -1,13 +1,11 @@
 package com.minair.minair.domain;
 
 import com.minair.minair.domain.date.DateEntity;
+import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.dto.member.MemberModifyDto;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.RefreshTokenProperty;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -16,8 +14,10 @@ import java.util.*;
 
 @Slf4j
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
 public class Member extends DateEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +36,6 @@ public class Member extends DateEntity {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    //private String roles;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "roles")
@@ -58,50 +56,29 @@ public class Member extends DateEntity {
     private List<Reservation> reservationList = new ArrayList<>();
     회원에서 예약을 조회하는것보다 예약에서 회원값으로 조회하는게 더 객체지향적임.*/
 
-    @Builder
-    public Member(Long id, String username, String password, String email, LocalDate birth,
-                  String nameKor, String nameEng, String phone, Gender gender) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.birth = birth;
-        this.nameKor = nameKor;
-        this.nameEng = nameEng;
-        this.phone = phone;
-        this.gender = gender;
-    }
-
     //Member생성 메서드
-    public static Member joinMember(String username,String password,
-                             String email, LocalDate birth,String nameKor,
-                             String nameEng, String phone,
-                             Gender gender){
+    public static Member createMember(MemberCreateDto member) {
 
-        /*return Member.builder()
-                .username(username)
-                .password(password)
-                .email(email)
-                .birth(birth)
-                .nameKor(nameKor)
-                .nameEng(nameEng)
-                .phone(phone)
-                .gender(gender)
+        return Member.builder()
+                .username(member.getUsername())
+                .password(member.getPassword())
+                .email(member.getEmail())
+                .birth(member.getBirth())
+                .nameKor(member.getNameKor())
+                .nameEng(member.getNameEng())
+                .phone(member.getPhone())
+                .gender(member.getGender())
                 .build();
-*/
-
-        Member member = new Member();
-        member.username  = username;
-        member.password = password;
-        member.email = email;
-        member.nameEng = nameEng;
-        member.nameKor = nameKor;
-        member.phone = phone;
-        member.birth = birth;
-        member.gender = gender;
-
-        return member;
     }
+
+    /**
+     * 1. 반복되는 코드 줄임
+     * 2. for문 지양
+     * 3. 각 역할에 맞는 로직인지 판단
+     *    -> 컨트롤러: 최대한 값이 오고 가는 것들만 구성하는게 좋다
+     *    -> 서비스: 최대한 '로직'자체를 구성하려고 노력하며 컨트롤러에 결과 전달시 OSIV를 고려해 DTO를 리턴할것.
+     *
+     * */
 
     public void investMemberRole(MemberRole roles){
         this.roles = roles;

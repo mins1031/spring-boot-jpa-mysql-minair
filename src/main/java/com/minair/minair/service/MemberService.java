@@ -36,27 +36,39 @@ public class MemberService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public MemberInfoDto join(MemberJoinDto memberJoinDto){
+    public MemberInfoDto join(MemberJoinDto memberJoinDto) {
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
-        Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
+        /*Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
                         encodePw, memberJoinDto.getEmail(),
                         memberJoinDto.getBirth(),memberJoinDto.getNameKor(),
                         memberJoinDto.getNameEng(),memberJoinDto.getPhone(),
                         memberJoinDto.getGender());
+        joinMember.investMemberRole(memberRole);*/
+        Member joinMember = Member.builder()
+                .username(memberJoinDto.getUsername())
+                .password(encodePw)
+                .email(memberJoinDto.getEmail())
+                .birth(memberJoinDto.getBirth())
+                .nameKor(memberJoinDto.getNameKor())
+                .nameEng(memberJoinDto.getNameEng())
+                .phone(memberJoinDto.getPhone())
+                .gender(memberJoinDto.getGender())
+                .build();
         joinMember.investMemberRole(memberRole);
 
+
         RefreshTokenProperty refreshTokenProperty
-                = new RefreshTokenProperty(null,0);
+                = new RefreshTokenProperty(null, 0);
         joinMember.issueRefreshToken(refreshTokenProperty);
 
         Member save = memberRepository.save(joinMember);
-        MemberInfoDto resultMember = modelMapper.map(save,MemberInfoDto.class);
+        MemberInfoDto resultMember = modelMapper.map(save, MemberInfoDto.class);
 
         return resultMember;
     }
 
-    //@Transactional
+    @Transactional
     public LoginServiceDto login(LoginRequestDto loginRequestDto) {
         LoginServiceDto loginServiceDto = new LoginServiceDto();
         Member member = memberRepository.findByUsername(loginRequestDto.getUsername());
@@ -71,35 +83,53 @@ public class MemberService {
             loginServiceDto.setWrongPwd(true);
         } else {
             log.info("pw clean!");
-            loginServiceDto.setWrongPwd(true);
+            loginServiceDto.setPassLogin(true);
         }
 
         return loginServiceDto;
     }
 
     @Transactional
-    public void joinAdmin(MemberJoinDto memberJoinDto){
+    public MemberInfoDto joinAdmin(MemberJoinDto memberJoinDto){
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
-        Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
+        /*Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
                 encodePw, memberJoinDto.getEmail(),
                 memberJoinDto.getBirth(),memberJoinDto.getNameKor(),
                 memberJoinDto.getNameEng(),memberJoinDto.getPhone(),
                 memberJoinDto.getGender());
+        joinMember.investMemberRole(memberRole);
+*/
+        Member joinMember = Member.builder()
+                .username(memberJoinDto.getUsername())
+                .password(encodePw)
+                .email(memberJoinDto.getEmail())
+                .birth(memberJoinDto.getBirth())
+                .nameKor(memberJoinDto.getNameKor())
+                .nameEng(memberJoinDto.getNameEng())
+                .phone(memberJoinDto.getPhone())
+                .gender(memberJoinDto.getGender())
+                .build();
         joinMember.investMemberRole(memberRole);
 
         RefreshTokenProperty refreshTokenProperty
                 = new RefreshTokenProperty(null,0);
         joinMember.issueRefreshToken(refreshTokenProperty);
 
-        memberRepository.save(joinMember);
+        Member save = memberRepository.save(joinMember);
+        MemberInfoDto resultMember = modelMapper.map(save,MemberInfoDto.class);
+
+        return resultMember;
     }
 
     public Optional<Member> findById(Long id){
         return memberRepository.findById(id);
     }
 
-    public Page<Member> findByAll(int pageNum){
+    public Page<Member> findByAll(int pageNum) throws IllegalArgumentException{
+
+        if (pageNum <= 0)
+            throw new IllegalArgumentException();
 
         int offset = pageNum - 1;
         PageRequest pageRequest = PageRequest.of(offset,10);
@@ -111,12 +141,6 @@ public class MemberService {
         return members;
     }
 
-    public void updateMember(Member member){
-        Long findId = member.getId();
-        Optional<Member> optionalMember = memberRepository.findById(findId);
-        Member findMember = optionalMember.get();
-
-    }
 
     @Transactional
     public void issueRefreshToken(String username, RefreshTokenProperty r){

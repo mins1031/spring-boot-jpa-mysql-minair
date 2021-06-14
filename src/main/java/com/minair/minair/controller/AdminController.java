@@ -32,7 +32,7 @@ public class AdminController {
     public String joinAdmin(@ModelAttribute("memberjoinDto") MemberJoinDto memberJoinDto){
         log.info("어드민 계정 등록 요청");
         try {
-            memberService.join(memberJoinDto);
+            memberService.joinAdmin(memberJoinDto);
             return "redirect:/admin/index";
         } catch (RuntimeException e){
             e.printStackTrace();
