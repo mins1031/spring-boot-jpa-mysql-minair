@@ -38,7 +38,7 @@
  
  > 8주차 ~ 10주차 : Rest 방식으로 Api구성후 테스트.
  
- > 10주차 ~ 현재 : 예외처리에 대한 고민과 리펙토링 요소들이 많이 보여 리펙토링, 추가적인 기능들 추가중.
+ > 10주차 ~ 현재 : 예외처리에 대한 고민과 단일 테스트 부족, 리펙토링 요소들이 많이 보여 테스트와 리펙토링, 추가적인 기능들 추가중.
 ## DataBase ERD
 <img src = "src/main/resources/static/images/minairErd.jpg" width="700" height="400">
 
