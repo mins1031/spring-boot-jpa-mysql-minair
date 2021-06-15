@@ -78,9 +78,8 @@ public class CustomReservationRepositoryImplTest {
                         UUID.randomUUID().toString(),
                         new Date().getTime()
                 );
-        Member member = Member.createMember(memberCreateDto);
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
-        member.investMemberRole(memberRole);
+        Member member = Member.createMember(memberCreateDto,memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);

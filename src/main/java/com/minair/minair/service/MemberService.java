@@ -1,5 +1,6 @@
 package com.minair.minair.service;
 
+import com.minair.minair.common.MethodDescription;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
@@ -7,6 +8,7 @@ import com.minair.minair.domain.dto.member.*;
 import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
+import com.minair.minair.jwt.TokenProperty;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +18,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -39,13 +45,8 @@ public class MemberService {
     public MemberInfoDto join(MemberJoinDto memberJoinDto) {
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
-        /*Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
-                        encodePw, memberJoinDto.getEmail(),
-                        memberJoinDto.getBirth(),memberJoinDto.getNameKor(),
-                        memberJoinDto.getNameEng(),memberJoinDto.getPhone(),
-                        memberJoinDto.getGender());
-        joinMember.investMemberRole(memberRole);*/
-        Member joinMember = Member.builder()
+
+        MemberCreateDto memberCreateDto = MemberCreateDto.builder()
                 .username(memberJoinDto.getUsername())
                 .password(encodePw)
                 .email(memberJoinDto.getEmail())
@@ -55,8 +56,8 @@ public class MemberService {
                 .phone(memberJoinDto.getPhone())
                 .gender(memberJoinDto.getGender())
                 .build();
-        joinMember.investMemberRole(memberRole);
 
+        Member joinMember = Member.createMember(memberCreateDto,memberRole);
 
         RefreshTokenProperty refreshTokenProperty
                 = new RefreshTokenProperty(null, 0);
@@ -93,14 +94,8 @@ public class MemberService {
     public MemberInfoDto joinAdmin(MemberJoinDto memberJoinDto){
         String encodePw = passwordEncoder.encode(memberJoinDto.getPassword());
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
-        /*Member joinMember = Member.joinMember(memberJoinDto.getUsername(),
-                encodePw, memberJoinDto.getEmail(),
-                memberJoinDto.getBirth(),memberJoinDto.getNameKor(),
-                memberJoinDto.getNameEng(),memberJoinDto.getPhone(),
-                memberJoinDto.getGender());
-        joinMember.investMemberRole(memberRole);
-*/
-        Member joinMember = Member.builder()
+
+        MemberCreateDto memberCreateDto = MemberCreateDto.builder()
                 .username(memberJoinDto.getUsername())
                 .password(encodePw)
                 .email(memberJoinDto.getEmail())
@@ -110,8 +105,8 @@ public class MemberService {
                 .phone(memberJoinDto.getPhone())
                 .gender(memberJoinDto.getGender())
                 .build();
-        joinMember.investMemberRole(memberRole);
 
+        Member joinMember = Member.createMember(memberCreateDto,memberRole);
         RefreshTokenProperty refreshTokenProperty
                 = new RefreshTokenProperty(null,0);
         joinMember.issueRefreshToken(refreshTokenProperty);
@@ -143,33 +138,41 @@ public class MemberService {
 
 
     @Transactional
-    public void issueRefreshToken(String username, RefreshTokenProperty r){
-        try {
-            Member member = memberRepository.findByUsername(username);
-            member.issueRefreshToken(r);
-        }catch (NullPointerException e){
+    public TokenDto issueRefreshToken(String username) throws RuntimeException{
+        RefreshTokenProperty r = new RefreshTokenProperty(
+                UUID.randomUUID().toString(), new TokenProperty().getAccessTokenValidTime()
+        );
+        Member member = memberRepository.findByUsername(username);
+        member.issueRefreshToken(r);
+        TokenDto tokenDto = TokenDto.builder()
+                .token(jwtTokenProvider.createRefreshToken(r))
+                .build();
 
-        }
+        return tokenDto;
     }//refreshToken DB에 저장
+
+
+    @Transactional
+    @MethodDescription("리프레시 토큰 기한확인 메서드")
+    public String reIssueRefreshToken(String refreshToken){
+        log.info("service: reIssueRefreshToken");
+        String reIssueTokenValue = null;
+        if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            log.info("리프레시 토큰 기한 유효!!");
+            Member memberByRefreshToken = memberRepository.findByRefreshToken(jwtTokenProvider.getMemberName(refreshToken));
+            reIssueTokenValue = jwtTokenProvider.createToken(memberByRefreshToken.getUsername(),
+                    memberByRefreshToken.getRole());
+            Authentication authentication = jwtTokenProvider.getAuthentication(reIssueTokenValue);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+        return reIssueTokenValue;
+    }
 
     @Transactional
     public Member findUserInfo(String token){
         String username = jwtTokenProvider.getMemberName(token);
         Member findMember = memberRepository.findByUsername(username);
         return findMember;
-    }
-
-    @Transactional
-    public Member reIssueRefreshToken(String refreshToken){
-        log.info("service: reIssueRefreshToken");
-        Member memberByRefreshToken = null;
-        if (jwtTokenProvider.validateRefreshToken(refreshToken)){
-            System.out.println("리프레시 토큰 기한 유효!!");
-            String realValue = jwtTokenProvider.getMemberName(refreshToken);
-            System.out.println("복호화 토큰="+realValue);
-            memberByRefreshToken = memberRepository.findByRefreshToken(realValue);
-        }
-        return memberByRefreshToken;
     }
 
 /**

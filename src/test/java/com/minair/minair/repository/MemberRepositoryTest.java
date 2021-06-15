@@ -63,9 +63,7 @@ class MemberRepositoryTest {
                 .gender(gender)
                 .build();
 
-        Member member = Member.createMember(memberCreateDto);
-        //member.investRole(role);
-        member.investMemberRole(memberRole);
+        Member member = Member.createMember(memberCreateDto,memberRole);
         member.issueRefreshToken(refreshTokenProperty);
         memberRepository.save(member);
     }

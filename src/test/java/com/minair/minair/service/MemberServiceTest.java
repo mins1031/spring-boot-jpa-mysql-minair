@@ -4,9 +4,15 @@ import com.minair.minair.common.TestDescription;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.dto.member.*;
+import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.domain.notEntity.Gender;
+import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
+import com.minair.minair.jwt.TokenProperty;
 import com.minair.minair.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -23,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.UUID;
+
 import static org.junit.Assert.*;
 
 
@@ -37,6 +46,8 @@ class MemberServiceTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     public void before(){
@@ -50,10 +61,8 @@ class MemberServiceTest {
                 .phone("010-2222-2222")
                 .gender(Gender.F)
                 .build();
-
-        Member member = Member.createMember(createDto);
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
-        member.investMemberRole(memberRole);
+        Member member = Member.createMember(createDto,memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
 
@@ -175,7 +184,7 @@ class MemberServiceTest {
             String name_eng = "test"+i;
             String phone = "010-1111-2222";
             Gender gender = Gender.M;
-            Member member = Member.builder()
+            MemberCreateDto memberCreateDto = MemberCreateDto.builder()
                     .username(username)
                     .password(password)
                     .email(email)
@@ -186,7 +195,8 @@ class MemberServiceTest {
                     .gender(gender)
                     .build();
             MemberRole memberRole = MemberRole.ROLE_MEMBER;
-            member.investMemberRole(memberRole);
+            Member member = Member.createMember(memberCreateDto,memberRole);
+
             RefreshTokenProperty r = new RefreshTokenProperty();
             member.issueRefreshToken(r);
             memberRepository.save(member);
@@ -246,7 +256,53 @@ class MemberServiceTest {
     @Test
     @DisplayName("로그인시 리프레시 토큰 객체 생성")
     public void issueRefreshTokenObjectTest(){
+        //Given
+        String username = "user1";
+        //When
+        TokenDto tokenDto = memberService.issueRefreshToken(username);
+        //Then
+        assertNotNull(tokenDto);
+        Member findMember = memberRepository.findByUsername(username);
+        assertEquals(jwtTokenProvider.getMemberName(tokenDto.getToken()),
+                findMember.getRefreshToken().getRefreshTokenValue());
+    }
 
+    @Test
+    @DisplayName("리프레시 토큰 기한 만료시 테스트-> TokenApiController에 작성할것.")
+    @Disabled
+    public void refreshTokenValidateTest(){
+        //Given
+        TokenProperty accessTokenProperty = new TokenProperty();
+        RefreshTokenProperty r = new RefreshTokenProperty(UUID.randomUUID().toString(),
+                -50);
+        String username = "user1";
+        Member beforeLoginMember = memberRepository.findByUsername(username);
+        beforeLoginMember.issueRefreshToken(r);
+        em.flush();
+        em.clear();
+        Member loginMember = memberRepository.findByUsername(username);
+        //When
+        //Then
+        //assertEquals(logout,false);
+    }
+    @Test
+    @DisplayName("로그아웃 테스트")
+    public void logoutTest(){
+        //Given
+        String username = "user1";
+        Member beforeLoginMember = memberRepository.findByUsername(username);
+        RefreshTokenProperty refreshTokenProperty = new RefreshTokenProperty(UUID.randomUUID().toString(),
+                new TokenProperty().getAccessTokenValidTime());
+        beforeLoginMember.issueRefreshToken(refreshTokenProperty);
+        em.flush();
+        em.clear();
+        Member loginMember = memberRepository.findByUsername(username);
+        assertEquals(loginMember.getRefreshToken().getRefreshTokenValue(),
+                refreshTokenProperty.getRefreshTokenValue());
+        //When
+        boolean logout = memberService.logout(username);
+        //Then
+        assertEquals(loginMember.getRefreshToken().getRefreshTokenValue(), null);
     }
 
 }

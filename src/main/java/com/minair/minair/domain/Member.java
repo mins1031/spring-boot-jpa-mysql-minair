@@ -57,7 +57,7 @@ public class Member extends DateEntity {
     회원에서 예약을 조회하는것보다 예약에서 회원값으로 조회하는게 더 객체지향적임.*/
 
     //Member생성 메서드
-    public static Member createMember(MemberCreateDto member) {
+    public static Member createMember(MemberCreateDto member,MemberRole memberRole) {
 
         return Member.builder()
                 .username(member.getUsername())
@@ -68,6 +68,7 @@ public class Member extends DateEntity {
                 .nameEng(member.getNameEng())
                 .phone(member.getPhone())
                 .gender(member.getGender())
+                .roles(memberRole)
                 .build();
     }
 
@@ -80,9 +81,6 @@ public class Member extends DateEntity {
      *
      * */
 
-    public void investMemberRole(MemberRole roles){
-        this.roles = roles;
-    }
     public void issueRefreshToken(RefreshTokenProperty refreshTokenProperty){
         this.refreshToken = refreshTokenProperty;
         log.info(refreshToken.getRefreshTokenValue());

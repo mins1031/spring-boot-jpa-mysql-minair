@@ -1,11 +1,8 @@
 function refresh(data) {
     console.log("Try refresh");
-
     let refreshToken = data
 
-
     let state = null;
-    let memberId = null;
     let accessToken = null;
 
     $.ajax({
@@ -19,7 +16,7 @@ function refresh(data) {
             200: function (response) {
                 console.log("Refresh success!!");
                 state = 200;
-                accessToken = response;
+                accessToken = response.token;
             },
             401: function (response) {
                 console.log("Refresh fail...");

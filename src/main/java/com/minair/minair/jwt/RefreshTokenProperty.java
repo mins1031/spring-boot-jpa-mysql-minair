@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @Embeddable
 @Getter
-//@Builder
 @NoArgsConstructor
 public class RefreshTokenProperty {
 
@@ -27,12 +26,5 @@ public class RefreshTokenProperty {
         this.refreshTokenValue = null;
         this.refreshTokenExpirationPeriod = 0;
     }
-    /*public static RefreshTokenProperty issueToken(){
-        return RefreshTokenProperty.builder()
-                .refreshToken(UUID.randomUUID().toString())
-                .refreshTokenExpirationPeriod(14 * 24 * 60 * 60 * 1000L)//2week
-                .build();
-    }*/
-
 
 }

@@ -98,10 +98,8 @@ class ReservationServiceTest {
 
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(null,0);
-        Member member = Member.createMember(createDto);
-
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
-        member.investMemberRole(memberRole);
+        Member member = Member.createMember(createDto,memberRole);
         member.issueRefreshToken(refreshTokenProperty);
         airlineRepository.save(airline);
         airlineRepository.save(airline2);

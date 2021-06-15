@@ -118,10 +118,8 @@ public class ReservationApiControllerTest {
                 .phone("010-2222-2222")
                 .gender(Gender.F)
                 .build();
-
-        Member member = Member.createMember(createDto);
         MemberRole memberRole = MemberRole.ROLE_ADMIN;
-        member.investMemberRole(memberRole);
+        Member member = Member.createMember(createDto,memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);
@@ -230,9 +228,8 @@ public class ReservationApiControllerTest {
                 .phone("010-2222-2222")
                 .gender(Gender.F)
                 .build();
-        Member member = Member.createMember(createDto);
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
-        member.investMemberRole(memberRole);
+        Member member = Member.createMember(createDto,memberRole);
         RefreshTokenProperty r = new RefreshTokenProperty();
         member.issueRefreshToken(r);
         memberRepository.save(member);

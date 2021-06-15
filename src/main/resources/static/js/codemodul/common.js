@@ -18,16 +18,13 @@
 
 //토큰 유효기간 체크이므로 엑세스 토큰 넣고 함수 실행함
 //컨트롤러에서 200 뱉으면 토큰기간 유효함으로 결과값 true 출력
-//401 뱉으면 유효기간 만료임으로 false 출력
-
+//401 뱉으면 유효기간 만료임으로 false 출력후 refrsh함수로 리프레시토큰의 만료기한을 확인한후 결과에 따른 result변수를 리턴
     function tokenExpirationCheck(access,refreshToken) {
         let result = null;
+        console.log(access)
         $.ajax({
             method: "get",
-            url: "/api/token/tokenExpirationCheck/" + access,
-            /*data: {
-                "accessToken": access
-            },*/
+            url: "/api/token/token-expiration-check/" + access,
             async: false,
             statusCode: {
                 200: function (response) {
@@ -62,8 +59,7 @@
             //토큰 유무값 리턴변수
             let tokenResult = null;
             if (existence) { //existence가 true면 실행됨.= 2토큰,id값이 있으면 실행.
-                tokenResult = tokenExpirationCheck(getTokenInfo().accessToken,
-                    getTokenInfo().refreshToken);
+                tokenResult = tokenExpirationCheck(getTokenInfo().accessToken, getTokenInfo().refreshToken);
                 if (tokenResult.result === null) { //엑세스 토큰 유효기간 남아있는 경우
                     loginStatus = true;
                     console.log("tokenExpirationCheck 200!")

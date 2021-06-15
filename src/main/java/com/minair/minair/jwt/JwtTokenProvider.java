@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 public class JwtTokenProvider {
 
-    AccessTokenProperty access = new AccessTokenProperty();
+    TokenProperty access = new TokenProperty();
 
     private String secretKey = access.getSecretKey();
 
@@ -57,12 +57,12 @@ public class JwtTokenProvider {
     }
 
     //refreshToken 생성
-    public String createRefreshToken(RefreshTokenProperty r){
-        Claims claims = Jwts.claims().setSubject(r.getRefreshTokenValue());
-        claims.put("value",r.getRefreshTokenValue());
+    public String createRefreshToken(RefreshTokenProperty refreshTokenProperty){
+        Claims claims = Jwts.claims().setSubject(refreshTokenProperty.getRefreshTokenValue());
+        claims.put("value",refreshTokenProperty.getRefreshTokenValue());
         Date date = new Date();
         Date expiration =
-                new Date(date.getTime() + r.getRefreshTokenExpirationPeriod());
+                new Date(date.getTime() + refreshTokenProperty.getRefreshTokenExpirationPeriod());
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(date)
@@ -70,6 +70,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256,secretKey)
                 .compact();
     }
+
     //JWT 토큰에서 인증정보 조회
     public Authentication getAuthentication(String token){
         log.info("getAuthentication");
