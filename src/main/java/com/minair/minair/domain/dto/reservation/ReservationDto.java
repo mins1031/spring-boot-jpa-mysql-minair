@@ -18,7 +18,7 @@ public class ReservationDto {
     private Long goAirId;
     @NotNull
     private Long backAirId;
-    @NotBlank
+    @NotNull
     private String username;
     @NotNull
     @Max(5)
@@ -26,7 +26,7 @@ public class ReservationDto {
     @NotNull
     @Max(5)
     private int childCount;
-    @Max(18)
+    @Max(10)
     @NotNull
     private int totalPerson;
     @NotNull

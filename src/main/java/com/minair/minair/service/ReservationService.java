@@ -1,14 +1,21 @@
 package com.minair.minair.service;
 
+import com.minair.minair.common.ServerConstValue;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.ReservationGenerateDto;
+import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.reservation.ReservationDto;
+import com.minair.minair.domain.dto.reservation.ReservationResultApiDto;
+import com.minair.minair.domain.dto.reservation.ReservationResultDto;
+import com.minair.minair.domain.dto.reservation.ReservationsResultDto;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,47 +36,76 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final AirlineRepository airlineRepository;
+    private final ModelMapper modelMapper;
+    private final ServerConstValue serverConstValue;
 
     @Transactional
-    public List<Reservation> reservation(ReservationDto reservationDto){
+    public List<ReservationResultDto> reservation(ReservationDto reservationDto) throws NullPointerException{
         log.info("예약 진행!");
         if (reservationDto == null)
             log.info("요청이 올바르지 않습니다.");
         Optional<Airline> optionalGoAir = airlineRepository.findById(reservationDto.getGoAirId());
-        Airline goAir = optionalGoAir.get();
         Optional<Airline> optionalBackAir = airlineRepository.findById(reservationDto.getBackAirId());
+        Airline goAir = optionalGoAir.get();
         Airline backAir = optionalBackAir.get();
         Member member = memberRepository.findByUsername(reservationDto.getUsername());
-        Reservation goReservation = Reservation.createReservation(member,goAir,
-                reservationDto.getAdultCount(), reservationDto.getChildCount(),
-                reservationDto.getTotalPerson(), reservationDto.getTotalPrice());
-        Reservation backReservation = Reservation.createReservation(member,backAir,
-                reservationDto.getAdultCount(), reservationDto.getChildCount(),
-                reservationDto.getTotalPerson(), reservationDto.getTotalPrice());
+
+        ReservationGenerateDto goReservationDto =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(goAir)
+                        .adultCount(reservationDto.getAdultCount())
+                        .childCount(reservationDto.getChildCount())
+                        .totalPerson(reservationDto.getTotalPerson())
+                        .totalPrice(reservationDto.getTotalPrice())
+                        .build();
+        ReservationGenerateDto backReservationDto =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(backAir)
+                        .adultCount(reservationDto.getAdultCount())
+                        .childCount(reservationDto.getChildCount())
+                        .totalPerson(reservationDto.getTotalPerson())
+                        .totalPrice(reservationDto.getTotalPrice())
+                        .build();
+
+        Reservation goReservation = Reservation.createReservation(goReservationDto);
+        Reservation backReservation = Reservation.createReservation(backReservationDto);
+        ReservationResultDto goReservationResultDto = modelMapper.map(goReservation,ReservationResultDto.class);
+        ReservationResultDto backReservationResultDto = modelMapper.map(backReservation,ReservationResultDto.class);
+
         reservationRepository.save(goReservation);
         reservationRepository.save(backReservation);
 
-        List<Reservation> reservationList = new ArrayList<>();
-        reservationList.add(goReservation);
-        reservationList.add(backReservation);
+        List<ReservationResultDto> reservationList = new ArrayList<>();
+        reservationList.add(goReservationResultDto);
+        reservationList.add(backReservationResultDto);
 
         return reservationList;
     }
 
-    public Page<Reservation> findReservation(String username,int pageNum){
+    public ReservationsResultDto findReservations(String username,int pageNum){
 
         int offset = pageNum - 1;
 
         Member findMember = memberRepository.findByUsername(username);
-        PageRequest pageRequest = PageRequest.of(offset,10, Sort.by(Sort.Direction.DESC,"id"));
+        PageRequest pageRequest = PageRequest.of(offset,serverConstValue.getLimit(), Sort.by(Sort.Direction.DESC,"id"));
         //PageRequest.of의 offset은 디비 적용시 offset * limit의 양으로 들어감. 귯
-        Page<Reservation> page = reservationRepository.pageReservations(findMember, pageRequest);
-        if (page.getContent().isEmpty())
-            throw new NullPointerException();
-        //List<Reservation> reservationList = reservationRepository.findAllByMember(findMember);
-        return page;
+        Page<Reservation> reservations = reservationRepository.pageReservations(findMember, pageRequest);
+        List<ReservationResultApiDto> resultDtos = reservations.getContent().stream()
+                .map(reservation -> new ReservationResultApiDto(reservation))
+                .collect(Collectors.toList());
+        PageDto pageDto  = new PageDto(pageNum, serverConstValue.getLimit(),
+                reservations.getTotalElements(),
+                reservations.getTotalPages());
+
+        ReservationsResultDto reservationsResultDto = ReservationsResultDto.builder()
+                .reservations(resultDtos)
+                .pageDto(pageDto)
+                .build();
+
+        return reservationsResultDto;
         //이거 페이징 처리 진행하기 위해 로직 들어내야함.
-        //
     }
 
     public Reservation findOneReservation(Long reservationId){
@@ -78,7 +115,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void checkSeat(Long reservationId,String seats){
+    public void checkSeat(Long reservationId,String seats) throws RuntimeException{
         Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
         Reservation findReservation = optionalReservation.get();
         findReservation.setSeats(seats);

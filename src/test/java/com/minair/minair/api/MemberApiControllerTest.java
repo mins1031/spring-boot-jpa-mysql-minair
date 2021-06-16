@@ -6,6 +6,7 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.ReservationGenerateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.member.LoginRequestDto;
@@ -549,10 +550,29 @@ public class MemberApiControllerTest {
         Airline airline2 = Airline.createAirline(airlineGenerateDto2);
 
         Member member = memberRepository.findByUsername("user1");
+        ReservationGenerateDto reservationGenerateDto1 =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(airline1)
+                        .adultCount(1)
+                        .childCount(1)
+                        .totalPerson(2)
+                        .totalPrice(80000)
+                        .build();
+        ReservationGenerateDto reservationGenerateDto2 =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(airline2)
+                        .adultCount(1)
+                        .childCount(1)
+                        .totalPerson(2)
+                        .totalPrice(80000)
+                        .build();
+
         Reservation reservation =
-                Reservation.createReservation(member,airline1,1,1,2,80000);
+                Reservation.createReservation(reservationGenerateDto1);
         Reservation reservation2 =
-                Reservation.createReservation(member,airline2,1,1,2,80000);
+                Reservation.createReservation(reservationGenerateDto2);
 
         airlineRepository.save(airline1);
         airlineRepository.save(airline2);

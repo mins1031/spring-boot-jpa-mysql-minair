@@ -2,10 +2,7 @@ package com.minair.minair.controller;
 
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.common.PageDto;
-import com.minair.minair.domain.dto.reservation.CheckInRegDto;
-import com.minair.minair.domain.dto.reservation.ReservationDetailInfoDto;
-import com.minair.minair.domain.dto.reservation.ReservationDto;
-import com.minair.minair.domain.dto.reservation.ReservationResultDto;
+import com.minair.minair.domain.dto.reservation.*;
 import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.service.AirlineService;
 import com.minair.minair.service.ReservationService;
@@ -20,6 +17,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +31,7 @@ public class ReservationController {
     private final SeatService seatService;
     private final AirlineService airlineService;
 
+
     @PostMapping("/complete")
     public void reserve(@ModelAttribute("ReservationDto") @Valid ReservationDto reservationDto,
                         BindingResult bindingResult, Model model){
@@ -40,14 +39,10 @@ public class ReservationController {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException("예약을 위한 파라미터가 재대로 입력되지 않았습니다");
         }
-        List<Reservation> reservationList = reservationService.reservation(reservationDto);
-        if (reservationList == null)
+        List<ReservationResultDto> resultList = reservationService.reservation(reservationDto);
+        if (resultList == null)
             throw new NullPointerException();
 
-        List<ReservationResultDto> resultList = reservationList.stream()
-                .map(r -> new ReservationResultDto(r.getId(),r.getMember(),r.getAirline(),r.getAdultCount(),
-                        r.getChildCount(),r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
-                .collect(Collectors.toList());
         model.addAttribute("goReserveList",resultList.get(0));
         model.addAttribute("backReserveList",resultList.get(1));
         //result 객체로 싸서 뷰로보내야함.
@@ -65,23 +60,14 @@ public class ReservationController {
             throw new IllegalArgumentException();
         }
         try {
-            Page<Reservation> reservations = reservationService.findReservation(username,pageNum);
-            List<Reservation> teamList = reservations.getContent();
-            List<ReservationResultDto> realList = teamList.stream()
-                    .map(r -> new ReservationResultDto(r.getId(),r.getMember(),r.getAirline(),r.getAdultCount(),
-                            r.getChildCount(),r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
-                    .collect(Collectors.toList());
-
-            PageDto pageDto = new PageDto(pageNum,10,reservations.getTotalElements(),
-                    reservations.getTotalPages());
-
-            model.addAttribute("reservations",realList);
-            model.addAttribute("pageMaker",pageDto);
+            ReservationsResultDto reservations = reservationService.findReservations(username,pageNum);
+            System.out.println(reservations.getReservations());
+            model.addAttribute("reservations",reservations.getReservations());
+            model.addAttribute("pageMaker",reservations.getPageDto());
             model.addAttribute("Empty",null);
         } catch (NullPointerException e){
             String messege = "아직 예약하신 상품이 없습니다.";
             model.addAttribute("Empty",messege);
-
         }
     }
 
@@ -123,12 +109,12 @@ public class ReservationController {
 
         log.info("예약 목록");
         Page<Reservation> allReservation = reservationService.findAll(pageNum);
-
         List<ReservationResultDto> resultList = allReservation.getContent().stream()
-                .map(r -> new ReservationResultDto(r.getId(),r.getMember(),
-                        r.getAirline(),r.getAdultCount(),r.getChildCount(),
-                        r.getTotalPerson(),r.getTotalPrice(),r.getReserveSeat()))
-                .collect(Collectors.toList());
+                .map(reservation -> new ReservationResultDto(reservation.getId(),reservation.getMember().getUsername(),
+                        reservation.getAirline().getId(), reservation.getAirline().getDeparture(),
+                        reservation.getAirline().getDistination(), reservation.getAirline().getDepartDate(),
+                        reservation.getAirline().getDepartTime(), reservation.getTotalPerson(),
+                        reservation.getReserveSeat())).collect(Collectors.toList());
 
         PageDto pageDto = new PageDto(pageNum,10,allReservation.getTotalElements(),
                 allReservation.getTotalPages());

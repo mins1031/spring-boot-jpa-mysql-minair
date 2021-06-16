@@ -26,8 +26,8 @@ public class AirlineSearchRepositoryImpl implements AirlineSearchRepository{
                 .from(airline)
                 .where(airline.departure.eq(airlineSearchDto.getDeparture())
                         .and(airline.distination.eq(airlineSearchDto.getDistination()))
-                        .and(airline.depart_date.goe(airlineSearchDto.getDepart_date()))
-                        .and(airline.aboveseat.goe(totalPerson)))
+                        .and(airline.departDate.goe(airlineSearchDto.getDepart_date()))
+                        .and(airline.aboveSeat.goe(totalPerson)))
                 .fetch();
     }
 }

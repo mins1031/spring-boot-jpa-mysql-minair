@@ -25,12 +25,12 @@
     <!--<tr th:each="airline : ${backAirlineList.getAirlineResult}">-->
     <tr th:each="reservation : ${reservations}">
         <td style="color: #0b0b0b" th:text="${reservation?.id}"/></td>
-        <td th:text="${reservation?.getMember.getUsername}"></td>
-        <td th:text="${reservation?.getAirline.getId}" class="airlineId"></td>
-        <td th:text="${reservation?.getAirline.getDeparture}"></td>
-        <td th:text="${reservation?.getAirline.getDistination}"></td>
-        <td th:text="${reservation?.getAirline.getDepart_date}"></td>
-        <td th:text="${reservation?.getAirline.getDepart_time}"></td>
+        <td th:text="${reservation?.username}"></td>
+        <td th:text="${reservation?.getAirlineId}" class="airlineId"></td>
+        <td th:text="${reservation?.getDeparture}"></td>
+        <td th:text="${reservation?.getDistination}"></td>
+        <td th:text="${reservation?.getDepartDate}"></td>
+        <td th:text="${reservation?.getDepartTime}"></td>
         <td th:text="${reservation?.totalPerson}"></td>
         <td th:text="${reservation?.getReserveSeat}"></td>
         <td><button type="button" style="color: #545b62"

@@ -2,10 +2,8 @@ package com.minair.minair.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minair.minair.domain.date.DateEntity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.minair.minair.domain.dto.ReservationGenerateDto;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -16,6 +14,8 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 @ToString(exclude = "airline")
+@AllArgsConstructor
+@Builder
 public class Reservation extends DateEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +28,8 @@ public class Reservation extends DateEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "airline_id")
-    //@JsonIgnore
     private Airline airline;
-    //양방향 관계로 걸려있는경우 한쪽에는 꼭 @JsonIgnore를 걸어줘야 무한루프 = stackoverflow가 안걸림.
+
     private int adultCount;
     private int childCount;
     private int totalPerson;
@@ -38,18 +37,16 @@ public class Reservation extends DateEntity {
 
     private String reserveSeat = null;
 
-    public static Reservation createReservation(Member member, Airline airline,
-                                                int adultCount, int childCount,
-                                                int totalPerson,int totalPrice){
-        Reservation reservation = new Reservation();
-        reservation.member = member;
-        reservation.airline = airline;
-        reservation.adultCount = adultCount;
-        reservation.childCount = childCount;
-        reservation.totalPerson = totalPerson;
-        reservation.totalPrice = totalPrice;
+    public static Reservation createReservation(ReservationGenerateDto memberGenerateDto){
 
-        return reservation;
+        return Reservation.builder()
+                .member(memberGenerateDto.getMember())
+                .airline(memberGenerateDto.getAirline())
+                .adultCount(memberGenerateDto.getAdultCount())
+                .childCount(memberGenerateDto.getChildCount())
+                .totalPerson(memberGenerateDto.getTotalPerson())
+                .totalPrice(memberGenerateDto.getTotalPrice())
+                .build();
     }
 
     public void setSeats(String seats){

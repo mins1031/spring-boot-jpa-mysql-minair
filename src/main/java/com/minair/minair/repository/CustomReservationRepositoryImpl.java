@@ -27,13 +27,14 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
 
     @Override
     public Page<Reservation> pageReservations(Member member, Pageable pageable) {
-        List<Reservation> reservations = queryFactory
-                .selectFrom(reservation)
-                .where(reservation.member().eq(member))
-                .orderBy(reservation.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        List<Reservation> reservations =
+                queryFactory
+                    .selectFrom(reservation)
+                    .where(reservation.member().eq(member))
+                    .orderBy(reservation.id.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
 
         long total = queryFactory
                 .selectFrom(reservation)
@@ -64,7 +65,7 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
         LocalDate data = LocalDate.now();
         long fetchCount = queryFactory
                 .selectFrom(reservation)
-                .where(reservation.airline().depart_date.after(data))
+                .where(reservation.airline().departDate.after(data))
                 .fetchCount();
 
         boolean result = false ;

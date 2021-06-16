@@ -5,6 +5,7 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.ReservationGenerateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.member.MemberCreateDto;
@@ -129,11 +130,30 @@ public class ReservationApiControllerTest {
         int child = 1;
         int totalPer = 2;
         int totalPri = 80000;
+        ReservationGenerateDto goReservationDto =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(goAir)
+                        .adultCount(adult)
+                        .childCount(child)
+                        .totalPerson(adult+child)
+                        .totalPrice(totalPri)
+                        .build();
+
+        ReservationGenerateDto backReservationDto =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(goAir)
+                        .adultCount(adult)
+                        .childCount(child)
+                        .totalPerson(adult+child)
+                        .totalPrice(totalPri)
+                        .build();
 
         Reservation reservation
-                = Reservation.createReservation(member,goAir,adult,child,adult+child,totalPri);
+                = Reservation.createReservation(goReservationDto);
         Reservation reservation2
-                = Reservation.createReservation(member,backAir,adult,child,adult+child,totalPri);
+                = Reservation.createReservation(backReservationDto);
 
         reservationRepository.save(reservation);
         reservationRepository.save(reservation2);
@@ -240,10 +260,30 @@ public class ReservationApiControllerTest {
         int totalPer = 2;
         int totalPri = 80000;
 
+        ReservationGenerateDto goReservationDto =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(goAir)
+                        .adultCount(adult)
+                        .childCount(child)
+                        .totalPerson(adult+child)
+                        .totalPrice(totalPri)
+                        .build();
+
+        ReservationGenerateDto backReservationDto =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(goAir)
+                        .adultCount(adult)
+                        .childCount(child)
+                        .totalPerson(adult+child)
+                        .totalPrice(totalPri)
+                        .build();
+
         Reservation reservation
-                = Reservation.createReservation(member,goAir,adult,child,adult+child,totalPri);
+                = Reservation.createReservation(goReservationDto);
         Reservation reservation2
-                = Reservation.createReservation(member,backAir,adult,child,adult+child,totalPri);
+                = Reservation.createReservation(backReservationDto);
 
         reservationRepository.save(reservation);
         reservationRepository.save(reservation2);

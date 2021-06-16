@@ -1,5 +1,6 @@
 package com.minair.minair.api;
 
+import com.minair.minair.common.BasicResource;
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.Seat;
@@ -50,22 +51,16 @@ public class ReservationApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        List<Reservation> reservationList = reservationService.reservation(reservationDto);
-        if (reservationList.isEmpty())
+        List<ReservationResultDto> resultDtos = reservationService.reservation(reservationDto);
+        if (resultDtos.isEmpty())
             return ResponseEntity.noContent().build();
 
-        List<ReservationResultDto> resultDtos = new ArrayList<>();
-        for (Reservation r: reservationList) {
-            resultDtos.add(modelMapper.map(r,ReservationResultDto.class));
-        }
-
-        ReservationCompleteResultDto rcrDtos = ReservationCompleteResultDto.builder()
+        ReservationCompleteResultDto resultDto = ReservationCompleteResultDto.builder()
                 .goAirline(resultDtos.get(0))
                 .backAirline(resultDtos.get(1))
                 .build();
 
-        EntityModel reservationResource = EntityModel.of(rcrDtos);
-        reservationResource.add(new Link("/index").withRel("index"));
+        BasicResource reservationResource = new BasicResource(resultDto);
         reservationResource.add(new Link("/api/reservation/new").withSelfRel());
         reservationResource.add(new Link("/api/reservation").withRel("my-reservationList"));
         reservationResource.add(new Link("/api/checkIn").withRel("reservation-checkIn"));
@@ -80,37 +75,13 @@ public class ReservationApiController {
     public ResponseEntity myReservations(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
                                          Errors errors){
 
-        if (errors.hasErrors())
+        if (errors.hasErrors() || forFindPagingDto.getUsername() == null)
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        if (forFindPagingDto.getUsername() == null)
-            return ResponseEntity.badRequest().build();
+        ReservationsResultDto reservationsResult =
+                reservationService.findReservations(forFindPagingDto.getUsername(), forFindPagingDto.getPageNum());
 
-        Page<Reservation> reservationPage =
-                reservationService.findReservation(forFindPagingDto.getUsername(), forFindPagingDto.getPageNum());
-        if (reservationPage.getContent().isEmpty()) {
-            log.info("noContent");
-            return ResponseEntity.noContent().build();
-        }
-        List<Reservation> teamList = reservationPage.getContent();
-        List<ReservationResultApiDto> resultDtos = new ArrayList<>();
-        for (Reservation r: teamList) {
-            resultDtos.add(modelMapper.map(r,ReservationResultApiDto.class));
-        }
-
-        PageDto pageDto  = new PageDto(forFindPagingDto.getPageNum(), 10 ,
-                reservationPage.getTotalElements(),
-                reservationPage.getTotalPages());
-
-        ReservationsResultDto result = ReservationsResultDto.builder()
-                .reservations(resultDtos)
-                .pageDto(pageDto)
-                .build();
-
-        EntityModel reservationResource = EntityModel.of(result);
-        reservationResource.add(linkTo(ReservationApiController.class).withSelfRel());
-        reservationResource.add(new Link("/").withRel("index"));
-        reservationResource.add(new Link("/docs/index.html").withRel("profile"));
+        BasicResource reservationResource = new BasicResource(reservationsResult);
         reservationResource.add(new Link("/api/checkIn").withRel("reservation-checkIn"));
         reservationResource.add(new Link("/api/reservation").withRel("reservation-Info"));
 
@@ -126,32 +97,19 @@ public class ReservationApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        List<Seat> seats = new ArrayList<>();
+        reservationService.checkSeat(checkInRegDto.getReservationId(), checkInRegDto.getSelectSeats());
+        airlineService.subSeatCount(checkInRegDto.getAirlineId(), checkInRegDto.getTotalPerson());
+        List<SeatDtoForCheckIn> seatDtoList
+                = seatService.checkInSeats(checkInRegDto.getAirlineId(), checkInRegDto.getSelectSeats());
 
-        try {
-            reservationService.checkSeat(checkInRegDto.getReservationId(), checkInRegDto.getSelectSeats());
-            airlineService.subSeatCount(checkInRegDto.getAirlineId(), checkInRegDto.getTotalPerson());
-            seats = seatService.checkInSeats(checkInRegDto.getAirlineId(), checkInRegDto.getSelectSeats());
-        } catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity(e,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        CheckinResultDto checkinResultDto = new CheckinResultDto(seatDtoList);
 
-        List<SeatDtoForCheckIn> resultList = new ArrayList<>();
-        for (Seat s: seats) {
-            resultList.add(modelMapper.map(s,SeatDtoForCheckIn.class));
-        }
-
-        CheckinResultDto checkinResultDto = new CheckinResultDto(resultList);
-
-        EntityModel resultResource = EntityModel.of(checkinResultDto);
-        resultResource.add(new Link("/").withRel("index"));
+        BasicResource resultResource = new BasicResource(checkinResultDto);
         resultResource.add(new Link("/api/reservation/checkIn").withSelfRel());
-        resultResource.add(new Link("/docs/index").withRel("profile"));
 
         return ResponseEntity.ok().body(resultResource);
     }
-
+    //==================06/16 리펙토링=====================
     //단건예약 상세 조회
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")

@@ -285,6 +285,7 @@ class MemberServiceTest {
         //Then
         //assertEquals(logout,false);
     }
+
     @Test
     @DisplayName("로그아웃 테스트")
     public void logoutTest(){

@@ -154,7 +154,7 @@ public class SearchTest {
 
     private BooleanExpression departTimeEq(LocalDate depart_date){
 
-        return depart_date != null ? airline.depart_date.goe(depart_date) : null;
+        return depart_date != null ? airline.departDate.goe(depart_date) : null;
     }
 
 

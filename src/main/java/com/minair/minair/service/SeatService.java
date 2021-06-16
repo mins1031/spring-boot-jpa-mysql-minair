@@ -2,10 +2,12 @@ package com.minair.minair.service;
 
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Seat;
+import com.minair.minair.domain.dto.seat.SeatDtoForCheckIn;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ public class SeatService {
 
     private final SeatRepository seatRepository;
     private final AirlineRepository airlineRepository;
+    private final ModelMapper modelMapper;
 
 
     @Transactional
@@ -54,9 +57,7 @@ public class SeatService {
     }
 
     @Transactional
-    public List<Seat> checkInSeats(Long airlineId, String seats){
-        System.out.println(airlineId);
-        System.out.println(seats);
+    public List<SeatDtoForCheckIn> checkInSeats(Long airlineId, String seats){
         List<String> checkInList = Arrays.asList(seats.split(","));
         List<Seat> seatList = new ArrayList<>();
         for (String s:checkInList) {
@@ -66,7 +67,12 @@ public class SeatService {
             findSeat.checkInSeat();
         }
 
-        return seatList;
+        List<SeatDtoForCheckIn> seatDtoList = new ArrayList<>();
+        for (Seat s: seatList) {
+            seatDtoList.add(modelMapper.map(s,SeatDtoForCheckIn.class));
+        }
+
+        return seatDtoList;
     }
 
     @Transactional

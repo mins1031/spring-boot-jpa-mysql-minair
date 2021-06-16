@@ -4,6 +4,7 @@ import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.ReservationGenerateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.notEntity.Departure;
@@ -98,8 +99,27 @@ public class CustomReservationRepositoryImplTest {
         airlineRepository.save(airline1);
         airlineRepository.save(airline2);
 
-        Reservation reservation1 = Reservation.createReservation(member,airline1,1,1,2,80000);
-        Reservation reservation2 = Reservation.createReservation(member,airline2,1,1,2,80000);
+        ReservationGenerateDto reservationGenerateDto1 =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(airline1)
+                        .adultCount(1)
+                        .childCount(1)
+                        .totalPerson(2)
+                        .totalPrice(80000)
+                        .build();
+        ReservationGenerateDto reservationGenerateDto2 =
+                ReservationGenerateDto.builder()
+                        .member(member)
+                        .airline(airline2)
+                        .adultCount(1)
+                        .childCount(1)
+                        .totalPerson(2)
+                        .totalPrice(80000)
+                        .build();
+
+        Reservation reservation1 = Reservation.createReservation(reservationGenerateDto1);
+        Reservation reservation2 = Reservation.createReservation(reservationGenerateDto2);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
         em.flush();

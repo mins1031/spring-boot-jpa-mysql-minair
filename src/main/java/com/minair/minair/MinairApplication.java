@@ -2,6 +2,7 @@ package com.minair.minair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.minair.minair.common.ServerConstValue;
 import com.minair.minair.config.JacksonConfig;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
@@ -34,6 +35,11 @@ public class MinairApplication {
 				new MappingJackson2HttpMessageConverter(mapper);
 		converter.setObjectMapper(new JacksonConfig.CustomObjectMapper1());
 		return converter;
+	}
+
+	@Bean
+	public ServerConstValue serverConstValue(){
+		return new ServerConstValue();
 	}
 
 }

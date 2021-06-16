@@ -25,12 +25,12 @@
     <!--<tr th:each="airline : ${backAirlineList.getAirlineResult}">-->
     <tr th:each="reservation : ${reservations}">
         <td style="color: #0b0b0b" th:text="${reservation?.id}"/></td>
-        <td th:text="${reservation?.getMember.getUsername}"></td>
-        <td th:text="${reservation?.getAirline.getId}" class="airlineId"></td>
-        <td th:text="${reservation?.getAirline.getDeparture}"></td>
-        <td th:text="${reservation?.getAirline.getDistination}"></td>
-        <td th:text="${reservation?.getAirline.getDepart_date}"></td>
-        <td th:text="${reservation?.getAirline.getDepart_time}"></td>
+        <td th:text="${reservation?.username}"></td>
+        <td th:text="${reservation?.airlineId}" class="airlineId"></td>
+        <td th:text="${reservation?.departure}"></td>
+        <td th:text="${reservation?.distination}"></td>
+        <td th:text="${reservation?.departDate}"></td>
+        <td th:text="${reservation?.departTime}"></td>
         <td th:text="${reservation?.totalPerson}"></td>
         <td th:if="${reservation?.getReserveSeat} != null"
             th:text="${reservation?.getReserveSeat}"></td>
@@ -134,6 +134,7 @@
             cancleBtnTr = $(this).parent().parent()
             cancleBtnTd = cancleBtnTr.children()
         })
+
     });
 
     $('.checkInBtn').on('click',function (e) {
@@ -142,9 +143,11 @@
         var td = tr.children();
 
         var reservationId = td.eq(0).text();
+        var usernametest = td.eq(1).text();
         var airlineId = td.eq(2).text();
         var totalPerson = td.eq(7).text();
 
+        console.log(usernametest)
         $('.hiddenAirlineId').val(airlineId);
         console.log(airlineId);
         $('.hiddenTotalPerson').val(totalPerson);
@@ -201,8 +204,7 @@
     $('.pageNextBtn').on('click',function (e) {
         console.log("다음버튼 클릭")
         /*<![CDATA[*/
-
-        var endPage = /*[[${pageMaker.getEndPage()}]]*/
+            var endPage = /*[[${pageMaker.getEndPage()}]]*/
             console.log("endPage = "+endPage);
         /*]]>*/
         $('.pageNum').val(endPage + 1);
