@@ -10,6 +10,7 @@ import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.reservation.ReservationRemoveDto;
 import com.minair.minair.domain.dto.reservation.*;
 import com.minair.minair.domain.dto.seat.SeatDtoForCheckIn;
+import com.minair.minair.repository.ReservationRepository;
 import com.minair.minair.service.AirlineService;
 import com.minair.minair.service.ReservationService;
 import com.minair.minair.service.SeatService;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -39,9 +41,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class ReservationApiController {
 
     private final ReservationService reservationService;
+    private final ReservationRepository reservationRepository;
     private final AirlineService airlineService;
     private final SeatService seatService;
-    private final ModelMapper modelMapper;
 
     //예약 완료 페이지
     @PostMapping("/new")
@@ -110,31 +112,27 @@ public class ReservationApiController {
         return ResponseEntity.ok().body(resultResource);
     }
     //==================06/16 리펙토링=====================
+
     //단건예약 상세 조회
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity getReservation(@PathVariable("id")  Long reservationId){
-
-        Reservation reservation = reservationService.findOneReservation(reservationId);
-        if (reservation == null)
+//
+        ReservationDetailInfoDto reservationDetailInfoDto = reservationService.findOneReservation(reservationId);
+        if (reservationDetailInfoDto == null)
             return ResponseEntity.noContent().build();
 
-        ReservationDetailInfoDto infoDto
-                = ReservationDetailInfoDto.ReservationDetailInfoDto(reservation);
+        BasicResource reservationResource = new BasicResource(reservationDetailInfoDto);
 
-        EntityModel resultResource = EntityModel.of(infoDto);
-        resultResource.add(new Link("/").withRel("index"));
-        resultResource.add(linkTo(ReservationApiController.class)
+        reservationResource.add(linkTo(ReservationApiController.class)
                 .slash(reservationId).withSelfRel());
-        resultResource.add(linkTo(ReservationApiController.class)
-                .slash(reservationId)
-                .withRel("update-reservation"));
-        resultResource.add(new Link("/docs/index").withRel("profile"));
+        reservationResource.add(linkTo(ReservationApiController.class)
+                .slash(reservationId).withRel("update-reservation"));
 
-        return ResponseEntity.ok().body(resultResource);
+        return ResponseEntity.ok().body(reservationResource);
     }
 
-    @GetMapping("/admin")
+    @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity findAllReservation(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
                                              Errors errors){
@@ -142,24 +140,11 @@ public class ReservationApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        Page<Reservation> allReservation = reservationService.findAll(forFindPagingDto.getPageNum());
-        if (allReservation.isEmpty())
+        ReservationsResultDto allReservation = reservationService.findAll(forFindPagingDto.getPageNum());
+        if (allReservation == null)
             return ResponseEntity.noContent().build();
 
-        List<ReservationResultApiDto> tempDtos = new ArrayList<>();
-        for (Reservation r : allReservation.getContent()) {
-            tempDtos.add(modelMapper.map(r,ReservationResultApiDto.class));
-        }
-        PageDto pageDto = new PageDto(forFindPagingDto.getPageNum(), 10,
-                allReservation.getTotalElements(),allReservation.getTotalPages());
-
-        ReservationsResultDto result = ReservationsResultDto.builder()
-                .reservations(tempDtos)
-                .pageDto(pageDto)
-                .build();
-        EntityModel reservationResource = EntityModel.of(result);
-        reservationResource.add(new Link("/").withRel("index"));
-        reservationResource.add(new Link("/docs/index").withRel("profile"));
+        BasicResource reservationResource = new BasicResource(allReservation);
         reservationResource.add(linkTo(ReservationApiController.class).withSelfRel());
         reservationResource.add(new Link("/api/reservation/{id}").withRel("reservation-info"));
 
@@ -174,29 +159,22 @@ public class ReservationApiController {
         if (errors.hasErrors() || id == null)
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        Reservation reservation = reservationService.findOneReservation(id);
-        if (reservation == null)
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        Reservation findReservation = optionalReservation.get();
+        if (findReservation == null)
             return ResponseEntity.noContent().build();
 
-        if (reservation.getReserveSeat() != null){
+        if (findReservation.getReserveSeat() != null){
             airlineService.subSeatCount(reservationRemoveDto.getAirlineId(), reservationRemoveDto.getTotalPerson());
-            seatService.cancleSeats(reservationRemoveDto.getAirlineId(), reservation.getReserveSeat());
-            reservationService.remove(reservation);
+            seatService.cancleSeats(reservationRemoveDto.getAirlineId(), findReservation.getReserveSeat());
+            reservationService.remove(findReservation);
         } else {
-            reservationService.remove(reservation);
+            reservationService.remove(findReservation);
         }
 
-        Link selfLink = linkTo(ReservationApiController.class).slash(id).withSelfRel();
-        Link indexLink = new Link("/").withRel("index");
-        Link profileLink = new Link("/docs/index").withRel("profile");
+        BasicResource deleteResource = new BasicResource();
 
-        LinkDto linkDto = LinkDto.builder()
-                .selfLink(selfLink)
-                .indexLink(indexLink)
-                .profileLink(profileLink)
-                .build();
-
-        return ResponseEntity.ok().body(linkDto);
+        return ResponseEntity.ok().body(deleteResource);
     }
 
     /**

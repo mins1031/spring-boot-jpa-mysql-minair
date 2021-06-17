@@ -5,6 +5,8 @@ import com.minair.minair.domain.Member;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -38,6 +40,5 @@ public class ReservationResultApiDto {
         this.totalPerson = reservation.getTotalPerson();
         this.totalPrice = reservation.getTotalPrice();
         this.reserveSeat = reservation.getReserveSeat();
-
     }
 }

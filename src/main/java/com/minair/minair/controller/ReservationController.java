@@ -1,9 +1,11 @@
 package com.minair.minair.controller;
 
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.ReservationGenerateDto;
 import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.reservation.*;
 import com.minair.minair.exception.RequestNullException;
+import com.minair.minair.repository.ReservationRepository;
 import com.minair.minair.service.AirlineService;
 import com.minair.minair.service.ReservationService;
 import com.minair.minair.service.SeatService;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationRepository reservationRepository;
     private final SeatService seatService;
     private final AirlineService airlineService;
 
@@ -80,6 +84,7 @@ public class ReservationController {
 
         // 객체지향의 원칙에 따라
         // 예약에서 체크인 내용에 추가하는건 예약 서비스에서, 항공id통해서 좌석 상태 변경은 좌석서비스 통해서.
+        //이거 서비스 로직으로 넣어놓을것. api,web all파트 끝나고
         reservationService.checkSeat(checkInRegDto.getReservationId(),checkInRegDto.getSelectSeats());
         seatService.checkInSeats(checkInRegDto.getAirlineId(), checkInRegDto.getSelectSeats());
         airlineService.subSeatCount(checkInRegDto.getAirlineId(), checkInRegDto.getTotalPerson());
@@ -92,12 +97,11 @@ public class ReservationController {
         if (reservationId == null)
             throw new NullPointerException();
 
-        Reservation findReservation = reservationService.findOneReservation(reservationId);
-        if (findReservation == null)
+        ReservationDetailInfoDto reservationDetailInfoDto =
+                reservationService.findOneReservation(reservationId);
+        if (reservationDetailInfoDto == null)
             throw new NullPointerException();
-        ReservationDetailInfoDto reservationDetailInfoDto
-                = ReservationDetailInfoDto.ReservationDetailInfoDto(findReservation);
-        log.info("test 예약 정보");
+
         model.addAttribute("reservation", reservationDetailInfoDto);
     }
 
@@ -108,19 +112,10 @@ public class ReservationController {
             throw new RequestNullException();
 
         log.info("예약 목록");
-        Page<Reservation> allReservation = reservationService.findAll(pageNum);
-        List<ReservationResultDto> resultList = allReservation.getContent().stream()
-                .map(reservation -> new ReservationResultDto(reservation.getId(),reservation.getMember().getUsername(),
-                        reservation.getAirline().getId(), reservation.getAirline().getDeparture(),
-                        reservation.getAirline().getDistination(), reservation.getAirline().getDepartDate(),
-                        reservation.getAirline().getDepartTime(), reservation.getTotalPerson(),
-                        reservation.getReserveSeat())).collect(Collectors.toList());
+        ReservationsResultDto allReservation = reservationService.findAll(pageNum);
 
-        PageDto pageDto = new PageDto(pageNum,10,allReservation.getTotalElements(),
-                allReservation.getTotalPages());
-
-        model.addAttribute("reservations",resultList);
-        model.addAttribute("pageMaker",pageDto);
+        model.addAttribute("reservations",allReservation.getReservations());
+        model.addAttribute("pageMaker",allReservation.getPageDto());
     }
 
     @PostMapping("/remove")
@@ -131,11 +126,10 @@ public class ReservationController {
         if (reservationId == null)
             throw new RequestNullException();
 
-        System.out.println("airId"+airlineId);
-
-
+//이로직들 서비스에 넣을것.
         try {
-            Reservation findReservation = reservationService.findOneReservation(reservationId);
+            Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
+            Reservation findReservation = optionalReservation.get();
             if (findReservation.getReserveSeat() != null) {
                 airlineService.plusSeatCount(findReservation.getAirline().getId(),totalPerson);
                 seatService.cancleSeats(airlineId, findReservation.getReserveSeat());

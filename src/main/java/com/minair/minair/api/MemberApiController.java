@@ -191,11 +191,11 @@ public class MemberApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        Page<Member> members = memberService.findByAll(forFindPagingDto.getPageNum());
-        if (members.getContent().isEmpty())
+        QueryMemberDto queryMemberDto = memberService.findByAll(forFindPagingDto.getPageNum());
+        if (queryMemberDto.getMemberList() == null)
             return ResponseEntity.noContent().build();
 
-        List<MemberListDto> memberListDtos = new ArrayList<>();
+        /*List<MemberListDto> memberListDtos = new ArrayList<>();
         for (Member m : members) {
             memberListDtos.add(modelMapper.map(m,MemberListDto.class));
         }
@@ -207,8 +207,8 @@ public class MemberApiController {
                 .memberList(memberListDtos)
                 .pageDto(pageDto)
                 .build();
-
-        BasicResource basicResource = new BasicResource(q);
+*/
+        BasicResource basicResource = new BasicResource(queryMemberDto);
         basicResource.add(linkTo(MemberApiController.class).withSelfRel());
         basicResource.add(new Link("/api/member/{username}").withRel("member-info"));
         return ResponseEntity.ok().body(basicResource);

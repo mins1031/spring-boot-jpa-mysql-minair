@@ -4,6 +4,7 @@ import com.minair.minair.common.MethodDescription;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.dto.member.*;
 import com.minair.minair.domain.dto.token.TokenDto;
 import com.minair.minair.jwt.JwtTokenProvider;
@@ -24,10 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -121,7 +119,7 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
-    public Page<Member> findByAll(int pageNum) throws IllegalArgumentException{
+    public QueryMemberDto findByAll(int pageNum) throws IllegalArgumentException{
 
         if (pageNum <= 0)
             throw new IllegalArgumentException();
@@ -133,7 +131,20 @@ public class MemberService {
         if (members.getContent().isEmpty())
             throw new NullPointerException();
 
-        return members;
+        List<MemberListDto> memberListDtos = new ArrayList<>();
+        for (Member m : members.getContent()) {
+            memberListDtos.add(modelMapper.map(m,MemberListDto.class));
+        }
+
+        PageDto pageDto = new PageDto(pageNum, 10
+                ,members.getTotalElements(),members.getTotalPages());
+
+        QueryMemberDto queryMemberDto = QueryMemberDto.builder()
+                .memberList(memberListDtos)
+                .pageDto(pageDto)
+                .build();
+
+        return queryMemberDto;
     }
 
 
@@ -160,8 +171,9 @@ public class MemberService {
         if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
             log.info("리프레시 토큰 기한 유효!!");
             Member memberByRefreshToken = memberRepository.findByRefreshToken(jwtTokenProvider.getMemberName(refreshToken));
+
             reIssueTokenValue = jwtTokenProvider.createToken(memberByRefreshToken.getUsername(),
-                    memberByRefreshToken.getRole());
+                    memberByRefreshToken.getRoles());
             Authentication authentication = jwtTokenProvider.getAuthentication(reIssueTokenValue);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

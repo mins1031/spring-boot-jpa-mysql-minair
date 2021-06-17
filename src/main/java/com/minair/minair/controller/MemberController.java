@@ -95,12 +95,12 @@ public class MemberController {
             log.info("페이지 넘버가 0임. 페이징 오류");
             throw new RequestNullException();
         }
-        Page<Member> memberList = memberService.findByAll(pageNum);
-        if (memberList.getContent().isEmpty()){
+        QueryMemberDto queryMemberDto = memberService.findByAll(pageNum);
+        if (queryMemberDto.getMemberList() == null){
             log.info("회원이 없거나 회원목록 조회 실패");
             throw new MemberListException();
         }
-        List<MemberListDto> memberListDtos = memberList.getContent().stream()
+        /*List<MemberListDto> memberListDtos = memberList.getContent().stream()
                 .map(m -> new MemberListDto(m.getId(),m.getUsername(),m.getEmail(),
                         m.getNameKor(),m.getNameEng(),m.getPhone(),m.getGender(),
                         m.getRegDate()))
@@ -108,9 +108,9 @@ public class MemberController {
 
         PageDto pageDto = new PageDto(pageNum,10,memberList.getTotalElements(),
                 memberList.getTotalPages());
-
-        model.addAttribute("memberList", memberListDtos);
-        model.addAttribute("pageMaker", pageDto);
+*/
+        model.addAttribute("memberList", queryMemberDto.getMemberList());
+        model.addAttribute("pageMaker", queryMemberDto.getPageDto());
     }
 
     /*@PostMapping("/member/delete")

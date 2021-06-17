@@ -7,38 +7,43 @@ import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.ReservationGenerateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.member.MemberCreateDto;
-import com.minair.minair.domain.dto.reservation.ReservationDto;
-import com.minair.minair.domain.dto.reservation.ReservationResultApiDto;
-import com.minair.minair.domain.dto.reservation.ReservationsResultDto;
+import com.minair.minair.domain.dto.reservation.*;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
+import com.minair.minair.exception.NotFoundReservations;
+import com.minair.minair.exception.RequestNullException;
 import com.minair.minair.jwt.RefreshTokenProperty;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Slf4j
 @Transactional(readOnly = true)
-@Rollback(value = false)
 class ReservationServiceTest {
 
     @Autowired
@@ -69,10 +74,6 @@ class ReservationServiceTest {
                 .departTime(depart_time1)
                 .reachTime(reach_time1)
                 .build();
-
-
-        Airline airline = Airline.createAirline(airlineGenerateDto);
-
         Departure departure2 = Departure.JEJU;
         Distination distination2 = Distination.ICN;
         LocalDate depart_date2 = LocalDate.of(2021,04,8);
@@ -86,7 +87,7 @@ class ReservationServiceTest {
                 .departTime(depart_time2)
                 .reachTime(reach_time2)
                 .build();
-
+        Airline airline = Airline.createAirline(airlineGenerateDto);
         Airline airline2 = Airline.createAirline(airlineGenerateDto2);
 
         MemberCreateDto createDto = MemberCreateDto.builder()
@@ -100,11 +101,25 @@ class ReservationServiceTest {
                 .gender(Gender.F)
                 .build();
 
+        MemberCreateDto createDto2 = MemberCreateDto.builder()
+                .username("user2")
+                .password(passwordEncoder.encode("test"))
+                .email("min2@min")
+                .birth(LocalDate.of(2021,05,30))
+                .nameKor("민2")
+                .nameEng("minyoung2")
+                .phone("010-2222-2122")
+                .gender(Gender.F)
+                .build();
+
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(null,0);
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
+        Member member2 = Member.createMember(createDto2,memberRole);
         Member member = Member.createMember(createDto,memberRole);
         member.issueRefreshToken(refreshTokenProperty);
+        member2.issueRefreshToken(refreshTokenProperty);
+
         airlineRepository.save(airline);
         airlineRepository.save(airline2);
         memberRepository.save(member);
@@ -161,74 +176,125 @@ class ReservationServiceTest {
     }
 
     @Test
-    public void listTest(){
-        String username = "member";
-        /*List<Reservation> reservation = reservationService.findReservation(username);
-        System.out.println(reservation.get(0).getAirline().getDeparture());
-        System.out.println(reservation.get(0).getAirline().getDistination());
-        System.out.println(reservation.get(1).getAirline().getDeparture());
-        System.out.println(reservation.get(1).getAirline().getDistination());
-*/
-    }
+    @DisplayName("예약 테스트")
+    void reservationTest() {
+        //Given
+        Optional<Airline> goOp = airlineRepository.findById(1L);
+        Airline goAir = goOp.get();
 
-    @Test
-    @Disabled
-    public void reservationsPagingTest(){
-       /* String username = "user1";
-        int offset1 = 1;
-        int offset2 = 2;
-
-        ReservationsResultDto reservations = reservationService.findReservations(username, offset2);
-        Object reservations1 = reservations.getReservations();
-        for (Object r: reservations.getReservations()) {
-            System.out.println("page="+r.getId());
-        }
-        System.out.println("전체 데이터 갯수"+reservations.getTotalElements());
-        System.out.println("전체 페이지 번호"+reservations.getTotalPages());
-        System.out.println("??"+reservations.getPageable());
-        System.out.println("전체 페이지 번호"+reservations.getNumberOfElements());
-        //System.out.println("전체 페이지 번호"+reservations.);
-
-        System.out.println("페이지 번호"+reservations.getNumber());
-        System.out.println("첫 번째 항목인가?"+reservations.isFirst());
-        System.out.println("이전 페이지항목들이 있는가?"+reservations.hasPrevious());
-        System.out.println("다음 페이지 항목들이 있는가?"+reservations.hasNext());
-        System.out.println("첫번째 항목?"+reservations.isFirst());
-
-
-        //System.out.println(reservations.getContent());*/
-    }
-
-    @Test
-    public void reserveTest(){
-        Long goAirId = 4L;
-        Long backAirId = 5L;
-        String username = "member";
+        Optional<Airline> backOp = airlineRepository.findById(2L);
+        Airline backAir = backOp.get();
+        String username = "user1";
         int adult = 2;
         int child = 1;
         int totalPerson = adult + child;
         int totalPrice = 260000;
+        Member member = memberRepository.findByUsername(username);
 
-        ReservationDto reservationDto =
-                new ReservationDto(goAirId,backAirId,username,adult,child
-                ,totalPerson,totalPrice);
+        ReservationDto reservationDto = new ReservationDto();
+        reservationDto.setGoAirId(goAir.getId());
+        reservationDto.setBackAirId(backAir.getId());
+        reservationDto.setUsername(member.getUsername());
+        reservationDto.setAdultCount(adult);
+        reservationDto.setChildCount(child);
+        reservationDto.setTotalPerson(totalPerson);
+        reservationDto.setTotalPrice(totalPrice);
+        //When
+        List<ReservationResultDto> resultDtos = reservationService.reservation(reservationDto);
+        //Then
+        assertEquals(resultDtos.get(0).getAirlineId(), goAir.getId());
+        assertEquals(resultDtos.get(1).getAirlineId(), backAir.getId());
+    }
 
-        //Optional<Member> testMem = memberRepository.findById(8L);
-        //assertThat(testMem.isPresent()).isTrue();
+    @Test
+    @DisplayName("파리미터가 null인 경우 예약 테스트")
+    void parameterNullReservationTest() {
+        //Given
+        Optional<Airline> goOp = airlineRepository.findById(1L);
+        Airline goAir = goOp.get();
 
-        Optional<Airline> first = airlineRepository.findById(1L);
-        Optional<Airline> second = airlineRepository.findById(1L);
-        assertThat(first.isPresent()).isTrue();
-        assertThat(second.isPresent()).isTrue();
-        //Airline goAir = first.get();
-        //Airline backAir = second.get();
-        System.out.println(first.isPresent());
-        System.out.println(second.isPresent());
+        Optional<Airline> backOp = airlineRepository.findById(2L);
+        Airline backAir = backOp.get();
+        String username = "user1";
+        int adult = 2;
+        int child = 1;
+        int totalPerson = adult + child;
+        int totalPrice = 260000;
+        Member member = memberRepository.findByUsername(username);
 
-        //List<Reservation> reservationList = reservationService.reservation(reservationDto);
+        ReservationDto reservationDto = null;
+        //When & Then
+        assertThrows(RequestNullException.class, () -> reservationService.reservation(reservationDto));
+    }
 
-        /*for (Reservation r: reservationList) {
-            System.out.println(r);
-        }*/
+    @Test
+    @DisplayName("회원 예약목록 조회 테스트")
+    void findReservationsTest() {
+        //Given
+        String username = "user1";
+        int pageNum = 1;
+        //When
+        ReservationsResultDto reservations = reservationService.findReservations(username, pageNum);
+        //Then
+        List<ReservationResultApiDto> o = (List<ReservationResultApiDto>) reservations.getReservations();
+        System.out.println(o.get(0));
+        for (ReservationResultApiDto r: o) {
+            assertEquals(r.getUsername(),username);
+        }
+        assertEquals(reservations.getReservations().getClass(), ArrayList.class);
+    }
+
+    @Test
+    @DisplayName("회원의 예약목록이 없는 경우 테스트")
+    void noReservationFoundTest() {
+        //Given
+        String username = "user2";
+        int pageNum = 1;
+        //When & Then
+        assertThrows(NotFoundReservations.class,
+                () -> reservationService.findReservations(username, pageNum));
+    }
+
+    @Test
+    @DisplayName("예약에 대한 상세조회 테스트")
+    void findOneReservationTest() {
+        //Given
+        String username = "user1";
+        Long reservationId = 1L;
+        //When
+        ReservationDetailInfoDto oneReservation = reservationService.findOneReservation(reservationId);
+        //Then
+        assertEquals(oneReservation.getUsername(), username);
+    }
+
+    @Test
+    @DisplayName("없는 예약 조회 테스트")
+    void NoReservationTest() {
+        //Given
+        String username = "user1";
+        Long reservationId = 25L;
+        //When & Then
+        assertEquals(RuntimeException.class, reservationService.findOneReservation(reservationId));
+    }
+//========06/17 리펙토링 + 테스트 위 테스트 실패=====================
+    @Test
+    void checkSeat() {
+        //Given
+        //When
+        //Then
+    }
+
+    @Test
+    void findAll() {
+        //Given
+        //When
+        //Then
+    }
+
+    @Test
+    void remove() {
+        //Given
+        //When
+        //Then
     }
 }

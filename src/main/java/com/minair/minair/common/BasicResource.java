@@ -11,4 +11,9 @@ public class BasicResource extends EntityModel<Object> {
         add(new Link("/").withRel("index"));
         add(new Link("/docs/index").withRel("profile"));
     }
+
+    public BasicResource() {
+        add(new Link("/").withRel("index"));
+        add(new Link("/docs/index").withRel("profile"));
+    }
 }

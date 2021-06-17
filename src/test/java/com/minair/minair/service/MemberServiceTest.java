@@ -210,11 +210,12 @@ class MemberServiceTest {
         int pageNum = 2;
         generateMember(15);
         //When
-        Page<Member> byAll = memberService.findByAll(pageNum);
+        QueryMemberDto byAll = memberService.findByAll(pageNum);
         //Then
-        for (Member m:byAll.getContent()) {
+        /*for (Member m:byAll.getMemberList()) {
             System.out.println("유저의 이름"+m.getNameKor());
-        }
+        }*/
+        assertNotNull(byAll);
     }
 
     @Test
