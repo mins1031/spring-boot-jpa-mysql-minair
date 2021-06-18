@@ -29,8 +29,7 @@ public class Airline extends DateEntity {
     @Column(name = "airline_id")
     private Long id;
 
-    @OneToMany(mappedBy = "airline")
-    @JsonIgnore
+    @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL)
     private List<Seat> seats = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +48,7 @@ public class Airline extends DateEntity {
     public static Airline createAirline(AirlineGenerateDto airlineGenerateDto){
 
         AirlineProperty property = new AirlineProperty();
+        List<Seat> tempSeatList = new ArrayList<>();
 
         return Airline.builder()
                 .departure(airlineGenerateDto.getDeparture())
@@ -58,6 +58,7 @@ public class Airline extends DateEntity {
                 .reachTime(airlineGenerateDto.getReachTime())
                 .seatCount(property.getLocationSeats())
                 .aboveSeat(property.getLocationSeats())
+                .seats(tempSeatList)
                 .build();
     }
 

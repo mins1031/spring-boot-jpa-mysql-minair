@@ -6,6 +6,7 @@ import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
 import com.minair.minair.domain.dto.ReservationGenerateDto;
+import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
 import com.minair.minair.domain.dto.member.MemberCreateDto;
@@ -27,6 +28,7 @@ import com.minair.minair.testconfig.RestDocsConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +41,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -86,6 +90,9 @@ public class ReservationApiControllerTest {
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    ModelMapper modelMapper;
+
     @Before
     public void before(){
         AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
@@ -105,9 +112,11 @@ public class ReservationApiControllerTest {
 
         Airline goAir = Airline.createAirline(airlineGenerateDto1);
         Airline backAir = Airline.createAirline(airlineGenerateDto2);
+        AirlineCreateDto airlineCreateDto = modelMapper.map(goAir, AirlineCreateDto.class);
+        AirlineCreateDto airlineCreateDto2 = modelMapper.map(backAir, AirlineCreateDto.class);
 
-        airlineService.createAirline(goAir);
-        airlineService.createAirline(backAir);
+        airlineService.createAirline(airlineCreateDto);
+        airlineService.createAirline(airlineCreateDto2);
 
         MemberCreateDto createDto = MemberCreateDto.builder()
                 .username("user1")

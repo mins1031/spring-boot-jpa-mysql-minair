@@ -37,6 +37,8 @@ public class Seat {
 
     public void setAirline(Airline airline){
         this.airline = airline;
+        System.out.println(airline);
+        System.out.println(airline.getSeats());
         airline.getSeats().add(this);
     }
 
@@ -47,6 +49,7 @@ public class Seat {
     public void cancleReservation(){
         this.seatStatus = false;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

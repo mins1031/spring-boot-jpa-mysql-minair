@@ -1,14 +1,11 @@
 package com.minair.minair.api;
 
 import com.minair.minair.common.ErrorResource;
+import com.minair.minair.common.ServerConstValue;
 import com.minair.minair.domain.Airline;
+import com.minair.minair.domain.dto.airline.*;
 import com.minair.minair.domain.dto.common.PageDto;
-import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.dto.common.ForFindPagingDto;
-import com.minair.minair.domain.dto.airline.AirlineCreateDto;
-import com.minair.minair.domain.dto.airline.AirlineDto;
-import com.minair.minair.domain.dto.airline.AirlineSearchApiDto;
-import com.minair.minair.domain.dto.airline.QueryAirlinesDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.service.AirlineService;
@@ -51,18 +48,24 @@ public class AirlineApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        /*try {
-            Airline airline = Airline.createAirline(airlineCreateDto.getDeparture()
-                    , airlineCreateDto.getDistination(), airlineCreateDto.getDepart_date(),
-                    airlineCreateDto.getDepart_time(), airlineCreateDto.getReach_time(), 18);
-
+        try {
+            /*AirlineGenerateDto airlineGenerateDto =
+                    AirlineGenerateDto.builder()
+                            .departure(airlineCreateDto.getDeparture())
+                            .distination(airlineCreateDto.getDistination())
+                            .departDate(airlineCreateDto.getDepart_date())
+                            .departTime(airlineCreateDto.getDepart_time())
+                            .reachTime(airlineCreateDto.getReach_time())
+                            .build();
+            Airline airline = Airline.createAirline(airlineGenerateDto);
+*/
             Link webMvcLinkBuilder = linkTo(methodOn(AirlineApiController.class)
                     .createAirline(airlineCreateDto,errors)).withSelfRel();
             URI createUri = webMvcLinkBuilder.toUri();
 
-            Airline savedAirline = airlineService.createAirline(airline);
-            AirlineDto airlineDto = modelMapper.map(savedAirline, AirlineDto.class);
-            EntityModel createAirlineResource = EntityModel.of(airlineDto);
+            AirlineDto savedAirline = airlineService.createAirline(airlineCreateDto);
+            //AirlineDto airlineDto = modelMapper.map(savedAirline, AirlineDto.class);
+            EntityModel createAirlineResource = EntityModel.of(savedAirline);
             createAirlineResource.add(webMvcLinkBuilder);
             createAirlineResource.add(new Link("/docs/index.html").withRel("profile"));
 
@@ -74,8 +77,8 @@ public class AirlineApiController {
         } catch (NullPointerException e){
             e.printStackTrace();
             return new ResponseEntity(e,HttpStatus.UNAUTHORIZED);
-        }*/
-        return null; //=> !!!!!리펙토링 해줘야함!!!!!
+        }
+        //return null; //=> !!!!!리펙토링 해줘야함!!!!!
     }
 
     @GetMapping(value = "/search",consumes = MediaType.APPLICATION_JSON_VALUE)

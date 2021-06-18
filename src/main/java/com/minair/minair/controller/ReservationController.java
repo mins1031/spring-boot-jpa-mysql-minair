@@ -84,7 +84,6 @@ public class ReservationController {
 
         // 객체지향의 원칙에 따라
         // 예약에서 체크인 내용에 추가하는건 예약 서비스에서, 항공id통해서 좌석 상태 변경은 좌석서비스 통해서.
-        //이거 서비스 로직으로 넣어놓을것. api,web all파트 끝나고
         reservationService.checkSeat(checkInRegDto.getReservationId(),checkInRegDto.getSelectSeats());
         seatService.checkInSeats(checkInRegDto.getAirlineId(), checkInRegDto.getSelectSeats());
         airlineService.subSeatCount(checkInRegDto.getAirlineId(), checkInRegDto.getTotalPerson());

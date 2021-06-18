@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -122,10 +123,14 @@ public class ReservationService {
 
     public ReservationDetailInfoDto findOneReservation(Long reservationId) throws RuntimeException{
         Optional<Reservation> optionalReservation = reservationRepository.findById(reservationId);
-        Reservation findReservation = optionalReservation.get();
-        ReservationDetailInfoDto infoDto
-                = ReservationDetailInfoDto.ReservationDetailInfoDto(findReservation);
-
+        ReservationDetailInfoDto infoDto;
+        try {
+            Reservation findReservation = optionalReservation.get();
+            infoDto = ReservationDetailInfoDto.ReservationDetailInfoDto(findReservation);
+        } catch (NoSuchElementException e){
+            e.printStackTrace();
+            throw new NotFoundReservations();
+        }
         return infoDto;
     }
 

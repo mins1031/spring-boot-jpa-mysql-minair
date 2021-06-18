@@ -40,9 +40,9 @@ public class SeatService {
             }
             for (int j =1;j<7;j++) {
                 seatName = seatCode + j;//
-                Seat seat = Seat.createSeat(seatName);
-                seat.setAirline(airline);
-                seatRepository.save(seat);
+                Seat createSeat = Seat.createSeat(seatName);
+                createSeat.setAirline(airline);
+                seatRepository.save(createSeat);
             }
         }
     }

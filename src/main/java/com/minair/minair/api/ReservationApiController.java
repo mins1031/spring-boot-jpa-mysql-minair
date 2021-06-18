@@ -111,23 +111,19 @@ public class ReservationApiController {
 
         return ResponseEntity.ok().body(resultResource);
     }
-    //==================06/16 리펙토링=====================
 
     //단건예약 상세 조회
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity getReservation(@PathVariable("id")  Long reservationId){
-//
+
         ReservationDetailInfoDto reservationDetailInfoDto = reservationService.findOneReservation(reservationId);
         if (reservationDetailInfoDto == null)
             return ResponseEntity.noContent().build();
 
         BasicResource reservationResource = new BasicResource(reservationDetailInfoDto);
-
-        reservationResource.add(linkTo(ReservationApiController.class)
-                .slash(reservationId).withSelfRel());
-        reservationResource.add(linkTo(ReservationApiController.class)
-                .slash(reservationId).withRel("update-reservation"));
+        reservationResource.add(linkTo(ReservationApiController.class).slash(reservationId).withSelfRel());
+        reservationResource.add(linkTo(ReservationApiController.class).slash(reservationId).withRel("update-reservation"));
 
         return ResponseEntity.ok().body(reservationResource);
     }

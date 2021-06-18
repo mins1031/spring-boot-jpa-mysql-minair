@@ -3,6 +3,7 @@ package com.minair.minair.service;
 import com.minair.minair.domain.Airline;
 import com.minair.minair.domain.AirlineSeat;
 import com.minair.minair.domain.Seat;
+import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.airline.AirlineSearchDto;
 import com.minair.minair.domain.notEntity.Departure;
@@ -89,8 +90,8 @@ public class AirlineServiceTest {
                 .reachTime(LocalTime.of(13,55))
                 .build();
         Airline airline = Airline.createAirline(airlineGenerateDto1);
-
-        airlineService.createAirline(airline);
+        //AirlineCreateDto airlineCreateDto = modelMapper.map(airline, AirlineCreateDto.class);
+       // airlineService.createAirline(airline);
     }
 
 }

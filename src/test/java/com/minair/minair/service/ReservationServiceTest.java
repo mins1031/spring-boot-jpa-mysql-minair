@@ -1,13 +1,12 @@
 package com.minair.minair.service;
 
-import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.Member;
-import com.minair.minair.domain.MemberRole;
-import com.minair.minair.domain.Reservation;
+import com.minair.minair.domain.*;
 import com.minair.minair.domain.dto.ReservationGenerateDto;
+import com.minair.minair.domain.dto.airline.AirlineCreateDto;
 import com.minair.minair.domain.dto.airline.AirlineGenerateDto;
 import com.minair.minair.domain.dto.member.MemberCreateDto;
 import com.minair.minair.domain.dto.reservation.*;
+import com.minair.minair.domain.dto.seat.SeatDtoForCheckIn;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -55,11 +56,16 @@ class ReservationServiceTest {
     @Autowired
     AirlineRepository airlineRepository;
     @Autowired
+    AirlineService airlineService;
+    @Autowired
     MemberRepository memberRepository;
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    ModelMapper modelMapper;
 
     @BeforeEach
+    @Rollback(value = false)
     public void beford(){
         Departure departure1 = Departure.ICN;
         Distination distination1 = Distination.JEJU;
@@ -89,7 +95,6 @@ class ReservationServiceTest {
                 .build();
         Airline airline = Airline.createAirline(airlineGenerateDto);
         Airline airline2 = Airline.createAirline(airlineGenerateDto2);
-
         MemberCreateDto createDto = MemberCreateDto.builder()
                 .username("user1")
                 .password(passwordEncoder.encode("test"))
@@ -112,6 +117,7 @@ class ReservationServiceTest {
                 .gender(Gender.F)
                 .build();
 
+        seatService.createSeats(airline,18);
         RefreshTokenProperty refreshTokenProperty =
                 new RefreshTokenProperty(null,0);
         MemberRole memberRole = MemberRole.ROLE_MEMBER;
@@ -119,8 +125,9 @@ class ReservationServiceTest {
         Member member = Member.createMember(createDto,memberRole);
         member.issueRefreshToken(refreshTokenProperty);
         member2.issueRefreshToken(refreshTokenProperty);
+        AirlineCreateDto airlineCreateDto = modelMapper.map(airline, AirlineCreateDto.class);
 
-        airlineRepository.save(airline);
+        //airlineService.createAirline(airlineCreateDto);
         airlineRepository.save(airline2);
         memberRepository.save(member);
 
@@ -131,6 +138,7 @@ class ReservationServiceTest {
         int child = 1;
         int totalPerson = adult + child;
         int totalPrice = 260000;
+
         ReservationGenerateDto reservationGenerateDto1 =
                 ReservationGenerateDto.builder()
                         .member(member)
@@ -140,6 +148,7 @@ class ReservationServiceTest {
                         .totalPerson(totalPerson)
                         .totalPrice(totalPrice)
                         .build();
+
         ReservationGenerateDto reservationGenerateDto2 =
                 ReservationGenerateDto.builder()
                         .member(member)
@@ -149,6 +158,7 @@ class ReservationServiceTest {
                         .totalPerson(totalPerson)
                         .totalPrice(totalPrice)
                         .build();
+
         Reservation reservation = Reservation.createReservation(reservationGenerateDto1);
         Reservation reservation2 = Reservation.createReservation(reservationGenerateDto2);
         Reservation reservation3 = Reservation.createReservation(reservationGenerateDto1);
@@ -274,14 +284,28 @@ class ReservationServiceTest {
         String username = "user1";
         Long reservationId = 25L;
         //When & Then
-        assertEquals(RuntimeException.class, reservationService.findOneReservation(reservationId));
+        assertThrows(NotFoundReservations.class,() -> reservationService.findOneReservation(reservationId));
     }
-//========06/17 리펙토링 + 테스트 위 테스트 실패=====================
+
+    @Autowired
+    SeatService seatService;
+
     @Test
+    @Rollback(value = false)
+    @Transactional
     void checkSeat() {
         //Given
+        Long airlineId = 1L;
+        Long reservationId = 1L;
+        String seats = "B2,B3";
         //When
+
+        List<SeatDtoForCheckIn> seatDtoForCheckIns = seatService.checkInSeats(airlineId, seats);
+        reservationService.checkSeat(reservationId,seats);
         //Then
+        assertEquals(seatDtoForCheckIns.get(0).getSeatName(),"B2");
+        assertEquals(seatDtoForCheckIns.get(1).getSeatName(),"B3");
+        assertEquals(reservationService.findOneReservation(reservationId).getReserveSeats(),"B2,B3");
     }
 
     @Test
