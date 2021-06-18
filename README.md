@@ -41,8 +41,10 @@
  > 10주차 ~ 현재 : 예외처리에 대한 고민과 단일 테스트 부족, 리펙토링 요소들이 많이 보여 테스트와 리펙토링, 추가적인 기능들 추가중.
 ## DataBase ERD
 <img src = "src/main/resources/static/images/minairErd.jpg" width="700" height="400">
+
 ## 개선점
  * refreshToken의 저장 방식에 대한 개선사항.redis를 도입해보는 것도 고려중.
+
 ## 현재까지 고민
  * Api는 응답Status를 통해 해당 예외에 대한 큰 설명이 가능. 웹파트는 AdviceController를 통해 해당 어플리케이션에서 발생하는 예외를 한번에 잡아서 예외별로 처리해주었다. 리펙토링. 피곤한경우 생각없이 구성한 코드가 몇몇 군데 보임.. 반성..  
 
