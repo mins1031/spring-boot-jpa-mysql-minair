@@ -129,4 +129,16 @@ public class TokenApiControllerTest {
                 .andExpect(status().isOk())
                 ;
     }
+
+    @Test
+    public void validRefresh() throws Exception {
+        generateMember(15);
+        String username = "testId2";
+
+        this.mockMvc.perform(post("/api/token/refresh/{username}",username))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("token").exists())
+        ;
+    }
 }

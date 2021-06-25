@@ -14,10 +14,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Assert;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -259,13 +256,16 @@ class MemberServiceTest {
     public void issueRefreshTokenObjectTest(){
         //Given
         String username = "user1";
+        Member findMember = memberRepository.findByUsername(username);
         //When
         TokenDto tokenDto = memberService.issueRefreshToken(username);
         //Then
         assertNotNull(tokenDto);
-        Member findMember = memberRepository.findByUsername(username);
         assertEquals(jwtTokenProvider.getMemberName(tokenDto.getToken()),
                 findMember.getRefreshToken().getRefreshTokenValue());
+        assertEquals(jwtTokenProvider.getMemberName(tokenDto.getToken()),
+                findMember.getRefreshToken().getRefreshTokenValue());
+
     }
 
     @Test
@@ -273,17 +273,14 @@ class MemberServiceTest {
     @Disabled
     public void refreshTokenValidateTest(){
         //Given
-        TokenProperty accessTokenProperty = new TokenProperty();
-        RefreshTokenProperty r = new RefreshTokenProperty(UUID.randomUUID().toString(),
-                -50);
+        TokenProperty tokenProperty = new TokenProperty();
         String username = "user1";
-        Member beforeLoginMember = memberRepository.findByUsername(username);
-        beforeLoginMember.issueRefreshToken(r);
-        em.flush();
-        em.clear();
-        Member loginMember = memberRepository.findByUsername(username);
+        Member findMember = memberRepository.findByUsername(username);
         //When
+        TokenDto tokenDto = memberService.issueRefreshToken(username);
         //Then
+        assertEquals(tokenProperty.getTokenValidTime(), tokenDto.getToken());
+        //일단 리프레시 토큰의 기한을 먼저 확인.-> 토큰프로바이더에서 나온 값을 확인해야함.
         //assertEquals(logout,false);
     }
 

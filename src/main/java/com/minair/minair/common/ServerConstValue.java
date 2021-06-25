@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class ServerConstValue {
 
     private final int limit = 10;
+
 }

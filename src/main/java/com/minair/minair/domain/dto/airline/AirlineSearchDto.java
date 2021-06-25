@@ -4,6 +4,7 @@ import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
+@Builder
 public class AirlineSearchDto {
 
     @NotNull
@@ -51,7 +53,6 @@ public class AirlineSearchDto {
         this.adult = adult;
         this.child = child;
     }
-
 
     public int getTotalPerson(){
         int totalPerson = this.adult + this.child;

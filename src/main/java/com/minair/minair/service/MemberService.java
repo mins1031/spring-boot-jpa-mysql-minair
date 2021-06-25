@@ -1,6 +1,7 @@
 package com.minair.minair.service;
 
 import com.minair.minair.common.MethodDescription;
+import com.minair.minair.common.ServerConstValue;
 import com.minair.minair.domain.Member;
 import com.minair.minair.domain.MemberRole;
 import com.minair.minair.domain.Reservation;
@@ -38,6 +39,7 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final ModelMapper modelMapper;
+    private final ServerConstValue serverConstValue;
 
     @Transactional
     public MemberInfoDto join(MemberJoinDto memberJoinDto) {
@@ -125,7 +127,8 @@ public class MemberService {
             throw new IllegalArgumentException();
 
         int offset = pageNum - 1;
-        PageRequest pageRequest = PageRequest.of(offset,10);
+
+        PageRequest pageRequest = PageRequest.of(offset, serverConstValue.getLimit());
 
         Page<Member> members = memberRepository.findMembers(pageRequest);
         if (members.getContent().isEmpty())
@@ -136,7 +139,7 @@ public class MemberService {
             memberListDtos.add(modelMapper.map(m,MemberListDto.class));
         }
 
-        PageDto pageDto = new PageDto(pageNum, 10
+        PageDto pageDto = new PageDto(pageNum, serverConstValue.getLimit()
                 ,members.getTotalElements(),members.getTotalPages());
 
         QueryMemberDto queryMemberDto = QueryMemberDto.builder()
@@ -153,6 +156,7 @@ public class MemberService {
         RefreshTokenProperty r = new RefreshTokenProperty(
                 UUID.randomUUID().toString(), new TokenProperty().getAccessTokenValidTime()
         );
+
         Member member = memberRepository.findByUsername(username);
         member.issueRefreshToken(r);
         TokenDto tokenDto = TokenDto.builder()
@@ -174,6 +178,7 @@ public class MemberService {
 
             reIssueTokenValue = jwtTokenProvider.createToken(memberByRefreshToken.getUsername(),
                     memberByRefreshToken.getRoles());
+
             Authentication authentication = jwtTokenProvider.getAuthentication(reIssueTokenValue);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

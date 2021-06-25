@@ -1,5 +1,6 @@
 package com.minair.minair.api;
 
+import com.minair.minair.common.BasicResource;
 import com.minair.minair.common.ErrorResource;
 import com.minair.minair.common.ServerConstValue;
 import com.minair.minair.domain.Airline;
@@ -35,13 +36,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/airline",produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value = "/api/airline", produces = MediaTypes.HAL_JSON_VALUE)
 public class AirlineApiController {
 
     private final AirlineService airlineService;
     private final ModelMapper modelMapper;
 
-    @PostMapping(value = "/new",produces = MediaTypes.HAL_JSON_VALUE)
+    @PostMapping(value = "/new", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity createAirline(@RequestBody @Valid AirlineCreateDto airlineCreateDto,
                                         Errors errors){
         log.info("항공권 등록 post 요청");
@@ -49,36 +50,20 @@ public class AirlineApiController {
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
         try {
-            /*AirlineGenerateDto airlineGenerateDto =
-                    AirlineGenerateDto.builder()
-                            .departure(airlineCreateDto.getDeparture())
-                            .distination(airlineCreateDto.getDistination())
-                            .departDate(airlineCreateDto.getDepart_date())
-                            .departTime(airlineCreateDto.getDepart_time())
-                            .reachTime(airlineCreateDto.getReach_time())
-                            .build();
-            Airline airline = Airline.createAirline(airlineGenerateDto);
-*/
-            Link webMvcLinkBuilder = linkTo(methodOn(AirlineApiController.class)
-                    .createAirline(airlineCreateDto,errors)).withSelfRel();
-            URI createUri = webMvcLinkBuilder.toUri();
-
             AirlineDto savedAirline = airlineService.createAirline(airlineCreateDto);
-            //AirlineDto airlineDto = modelMapper.map(savedAirline, AirlineDto.class);
-            EntityModel createAirlineResource = EntityModel.of(savedAirline);
-            createAirlineResource.add(webMvcLinkBuilder);
-            createAirlineResource.add(new Link("/docs/index.html").withRel("profile"));
 
+            Link selfRel = linkTo(methodOn(AirlineApiController.class)
+                    .createAirline(airlineCreateDto,errors)).withSelfRel();
+
+            BasicResource createAirlineResource = new BasicResource(savedAirline);
+            createAirlineResource.add(selfRel);
+
+            URI createUri = selfRel.toUri();
             return ResponseEntity.created(createUri).body(createAirlineResource);
-            //return new ResponseEntity(HttpStatus.CREATED);
-
-            //EntityModel도 결국 자바빈 규칙을 지키는 클래스만을 적용해야 컨버터가 jackson이 잘 json으로 컨버팅해줌
-            //즉 올바른 생성자(NO,ALL)두개와 세터,게터를 가진 객체를 of의 파라미터로 사용해줘야함.
-        } catch (NullPointerException e){
+        } catch (RuntimeException e){
             e.printStackTrace();
-            return new ResponseEntity(e,HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(e,HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        //return null; //=> !!!!!리펙토링 해줘야함!!!!!
     }
 
     @GetMapping(value = "/search",consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -87,36 +72,14 @@ public class AirlineApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
-        List<Airline> airlineList = airlineService.searchAirlines(airlineSearchDto);
-
-        /*if (airlineList.isEmpty())
-            return new ResponseEntity(new NotFoundAirlines(),HttpStatus.INTERNAL_SERVER_ERROR);
-*/
-        List<AirlineDto> goAirlineList = new ArrayList<>();
-        for (Airline a: airlineList) {
-            goAirlineList.add(modelMapper.map(a,AirlineDto.class));
-        }
-
-        String convertDeparture = airlineSearchDto.getDeparture().toString();
-        String convertDistination = airlineSearchDto.getDistination().toString();
-
-        Departure departure = Departure.valueOf(convertDistination);
-        Distination distination = Distination.valueOf(convertDeparture);
-
-        AirlineSearchDto backAirlineDto = new AirlineSearchDto(departure,distination,
-                airlineSearchDto.getComebackDate(),airlineSearchDto.getAdult(),airlineSearchDto.getChild());
-        List<Airline> backList = airlineService.searchAirlines(backAirlineDto);
-        List<AirlineDto> backAirlineList = new ArrayList<>();
-        for (Airline a: backList) {
-            backAirlineList.add(modelMapper.map(a,AirlineDto.class));
-        }
         AirlineSearchApiDto<List<AirlineDto>> airlineSearchApiDto
-                = new AirlineSearchApiDto<>(goAirlineList,backAirlineList,airlineSearchDto.getAdult(),
-                airlineSearchDto.getChild());
-        EntityModel airlineResource = EntityModel.of(airlineSearchApiDto);
+                = airlineService.searchAirlines(airlineSearchDto);
+        //가는편,오는편,인원수 정보 서비스에서 리턴
+
+        BasicResource airlineResource = new BasicResource(airlineSearchApiDto);
         airlineResource.add(new Link("/api/airline/search").withSelfRel());
         airlineResource.add(new Link("/reservation/complete").withRel("reserve-complete"));
-        airlineResource.add(new Link("/docs/index.html").withRel("profile"));
+
         return new ResponseEntity(airlineResource,HttpStatus.OK);
     }
 
@@ -128,25 +91,13 @@ public class AirlineApiController {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().build();
 
-        Page<Airline> airlinePage = airlineService.findAllAirline(forFindPagingDto.getPageNum());
-        List<AirlineDto> airlineDtoList = new ArrayList<>();
+        QueryAirlinesDto queryAirlinesDto = airlineService.findAllAirline(forFindPagingDto.getPageNum());
 
-        for (Airline a:airlinePage.getContent()) {
-            airlineDtoList.add(modelMapper.map(a,AirlineDto.class));
-        }
-        PageDto pageDto = new PageDto(forFindPagingDto.getPageNum(),10,
-                airlinePage.getTotalElements(),airlinePage.getTotalPages());
-        QueryAirlinesDto queryAirlinesDto = QueryAirlinesDto.builder()
-                .airlineList(airlineDtoList)
-                .pageDto(pageDto)
-                .build();
+        BasicResource airlineResource = new BasicResource(queryAirlinesDto);
+        airlineResource.add(linkTo(AirlineApiController.class).withSelfRel());
 
-        EntityModel pageResource = EntityModel.of(queryAirlinesDto);
-        pageResource.add(linkTo(AirlineApiController.class).withSelfRel());
-        pageResource.add(new Link("/docs/index.htm").withRel("profile"));
-        return ResponseEntity.ok(pageResource);
+        return ResponseEntity.ok(airlineResource);
     }
 
-    //더 추가할거 없는가..? 항공권 검색, 등록, 모든 항공권 조회,  일반 웹은 구현 안했지만 항공권 단건조회와 수정...
-    //도 필요할듯.우선 구현해놨던거 구현하고 추가할것.
+    //더 추가할거 없는가..? 항공권 검색, 등록, 모든 항공권 조회,  일반 웹은 구현 안했지만 항공권 단건조회와 수정...도 필요할듯.우선 구현해놨던거 구현하고 추가할것.
 }

@@ -1,9 +1,7 @@
 package com.minair.minair.controller;
 
 import com.minair.minair.domain.Airline;
-import com.minair.minair.domain.dto.airline.AirlineDto;
-import com.minair.minair.domain.dto.airline.AirlineSearchDto;
-import com.minair.minair.domain.dto.airline.AirlineSearchResult;
+import com.minair.minair.domain.dto.airline.*;
 import com.minair.minair.domain.dto.common.PageDto;
 import com.minair.minair.domain.notEntity.Departure;
 import com.minair.minair.domain.notEntity.Distination;
@@ -36,40 +34,13 @@ public class AirlineController {
         if (errors.hasErrors())
             throw new IllegalArgumentException();
 
-        List<Airline> searchAirlineList = airlineService.searchAirlines(airlineSearchDto);
-        List<AirlineDto> collect = searchAirlineList.stream()
-                .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
-                        a.getDepartDate(),a.getDepartTime(),a.getReachTime(),
-                        a.getAboveSeat()))
-                .collect(Collectors.toList());
+        AirlineSearchApiDto airlineSearchApiResult = airlineService.searchAirlines(airlineSearchDto);
 
-        AirlineSearchResult<List<AirlineDto>> goAirResult =
-                new AirlineSearchResult<List<AirlineDto>>(collect);
-        //가는편 조회후 Dto로 변환해 View객체로 감싸줌
-
-        String convertDeparture = airlineSearchDto.getDeparture().toString();
-        String convertDistination = airlineSearchDto.getDistination().toString();
-
-        Departure departure = Departure.valueOf(convertDistination);
-        Distination distination = Distination.valueOf(convertDeparture);
-
-        AirlineSearchDto backDto = new AirlineSearchDto(departure,distination,
-                airlineSearchDto.getComebackDate(), airlineSearchDto.getAdult(), airlineSearchDto.getChild()
-        );
-        //검색시 오는날 데이터만 따로 담아서 오는편 조회시 가는날 데이터로 넣어서 만들어줌.
-        List<Airline> backAirlineList = airlineService.searchAirlines(backDto);
-        List<AirlineDto> backCollect = backAirlineList.stream()
-                .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
-                        a.getDepartDate(),a.getDepartTime(),a.getReachTime(),
-                        a.getAboveSeat()))
-                .collect(Collectors.toList());
-        AirlineSearchResult<List<AirlineDto>> backAirResult =
-                new AirlineSearchResult<List<AirlineDto>>(backCollect);
         //오는편 조회후 dto로 변환해 View객체로 감싸줌.
 
         model.addAttribute("searchInfo",airlineSearchDto);
-        model.addAttribute("goAirlineList", goAirResult);
-        model.addAttribute("backAirlineList", backAirResult);
+        model.addAttribute("goAirlineList", airlineSearchApiResult.getGoAirlineList());
+        model.addAttribute("backAirlineList", airlineSearchApiResult.getBackAirlineList());
 
         return "/airline/airlinelist";
     }
@@ -95,18 +66,9 @@ public class AirlineController {
         if (pageNum == 0)
             throw new RequestNullException();
 
-        Page<Airline> allAirline = airlineService.findAllAirline(pageNum);
-        List<AirlineDto> airlineDtoList = allAirline.getContent().stream()
-                .map(a -> new AirlineDto(a.getId(),a.getDeparture(),a.getDistination(),
-                        a.getDepartDate(),a.getDepartTime(),a.getReachTime(),
-                        a.getAboveSeat()))
-                .collect(Collectors.toList());
-        PageDto pageDto = new PageDto(pageNum,10,allAirline.getTotalElements()
-                ,allAirline.getTotalPages());
-        // 05/09 PageDto의 offset을 바꿔주는 것이 좋음. 저번에 했을떄 왜 안되었냐면
-        // if(offset <= 0) {this.offset = 1} else this.offset = offset 이경우 endPage 공식의 offset값을
-        // this.offset을 해야하는데 offset으로 했기 때문일것 내일 적용해보기기
-        model.addAttribute("airlineList",airlineDtoList);
-        model.addAttribute("pageMaker",pageDto);
+        QueryAirlinesDto queryAirlinesDto = airlineService.findAllAirline(pageNum);
+
+        model.addAttribute("airlineList",queryAirlinesDto.getAirlineList());
+        model.addAttribute("pageMaker",queryAirlinesDto.getPageDto());
     }
 }

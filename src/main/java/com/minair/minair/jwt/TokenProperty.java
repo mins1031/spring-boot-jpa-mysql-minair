@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 public class TokenProperty {
 
     private final String secretKey = "min6038";
-    private final long tokenValidTime = 30* 60 * 1000L; // 30분
+    private final long tokenValidTime = 30 * 60 * 1000L; // 30분
     private final String headerValue = "Authorization";
-    private final long accessTokenValidTime = 1209600; // 2주
+    private final long accessTokenValidTime = 14 * 24 * 60 * 60 * 1000L; // 2주
 
 }
