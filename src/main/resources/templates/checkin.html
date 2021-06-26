@@ -93,6 +93,18 @@
 <footer th:replace="fragments/fragments :: footer"></footer>
 
 <script th:inline="javascript">
+
+    $(document).ready(function () {
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    });
     /*<![CDATA[*/
     console.log("hi!")
     var totalPerson = /*[[${totalPerson}]]*/

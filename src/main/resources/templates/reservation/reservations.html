@@ -135,6 +135,16 @@
             cancleBtnTd = cancleBtnTr.children()
         })
 
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+
     });
 
     $('.checkInBtn').on('click',function (e) {

@@ -56,6 +56,19 @@
 
 <script>
 
+    $(document).ready(function () {
+
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
+    })
+
     $('.pageBtn').on('click',function (e) {
         var pageNum = $(this).text();
         console.log(pageNum);

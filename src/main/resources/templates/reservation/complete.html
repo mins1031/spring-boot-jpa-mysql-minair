@@ -122,6 +122,16 @@
         //id확인해서 예약 리스트 뽑아주는 방식으로 진행.
         //체크인은 예약내역에서 체크인 페이지 넘어갈때 예약id 주고 체크인좌석 선택되면 체크인 좌석정보
         //해당 예약 객체 reserve_seat에 저장.
+
+        loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
     })
     var reservationId;
     $('.checkInBtn').on('click',function (e) {

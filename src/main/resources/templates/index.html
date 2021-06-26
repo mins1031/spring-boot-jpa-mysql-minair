@@ -265,63 +265,9 @@
 
 <script>
 
-    /*$('#userLink').on("click",function (e) {
-        var token = localStorage.getItem("Authorization")
-
-        userInfo(token, function (result, xhr) {
-            var request = new XMLHttpRequest();
-            console.log(request.getResponseHeader("Authorization"));
-            //$(location).attr('href', "/user/info");
-        });
-    });*/
-
-    var a1 = getTokenInfo().accessToken;
-    var r1 = getTokenInfo().refreshToken;
-    console.log(a1);
-    console.log(r1);
 
     let reAccessToken = "";
     let status ;
-    function test(accessToken,refreshToken) {
-
-        $.ajax({
-            method: "get",
-            url: "/user/test",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", accessToken);
-            },
-            statusCode: {
-                200: function (response) {
-                    console.log("200!");
-                    console.log(response);
-                   // $(location).attr('href','/user/index');
-                },
-                403: function () {
-                    status = 403;
-                    console.log("403...");
-                    let reissueToken = refresh(refreshToken)
-                    console.log(reissueToken.accessToken);
-                    reAccessToken = reissueToken.accessToken;
-                    console.log("reaccessToken= "+reAccessToken);
-                    test(reissueToken.accessToken,refreshToken);
-                }
-            }
-        });
-        if(status === 403) {
-            console.log(reAccessToken);
-            localStorage.setItem("Authorization", reAccessToken);
-        }
-    }
-    //우선 403시 토큰을 재발급 받아서 로컬스토리지에 저장하는것이 주요했음.
-    //이것을 전역변수reAccessToken에 저장하고자 403시 reAccessToken에 받아온 토큰 값저장하고
-    //ajax종료시 로컬스토리지에 저장해서 갱신해주는 로직으로 진행해 성공.
-
-    $('#test').on("click", function (e) {
-            test(getTokenInfo().accessToken,getTokenInfo().refreshToken);
-    });
-    $('#bok').on("click", function (e) {
-        console.log(a1);
-    });
 
     $('.logout').on('click', function () {
         console.log("logout 버튼")

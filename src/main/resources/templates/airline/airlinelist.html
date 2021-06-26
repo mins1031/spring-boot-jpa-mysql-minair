@@ -146,6 +146,14 @@
 
     $(document).ready(function () {
         loginStatus();
+        console.log("index test="+tokenCheck().result)
+        if (tokenCheck().result){
+            $('.login').hide();
+            $('.join').hide();
+        } else {
+            $('.user').hide();
+            $('.logout').hide();
+        }
     })
     var adult = $('.adult').text();
     var child = $('.child').text();
