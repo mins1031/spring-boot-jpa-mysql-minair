@@ -47,8 +47,6 @@
 ## DataBase ERD
 <img src = "src/main/resources/static/images/minairErd.jpg" width="700" height="400">
 
-## 개선점
- * refreshToken의 저장 방식에 대한 개선사항.redis 공부후 도입해보는 것도 고려중.
 
 ## 현재까지 고민
  * Api는 응답Status를 통해 해당 예외에 대한 큰 설명이 가능. 웹파트는 AdviceController를 통해 해당 어플리케이션에서 발생하는 예외를 한번에 잡아서 예외별로 처리해주었다. 리펙토링. 피곤한경우 생각없이 구성한 코드가 몇몇 군데 보임.. 반성..  
