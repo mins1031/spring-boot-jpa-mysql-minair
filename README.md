@@ -46,8 +46,8 @@
 
  * 21.06.27 V1 배포 진행. 이후 git flow 방식에 맞게 v2구현 예정.
  
- 
  * v2엔 항공권 수정,삭제, 회원 탈퇴, 각 목록들에 검색기능,허술한 프론트부분 수정및 구현 예정.
+ * 부적절한 어노테이션 개선
 ## DataBase ERD
 <img src = "src/main/resources/static/images/minairErd.jpg" width="700" height="400">
 
