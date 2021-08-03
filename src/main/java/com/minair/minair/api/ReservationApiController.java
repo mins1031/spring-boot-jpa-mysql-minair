@@ -72,9 +72,10 @@ public class ReservationApiController {
     }
 
     //내 예약 목록 조회 api
+    //RequestBody 바꿔야됨
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
-    public ResponseEntity myReservations(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity myReservations(@ModelAttribute @Valid ForFindPagingDto forFindPagingDto,
                                          Errors errors){
 
         if (errors.hasErrors() || forFindPagingDto.getUsername() == null)
@@ -128,6 +129,7 @@ public class ReservationApiController {
         return ResponseEntity.ok().body(reservationResource);
     }
 
+    //RequestBody 바꿔야됨
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity findAllReservation(@RequestBody @Valid ForFindPagingDto forFindPagingDto,

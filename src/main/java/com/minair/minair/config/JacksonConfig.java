@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 public class JacksonConfig {
 
     public static final DateTimeFormatter LOCALDATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final DateTimeFormatter LOCALTIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
+    public static final DateTimeFormatter LOCALTIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static class LocalDateSerializer extends JsonSerializer<LocalDate> {
 

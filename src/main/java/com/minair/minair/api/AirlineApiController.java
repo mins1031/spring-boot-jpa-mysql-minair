@@ -36,13 +36,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/airline", produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value = "/api/airline")
 public class AirlineApiController {
 
     private final AirlineService airlineService;
     private final ModelMapper modelMapper;
 
-    @PostMapping(value = "/new", produces = MediaTypes.HAL_JSON_VALUE)
+    @PostMapping(value = "/new")
     public ResponseEntity createAirline(@RequestBody @Valid AirlineCreateDto airlineCreateDto,
                                         Errors errors){
         log.info("항공권 등록 post 요청");
@@ -66,8 +66,9 @@ public class AirlineApiController {
         }
     }
 
-    @GetMapping(value = "/search",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity searchAirline(@RequestBody @Valid AirlineSearchDto airlineSearchDto,
+    //RequestBody 바꿔야됨
+    @GetMapping(value = "/search")
+    public ResponseEntity searchAirline(@ModelAttribute @Valid AirlineSearchDto airlineSearchDto,
                                         Errors errors) {
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
@@ -83,9 +84,10 @@ public class AirlineApiController {
         return new ResponseEntity(airlineResource,HttpStatus.OK);
     }
 
+    //RequestBody 바꿔야됨
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity queryAirlines(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
+    public ResponseEntity queryAirlines(@ModelAttribute @Valid ForFindPagingDto forFindPagingDto,
                                         Errors errors){
 
         if (errors.hasErrors())

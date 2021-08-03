@@ -17,7 +17,6 @@ import java.time.LocalTime;
 @Builder
 public class AirlineDto {
 
-    private Long id;
     private Departure departure;
     private Distination distination;
     private LocalDate depart_date;

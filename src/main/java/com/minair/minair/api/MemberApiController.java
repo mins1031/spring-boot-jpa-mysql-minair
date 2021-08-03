@@ -15,6 +15,7 @@ import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,30 +186,17 @@ public class MemberApiController {
         return ResponseEntity.ok().body(basicResource);
     }
 
+    //RequestBody 바꿔야됨
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity findAllMember(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
-                                        Errors errors){
-        if (errors.hasErrors())
-            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+    public ResponseEntity findAllMember(@RequestParam(value = "pageNum",defaultValue = "1")@NotNull int pageNum){
+        if (pageNum == 0)
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        QueryMemberDto queryMemberDto = memberService.findByAll(forFindPagingDto.getPageNum());
+        QueryMemberDto queryMemberDto = memberService.findByAll(pageNum);
         if (queryMemberDto.getMemberList() == null)
             return ResponseEntity.noContent().build();
 
-        /*List<MemberListDto> memberListDtos = new ArrayList<>();
-        for (Member m : members) {
-            memberListDtos.add(modelMapper.map(m,MemberListDto.class));
-        }
-
-        PageDto pageDto = new PageDto(forFindPagingDto.getPageNum(), 10
-                        ,members.getTotalElements(),members.getTotalPages());
-
-        QueryMemberDto q = QueryMemberDto.builder()
-                .memberList(memberListDtos)
-                .pageDto(pageDto)
-                .build();
-*/
         BasicResource basicResource = new BasicResource(queryMemberDto);
         basicResource.add(linkTo(MemberApiController.class).withSelfRel());
         basicResource.add(new Link("/api/member/{username}").withRel("member-info"));

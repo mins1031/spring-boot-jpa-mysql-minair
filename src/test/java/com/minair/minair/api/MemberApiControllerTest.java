@@ -49,9 +49,12 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.web.servlet.function.RequestPredicates.param;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -436,10 +439,7 @@ public class MemberApiControllerTest {
     @Test
     public void findAllMember() throws Exception {
         //Given
-        int pageNum = 1;
         generateMember(15);
-        ForFindPagingDto forFindPagingDto = new ForFindPagingDto();
-        forFindPagingDto.setPageNum(pageNum);
 
         String findMemberName = "user1";
         Member member = memberRepository.findByUsername(findMemberName);
@@ -452,7 +452,8 @@ public class MemberApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE)
                 .header("Authorization",tokenDto.getToken())
-                .content(objectMapper.writeValueAsString(forFindPagingDto)))
+                //.content(objectMapper.writeValueAsString(forFindPagingDto)))
+                .param("pageNum","1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("memberList").exists())
@@ -471,9 +472,8 @@ public class MemberApiControllerTest {
                 requestHeaders(
                         headerWithName("Authorization").description("JWT 토큰 accessToken 식별 값")
                 ),
-                requestFields(
-                        fieldWithPath("pageNum").description("페이징을 위한 페이지 값"),
-                        fieldWithPath("username").description("회원을 식별할경우 필요한 값. 필수 x")
+                requestParameters(
+                        parameterWithName("pageNum").description("페이징을 위한 페이지 값")
                 ),
                 relaxedResponseFields(
                         fieldWithPath("memberList").description("페이징 처리된 10개의 회원리스트 값"),

@@ -19,6 +19,7 @@ import com.minair.minair.domain.notEntity.Distination;
 import com.minair.minair.domain.notEntity.Gender;
 import com.minair.minair.jwt.JwtTokenProvider;
 import com.minair.minair.jwt.RefreshTokenProperty;
+import com.minair.minair.jwt.TokenProperty;
 import com.minair.minair.repository.AirlineRepository;
 import com.minair.minair.repository.MemberRepository;
 import com.minair.minair.repository.ReservationRepository;
@@ -41,6 +42,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 
@@ -115,8 +117,8 @@ public class ReservationApiControllerTest {
         AirlineCreateDto airlineCreateDto = modelMapper.map(goAir, AirlineCreateDto.class);
         AirlineCreateDto airlineCreateDto2 = modelMapper.map(backAir, AirlineCreateDto.class);
 
-        airlineService.createAirline(airlineCreateDto);
-        airlineService.createAirline(airlineCreateDto2);
+        airlineRepository.save(goAir);
+        airlineRepository.save(backAir);
 
         MemberCreateDto createDto = MemberCreateDto.builder()
                 .username("user1")
@@ -247,21 +249,11 @@ public class ReservationApiControllerTest {
         Airline backAir = Airline.createAirline(airlineGenerateDto2);
         Airline goAirResult = airlineRepository.save(goAir);
         Airline bakcAirResult = airlineRepository.save(backAir);
-        MemberCreateDto createDto = MemberCreateDto.builder()
-                .username("user1")
-                .password(passwordEncoder.encode("alsdud"))
-                .email("min@min")
-                .birth(LocalDate.of(2021,05,30))
-                .nameKor("민")
-                .nameEng("min")
-                .phone("010-2222-2222")
-                .gender(Gender.F)
-                .build();
-        MemberRole memberRole = MemberRole.ROLE_MEMBER;
-        Member member = Member.createMember(createDto,memberRole);
-        RefreshTokenProperty r = new RefreshTokenProperty();
-        member.issueRefreshToken(r);
-        memberRepository.save(member);
+
+        Member member1 = memberRepository.findByUsername("user1");
+
+        TokenDto tokenDto = new TokenDto();
+        tokenDto.setToken(jwtTokenProvider.createToken(member1.getUsername(),member1.getRoles()));
 
         String username = "user1";
         int adult = 1;
@@ -271,7 +263,7 @@ public class ReservationApiControllerTest {
 
         ReservationGenerateDto goReservationDto =
                 ReservationGenerateDto.builder()
-                        .member(member)
+                        .member(member1)
                         .airline(goAir)
                         .adultCount(adult)
                         .childCount(child)
@@ -281,7 +273,7 @@ public class ReservationApiControllerTest {
 
         ReservationGenerateDto backReservationDto =
                 ReservationGenerateDto.builder()
-                        .member(member)
+                        .member(member1)
                         .airline(goAir)
                         .adultCount(adult)
                         .childCount(child)
@@ -296,15 +288,16 @@ public class ReservationApiControllerTest {
 
         reservationRepository.save(reservation);
         reservationRepository.save(reservation2);
-        int pageNum = 1;
-        ForFindPagingDto dto = new ForFindPagingDto(pageNum,username);
 
         this.mockMvc.perform(get("/api/reservation")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(dto)))
+                //.content(objectMapper.writeValueAsString(dto)))
+                .header("Authorization",tokenDto.getToken())
+                .param("pageNum","1")
+                .param("username","user1"))
                 .andDo(print())
                 .andExpect(status().isOk())
-        ;//!!!!!!!!예약 정보들 self-description안해씅ㅁ!!!! 밤에 해랑 21/06/02
+        ;
     }
 
     @Test

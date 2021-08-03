@@ -43,6 +43,7 @@ public class SeatApiController {
     private final SeatService seatService;
     private final ModelMapper modelMapper;
 
+    //RequestBody 바꿔야됨
     @GetMapping(value = "/api/checkIn", produces = MediaTypes.HAL_JSON_VALUE)
     //@PreAuthorize("hasRole('ROLE_MEMBER')")
     public ResponseEntity checkInSeat(@RequestBody @Valid CheckInDto checkInDto,
@@ -66,13 +67,13 @@ public class SeatApiController {
         }
         SeatListResultDto<SeatDtoForCheckIn> result = new SeatListResultDto(convertSeats,
                 checkInDto.getAirlineId(), checkInDto.getReservationId(), checkInDto.getTotalPerson());
+
         EntityModel seatResult = EntityModel.of(result);
         seatResult.add(linkTo(methodOn(SeatApiController.class)
                 .checkInSeat(checkInDto,errors))
                 .withSelfRel());
         seatResult.add(new Link("/docs/index.html").withRel("profile"));
-        //seatResult.add(linkTo(methodOn(HomeController.class).index()).withRel("index"));
-        //여기서 각 좌석값마다 링크를 줄필요는 x
+
         return ResponseEntity.ok().body(seatResult);
     }
 }
