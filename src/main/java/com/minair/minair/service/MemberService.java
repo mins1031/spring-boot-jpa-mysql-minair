@@ -78,13 +78,16 @@ public class MemberService {
             loginServiceDto.setIdNotMatch(true);
             return loginServiceDto;
         }
+        //id로 조회된 멤버가 없는 경우 idNotMatch에 True
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
             log.info("not match password!");
             loginServiceDto.setWrongPwd(true);
+            // 비밀번호가 맞지 않는 경우 WrongPwd에 True
         } else {
             log.info("pw clean!");
             loginServiceDto.setPassLogin(true);
+            //위의 2경우가 아닌 id,pw가 맞는 경우 PassLogin 에 True
         }
 
         return loginServiceDto;

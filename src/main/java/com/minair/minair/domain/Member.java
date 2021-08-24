@@ -90,8 +90,8 @@ public class Member extends DateEntity {
 
     public void updateMember(MemberModifyDto memberModifyDto){
         this.email = memberModifyDto.getEmail();
-        this.nameKor = memberModifyDto.getName_kor();
-        this.nameEng = memberModifyDto.getName_eng();
+        this.nameKor = memberModifyDto.getNameKor();
+        this.nameEng = memberModifyDto.getNameEng();
         this.phone = memberModifyDto.getPhone();
         this.birth = memberModifyDto.getBirth();
         this.gender = memberModifyDto.getGender();

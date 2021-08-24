@@ -45,14 +45,6 @@ public class AirlineController {
         return "/airline/airlinelist";
     }
 
-    /*@PostMapping("/airline/new")
-    public String createAirline(@RequestBody Airline airline){
-        //원래 dto로 받아서 Airline로 바꿔줘야 하지만 일단 테스트기에 받아서 진행
-        airlineService.createAirline(airline);
-        log.info("항공권 등록!");
-
-        return "항공권 등록!";
-    }*/
 
     @GetMapping("/airline/new")
     public void createAirline(){

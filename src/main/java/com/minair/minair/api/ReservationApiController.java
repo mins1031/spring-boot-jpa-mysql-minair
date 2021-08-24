@@ -28,6 +28,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -93,7 +94,7 @@ public class ReservationApiController {
 
     //좌석 체크인 등록 api
     @PostMapping("/checkIn")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity checkInSeat(@RequestBody @Valid CheckInRegDto checkInRegDto,
                                       Errors errors){
 
@@ -115,7 +116,7 @@ public class ReservationApiController {
 
     //단건예약 상세 조회
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity getReservation(@PathVariable("id")  Long reservationId){
 
         ReservationDetailInfoDto reservationDetailInfoDto = reservationService.findOneReservation(reservationId);
@@ -132,13 +133,12 @@ public class ReservationApiController {
     //RequestBody 바꿔야됨
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity findAllReservation(@RequestBody @Valid ForFindPagingDto forFindPagingDto,
-                                             Errors errors){
+    public ResponseEntity findAllReservation(@RequestParam(value = "pageNum",defaultValue = "1")@NotNull int pageNum){
 
-        if (errors.hasErrors())
-            return ResponseEntity.badRequest().body(new ErrorResource(errors));
+        if (pageNum == 0)
+            return ResponseEntity.badRequest().build();
 
-        ReservationsResultDto allReservation = reservationService.findAll(forFindPagingDto.getPageNum());
+        ReservationsResultDto allReservation = reservationService.findAll(pageNum);
         if (allReservation == null)
             return ResponseEntity.noContent().build();
 
@@ -150,7 +150,7 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity cancleReservation(@PathVariable Long id,
                                             @RequestBody @Valid ReservationRemoveDto reservationRemoveDto,
                                             Errors errors){

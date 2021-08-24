@@ -20,8 +20,8 @@ public class MemberModifyDto {
     private String email;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
-    private String name_kor;
-    private String name_eng;
+    private String nameKor;
+    private String nameEng;
     private String phone;
     private Gender gender;
 }

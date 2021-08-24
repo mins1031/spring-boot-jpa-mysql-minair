@@ -100,15 +100,7 @@ public class MemberController {
             log.info("회원이 없거나 회원목록 조회 실패");
             throw new MemberListException();
         }
-        /*List<MemberListDto> memberListDtos = memberList.getContent().stream()
-                .map(m -> new MemberListDto(m.getId(),m.getUsername(),m.getEmail(),
-                        m.getNameKor(),m.getNameEng(),m.getPhone(),m.getGender(),
-                        m.getRegDate()))
-                .collect(Collectors.toList());
 
-        PageDto pageDto = new PageDto(pageNum,10,memberList.getTotalElements(),
-                memberList.getTotalPages());
-*/
         model.addAttribute("memberList", queryMemberDto.getMemberList());
         model.addAttribute("pageMaker", queryMemberDto.getPageDto());
     }

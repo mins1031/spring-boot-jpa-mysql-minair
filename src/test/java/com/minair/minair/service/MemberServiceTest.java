@@ -239,7 +239,7 @@ class MemberServiceTest {
         String updateKorName = "update KorName!";
 
         MemberModifyDto memberModifyDto = MemberModifyDto.builder()
-                .name_kor(updateKorName)
+                .nameKor(updateKorName)
                 .build();
         //When
         user1.updateMember(memberModifyDto);

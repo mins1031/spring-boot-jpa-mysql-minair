@@ -26,6 +26,7 @@ import com.minair.minair.service.MemberService;
 import com.minair.minair.testconfig.RestDocsConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -128,8 +129,8 @@ public class MemberApiControllerTest {
                 .andExpect(jsonPath("password").doesNotExist())
                 .andExpect(jsonPath("email").exists())
                 .andExpect(jsonPath("birth").exists())
-                .andExpect(jsonPath("name_kor").exists())
-                .andExpect(jsonPath("name_eng").exists())
+                .andExpect(jsonPath("nameKor").exists())
+                .andExpect(jsonPath("nameEng").exists())
                 .andExpect(jsonPath("phone").exists())
                 .andExpect(jsonPath("gender").exists())
                 .andExpect(jsonPath("_links.self.href").exists())
@@ -146,8 +147,8 @@ public class MemberApiControllerTest {
                         fieldWithPath("password").description("회원가입 유저 비밀번호값"),
                         fieldWithPath("email").description("회원가입 유저 이메일 값"),
                         fieldWithPath("birth").description("회원가입 유저 생년월일 값"),
-                        fieldWithPath("name_kor").description("회원가입 유저 이름 값"),
-                        fieldWithPath("name_eng").description("회원가입 유저 영어이름 값"),
+                        fieldWithPath("nameKor").description("회원가입 유저 이름 값"),
+                        fieldWithPath("nameEng").description("회원가입 유저 영어이름 값"),
                         fieldWithPath("phone").description("회원가입 유저 핸드폰 번호값"),
                         fieldWithPath("gender").description("회원가입 유저 성별값")
                 ),
@@ -155,8 +156,8 @@ public class MemberApiControllerTest {
                         fieldWithPath("username").description("회원가입 유저 id 값"),
                         fieldWithPath("email").description("회원가입 유저 이메일 값"),
                         fieldWithPath("birth").description("회원가입 유저 생년월일 값"),
-                        fieldWithPath("name_kor").description("회원가입 유저 이름 값"),
-                        fieldWithPath("name_eng").description("회원가입 유저 영어이름 값"),
+                        fieldWithPath("nameKor").description("회원가입 유저 이름 값"),
+                        fieldWithPath("nameEng").description("회원가입 유저 영어이름 값"),
                         fieldWithPath("phone").description("회원가입 유저 핸드폰 번호 값"),
                         fieldWithPath("gender").description("회원가입 유저 성별 값"),
                         fieldWithPath("regDate").description("회원가입 유저 가입일시 값"),
@@ -193,7 +194,7 @@ public class MemberApiControllerTest {
     }*/
 
     @Test
-    @TestDescription("id 중복체크 중복되 id가 아닌 경우")
+    @TestDescription("id 중복체크 중복된 id가 아닌 경우")
     public void checkIdTrue() throws Exception {
         String id = "mmm";
 
@@ -253,8 +254,7 @@ public class MemberApiControllerTest {
                 .accept(MediaTypes.HAL_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andDo(print())
-                .andExpect(status().isOk())
-                //.andExpect(jsonPath("token").exists())
+                .andExpect(status().isBadRequest())
         ;
     }
 
@@ -369,8 +369,8 @@ public class MemberApiControllerTest {
                 .username(member.getUsername())
                 .email(member.getEmail())
                 .birth(member.getBirth())
-                .name_kor(member.getNameKor())
-                .name_eng(updateNameEng)
+                .nameKor(member.getNameKor())
+                .nameEng(updateNameEng)
                 .phone(member.getPhone())
                 .gender(member.getGender())
                 .build();
@@ -412,8 +412,8 @@ public class MemberApiControllerTest {
                         fieldWithPath("username").description("회원 id 값"),
                         fieldWithPath("email").description("회원 email 값"),
                         fieldWithPath("birth").description("회원 생년월일 값"),
-                        fieldWithPath("name_kor").description("회원 한국이름 값"),
-                        fieldWithPath("name_eng").description("회원 영어이름 값"),
+                        fieldWithPath("nameKor").description("회원 한국이름 값"),
+                        fieldWithPath("nameEng").description("회원 영어이름 값"),
                         fieldWithPath("phone").description("회원 휴대번호 값"),
                         fieldWithPath("gender").description("회원 성별 값")
                 ),
@@ -529,6 +529,7 @@ public class MemberApiControllerTest {
     ReservationRepository reservationRepository;
 
     @Test
+    @Disabled
     public void removeMember() throws Exception {
         //Given
         AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()

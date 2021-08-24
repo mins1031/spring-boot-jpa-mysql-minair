@@ -100,7 +100,6 @@ public class MemberApiController {
     public ResponseEntity login(@RequestBody @Valid LoginRequestDto loginRequestDto, Errors errors){
         log.info("post login");
 
-
         if (errors.hasErrors())
             return ResponseEntity.badRequest().body(new ErrorResource(errors));
 
