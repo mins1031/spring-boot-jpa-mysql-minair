@@ -2,8 +2,8 @@ spring:
   profiles:
     active: local
   datasource:
-    url: jdbc:mariadb://localhost:3306/minair
-    #url: jdbc:mariadb://minair-database.cllkjs3lli6y.us-east-2.rds.amazonaws.com:3306/minair
+    #url: jdbc:mariadb://localhost:3306/minair
+    url: jdbc:mariadb://minair-database.cllkjs3lli6y.us-east-2.rds.amazonaws.com:3306/minair
     username: min
     password: alsdud6038
     driver-class-name: org.mariadb.jdbc.Driver

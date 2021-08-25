@@ -172,7 +172,6 @@ public class ReservationApiControllerTest {
     }
 
     @Test
-    @Disabled
     public void newTest() throws Exception {
         AirlineGenerateDto airlineGenerateDto1 = AirlineGenerateDto.builder()
                 .departure(Departure.JEJU)
@@ -193,7 +192,7 @@ public class ReservationApiControllerTest {
         Airline backAir = Airline.createAirline(airlineGenerateDto2);
         Airline goAirResult = airlineRepository.save(goAir);
         Airline bakcAirResult = airlineRepository.save(backAir);
-        String username = "ppap";
+        String username = "user1";
         int adult = 1;
         int child = 1;
         int totalPer = 2;
@@ -208,9 +207,16 @@ public class ReservationApiControllerTest {
         reservationDto.setTotalPerson(adult+child);
         reservationDto.setTotalPrice(totalPri);
 
+        Member member1 = memberRepository.findByUsername(username);
+
+        TokenDto tokenDto = new TokenDto();
+        tokenDto.setToken(jwtTokenProvider.createToken(member1.getUsername(),member1.getRoles()));
+
+
         this.mockMvc.perform(post("/api/reservation/new")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
+                .header("Authorization",tokenDto.getToken())
                 .content(objectMapper.writeValueAsString(reservationDto)
                 ))
                 .andDo(print())
@@ -219,6 +225,7 @@ public class ReservationApiControllerTest {
                 links(
                         linkWithRel("index").description("index href"),
                         linkWithRel("self").description("self href"),
+                        linkWithRel("profile").description("profile href"),
                         linkWithRel("my-reservationList").description("내 예약 정보 확인 href"),
                         linkWithRel("reservation-checkIn").description("좌석체크인 href"),
                         linkWithRel("reservation-Info").description("해당 예약 상세 정보 확인 href")

@@ -350,12 +350,10 @@ public class AirlineApiControllerTest {
                         requestHeaders(
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description("application/json"),
                                 headerWithName(HttpHeaders.ACCEPT).description("hal")
-                        ),requestParameters(
+                        ),
+                        requestParameters(
                                 parameterWithName("pageNum").description("현재 페이지 정보")
                         )
-                        /*requestFields(
-                                fieldWithPath("pageNum").description("현재 페이지 정보")
-                        )*/
                 ))
         ;
         //api는 요청도 웬만하면 @RequestParam보단 dto하나 만들어서 @RequestBody로 받아줄것.

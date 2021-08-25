@@ -48,7 +48,7 @@ public class ReservationApiController {
 
     //예약 완료 페이지
     @PostMapping("/new")
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity complete(@RequestBody @Valid ReservationDto reservationDto,
                                    Errors errors){
         if (errors.hasErrors())
