@@ -1,7 +1,7 @@
 # SpringBoot-JPA-mysql-MinAir
  > 여행가고싶다는 단순한 생각중 항공편 가격들이 궁금해져 둘러보다 항공권 검색 시스템에 대한 구현을 해보고 싶어져 진행.
   * 프론트 페이지를 위해 부트스트랩 탬플릿을 찾는데 불필요한 시간이 많이 허비되어 웹보단 API 구성에 집중했다.
-  * hhttp://18.191.53.101/docs/index.html API rest-docs 주소
+  * http://18.191.53.101/docs/index.html API rest-docs 주소
   * AWS EC2와 AWS RDS MariaDB를 통해 http://18.191.53.101/ 배포
  
  ## 목적
